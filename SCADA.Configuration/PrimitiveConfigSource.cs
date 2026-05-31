@@ -21,8 +21,6 @@ namespace SCADA.Configuration
    
         private readonly Channel<IEnumerable<(string configItem, string value)>> _channel = Channel.CreateUnbounded<IEnumerable<(string configItem, string value)>>();
 
-        private readonly bool _restoredEachTimeRestartingApplication;
-
         private readonly Task _saveTask;
 
         private readonly string _xmlFilePath;
@@ -34,49 +32,26 @@ namespace SCADA.Configuration
         // 实例化一个顺序锁
         private SequenceLock _seqLock = new SequenceLock();
 
-        private readonly string _configValuesFilePath;
+        private readonly string _dbConnectionString;
+        readonly bool _supportAtomicOperations;
+        readonly bool _trackConfigValueModification;
+        readonly bool _restoreOnAppStartup;
 
-
-        public PrimitiveConfigSource(string dbName, bool history, bool restoreOnAppStartup, bool atomic)
+        public PrimitiveConfigSource(string sqliteDB, bool supportAtomicOperations, bool trackConfigValueModification, bool restoreOnAppStartup = false)
         {
+            _dbConnectionString = $"Data Source={sqliteDB};Version=3;";
+            _supportAtomicOperations = supportAtomicOperations;
+            _trackConfigValueModification = trackConfigValueModification;
+            _restoreOnAppStartup = restoreOnAppStartup;
         }
 
         public PrimitiveConfigSource(string xml, bool atomic)
         {
+
         }
 
         public PrimitiveConfigSource(string xmlFilePath, bool restoredEachTimeRestartingApplication,int capacity)
         {
-            _configValuesFilePath = xmlFilePath + ".data";
-
-            _configItems2 = new ConfigItem[capacity];
-            _transactionCache = new ConcurrentDictionary<long, FastStringObjectMap>();
-            _restoredEachTimeRestartingApplication = restoredEachTimeRestartingApplication;
-
-            _xmlFilePath = xmlFilePath;
-
-            var bytes = File.ReadAllBytes(_xmlFilePath);
-
-            ReadXmlString(bytes);
-
-            foreach (ConfigNode node in RootNodes)
-            {
-                Travel(node);
-            }
-
-            if (_configItems == null)
-            {
-                _configItems = ImmutableDictionary.CreateRange(_tempList);
-            }
-            else
-            {
-                var builder = (_configItems as ImmutableDictionary<string, ConfigItem>).ToBuilder();
-                builder.AddRange(_tempList);
-                _configItems = builder.ToImmutable();
-            }
-
-            _tempList.Clear();
-
             foreach (var item in _configItems)
             {
                 ValidateValue(item.Key, item.Value.StringValue);
@@ -94,7 +69,7 @@ namespace SCADA.Configuration
                             var pairs = asyncEnumerator.Current;
                             if (pairs.Count() > 0)
                             {
-                                if (!_restoredEachTimeRestartingApplication)
+                                if (!_restoreOnAppStartup)
                                 {
                                     Save(pairs);
                                 }
@@ -197,7 +172,10 @@ namespace SCADA.Configuration
                     return null;
             }
         }
+        private void WriteConfigValues(LightWeightDictionary keyValuePairs)
+        {
 
+        }
         private string Convert2String(object value)
         {
             if (value is DateTime dateTime)
@@ -242,7 +220,6 @@ namespace SCADA.Configuration
                     XmlWriterSettings settings = new XmlWriterSettings
                     {
                         Indent = true,                      // 是否需要缩进（按需开启，会稍微增加文件大小）
-                        Encoding = _encoding,
                         CloseOutput = false, // 让 using 块自己处理 FileStream 的关闭
                     };
                     // 3. 将 XmlWriter 绑定到 FileStream

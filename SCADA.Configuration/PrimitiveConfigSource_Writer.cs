@@ -12,7 +12,7 @@ namespace SCADA.Configuration
     {
         // long 事务id,允许多个事务并行.
         // ConcurrentDictionary<string, object> 单个事务需要修改的的配置项集合.使用字典的好处是如果在同一个事务中多次修改同一个配置项的值,会以最后一次为准!
-        private readonly ConcurrentDictionary<long, FastStringObjectMap> _transactionCache;
+        private readonly ConcurrentDictionary<long, LightWeightDictionary> _transactionCache;
 
         private long _id = 0;
 
@@ -20,7 +20,7 @@ namespace SCADA.Configuration
         {
             // _id: 0,1,2...long.max,long.min(overflow),long.min + 1...0...long.max...如此循环往复.
             transactionId = Interlocked.Increment(ref _id);
-            _transactionCache.TryAdd(transactionId, new FastStringObjectMap());
+            _transactionCache.TryAdd(transactionId, new LightWeightDictionary());
             return this;
         }
 
@@ -29,17 +29,17 @@ namespace SCADA.Configuration
             // 即使Set(会校验新值合法性以及写磁盘)失败,事务也会从缓存中移除,不会永驻导致内存泄漏.
 #if NET10_0_OR_GREATER
             if (_transactionCache.Remove(transactionId, out var configs))
-                Set(configs.Select(x => (x.Key, x.Value)));
+                Set(configs);
 #elif NET462_OR_GREATER
             if (_transactionCache.TryRemove(transactionId, out var configs))
-                Set(configs.Select(x => (x.Key, x.Value)));
+                Set(configs);
 #endif
             throw new InvalidOperationException($"This transaction '{transactionId}' has not been created or committed");
         }
 
         public IConfigSourceWriter Set(long transactionId, string config, object value)
         {
-            if (_transactionCache.TryGetValue(transactionId, out FastStringObjectMap configs))
+            if (_transactionCache.TryGetValue(transactionId, out LightWeightDictionary configs))
             {
                 // 在一个事务中多次修改同一配置的值,后面的覆盖前面的,最终的值是最后一次的赋值.
                 configs.AddOrUpdate(config, value);
@@ -51,7 +51,7 @@ namespace SCADA.Configuration
             return this;
         }
 
-        private void Set(IEnumerable<(string config, object value)> configValuePairs)
+        private void Set(LightWeightDictionary configValuePairs)
         {
             if (configValuePairs == null)
             {
@@ -120,133 +120,7 @@ namespace SCADA.Configuration
                 }
             }
         }
-        private void WriteConfigValues(FastStringObjectMap keyValuePairs)
-        {
+       
 
-        }
-        private class FastStringObjectMap : IEnumerable<KeyValuePair<string, object>>
-        {
-            /// <summary>
-            /// 当前容器内元素的个数
-            /// </summary>
-            private int _count;
-
-            private Entry[] _entries;
-
-            public FastStringObjectMap(int initialCapacity = 16)
-            {
-                _entries = new Entry[initialCapacity];
-            }
-
-            public int Count => _count;
-
-            public object this[string key]
-            {
-                get
-                {
-                    for (int i = 0; i < _count; i++)
-                    {
-                        if (ReferenceEquals(_entries[i].Key, key) ||
-                            string.Equals(_entries[i].Key, key, StringComparison.Ordinal))
-                        {
-                            return _entries[i].Value;
-                        }
-                    }
-                    return null;
-                }
-            }
-
-            public void AddOrUpdate(string key, object value)
-            {
-                // 如果Key已经存在则覆盖
-                for (int i = 0; i < _count; i++)
-                {
-                    if (ReferenceEquals(_entries[i].Key, key) ||
-                        string.Equals(_entries[i].Key, key, StringComparison.Ordinal))
-                    {
-                        _entries[i].Value = value;
-                        return;
-                    }
-                }
-                // 超出容量后进行扩容
-                if (_count >= _entries.Length)
-                {
-                    Array.Resize(ref _entries, _entries.Length * 2);
-                }
-                // 添加新的键值对
-                _entries[_count].Key = key;
-                _entries[_count].Value = value;
-                _count++;
-            }
-
-            public void Clear()
-            {
-                if (_count > 0)
-                {
-                    Array.Clear(_entries, 0, _count);
-                    _count = 0;
-                }
-            }
-
-            // 1. 提供给 foreach 使用的高性能入口，返回 struct 避免装箱和 GC 分配
-            public Enumerator GetEnumerator() => new Enumerator(this);
-
-            // ==========================================
-            // 迭代器实现部分
-            // ==========================================
-            // 2. 显式实现接口，提供对 LINQ 的兼容性支持
-            IEnumerator<KeyValuePair<string, object>> IEnumerable<KeyValuePair<string, object>>.GetEnumerator() => GetEnumerator();
-
-            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-            // 嵌套的 struct 枚举器，可以直接访问外部类的私有字段 _entries 和 _count
-            public struct Enumerator : IEnumerator<KeyValuePair<string, object>>
-            {
-                private readonly FastStringObjectMap _map;
-                private int _index;
-
-                internal Enumerator(FastStringObjectMap map)
-                {
-                    _map = map;
-                    _index = -1; // 初始状态游标在第一个元素之前
-                }
-
-                // 返回标准库的 KeyValuePair，方便解构和使用
-                public KeyValuePair<string, object> Current
-                {
-                    get
-                    {
-                        // 为了极致性能，不在这里做越界检查，依赖 MoveNext 的保护
-                        var entry = _map._entries[_index];
-                        return new KeyValuePair<string, object>(entry.Key, entry.Value);
-                    }
-                }
-
-                object IEnumerator.Current => Current;
-
-                public void Dispose()
-                {
-                    // 没有任何非托管资源需要释放，留空即可
-                }
-
-                public bool MoveNext()
-                {
-                    if (_index + 1 < _map._count)
-                    {
-                        _index++;
-                        return true;
-                    }
-                    return false;
-                }
-
-                public void Reset() => _index = -1;
-            }
-
-            private struct Entry
-            {
-                public string Key;
-                public object Value;
-            }
-        }
     }
 }

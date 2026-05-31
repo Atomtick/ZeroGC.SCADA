@@ -480,6 +480,5 @@ namespace SCADA.Configuration
             }
         }
 
-
     }
 }
