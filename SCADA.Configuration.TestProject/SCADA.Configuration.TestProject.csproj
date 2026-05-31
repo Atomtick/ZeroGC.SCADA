@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net472;net10.0</TargetFrameworks>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="xunit.v3.extensibility.core" Version="3.2.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SCADA.Configuration\SCADA.Configuration.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="system2.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="system.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <PackageReference Include="xunit.v3">
+      <Version>3.2.2</Version>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>

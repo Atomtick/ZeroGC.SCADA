@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+说明：
+  1. name 必须以DI_ DO_ AI_ AO_开 头命名，分别表示数字量输入、数字量输出、模拟量输入、模拟量输出
+  2. addr 1,2,3,4,...,1.0,1.1,1.2,...1.7
+  3. type bool int float double string1,string2,...stringN
+  4. 要支持直接写PLC，如配方，它不需要实时读取，只有在打开某个界面时才读取PLC数据，可以配置为不读PLC，在点击发送配方时，写一次。
+  5. 所以在此文件中只是配置的是需要实时刷新的PLC地址
+-->
+<PlcInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="!PlcInfo.Template.xsd" module="PM1" name="PLC" buffcount="20" address="192.168.2.10:12345" class="SCADA.PlcAdatpters.BeckoffPlcAdapter" assembly="SCADA.PlcAdatpters.dll">
+	<BlockList>
+		<PollingBlock id="1" type="di" startaddr="I3" len="50" />
+		<PollingBlock id="2" type="do" startaddr="M1" len="50" />
+		<PollingBlock id="3" type="ai" startaddr="D23" len="300" />
+		<PollingBlock id="4" type="ao" startaddr="D54" len="300" />
+		<!--Read或Write时必须传入Block包含的所有Item，适用大字节块的Recipe-->
+		<StaticBlock id="5" type="ai" startaddr="" len="" />
+		<!--Read或Write时时必须传入Block包含的所有Item，适用大字节块的Recipe-->
+		<StaticBlock id="6" type="ao" startaddr="" len="" />
+	</BlockList>
+	<IOList>
+		<DIList>
+			<Item name="DI_DoorClosed" index="" type="bool" blockid="1" display="" desc="Door Closed" />
+		</DIList>
+		<DOList>
+			<Item name="DO_CloseDoor" index="" type="bool" blockid="2" display="" desc="Close Door" />
+		</DOList>
+		<AIList>
+			<Item name="AI_ChamberPressure" index="9.1" type="bool" blockid="3" display="" desc="Chamber Pressure" />
+		</AIList>
+		<AOList>
+			<Item name="AO_GasLineTemperature" index="4" type="int8" blockid="4" display="" desc="Gas Line Temperature" />
+		</AOList>
+	</IOList>
+	<!--设置action do为value指定值前,先检查limit中的所有di和do是不是指定的值,若是,则允许设置,不是则禁止.-->
+	<!--实时监控,如果某个Limit的值不等于Value的指定值,则去检查其关联的所有action,若action的reverse是true,且do当前值与value相同,则翻转.-->
+	<!--limit条件满足,才允许Action.如果Limit不满足条件,立刻把Action动作取反.-->
+	<Interlock>
+		<Action do="PM1.DO_ProcessManometerIsolationValve" value="true">
+			<Limit di="PM1.DI_PMVacuumSwitchVAC1" value="true" />
+		</Action>
+		<Action do="PM1.DO_TurboPumpN2Purge" value="true">
+			<Limit di="PM1.DI_ForlineVacuunSwitchVAC2" value="true" />
+			<Limit do="PM1.DO_TurboBackingValve" value="true" />
+		</Action>
+		<Action do="PM1.DO_Line1UVOpen" value="true">
+			<Limit di="PM1.DI_UpperChamberClosed" value="true" />
+			<Limit di="PM1.DI_SlitClosed" value="true" />
+			<Limit di="PM1.DI_PMVacuumSwitchVAC1" value="true" />
+			<Limit di="PM1.DI_ForlineVacuunSwitchVAC1" value="true" />
+			<Limit di="PM1.DI_GBOK" value="true" />
+			<Limit di="PM1.DI_FacilityOK" value="true" />
+			<Limit di="PM1.DI_WaterLeakOK" value="true" />
+		</Action>
+	</Interlock>
+</PlcInfo>

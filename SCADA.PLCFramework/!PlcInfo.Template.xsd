@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="PlcInfo">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="BlockList">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element maxOccurs="unbounded" name="PollingBlock">
+								<xs:complexType>
+									<xs:attribute name="id" type="xs:unsignedByte" use="required" />
+									<xs:attribute name="type" type="xs:string" use="required" />
+									<xs:attribute name="startaddr" type="xs:string" use="required" />
+									<xs:attribute name="len" type="xs:unsignedShort" use="required" />
+								</xs:complexType>
+							</xs:element>
+							<xs:element maxOccurs="unbounded" name="StaticBlock">
+								<xs:complexType>
+									<xs:attribute name="id" type="xs:unsignedByte" use="required" />
+									<xs:attribute name="type" type="xs:string" use="required" />
+									<xs:attribute name="startaddr" type="xs:string" use="required" />
+									<xs:attribute name="len" type="xs:string" use="required" />
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="IOList">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="DIList">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Item">
+											<xs:complexType>
+												<xs:attribute name="name" type="xs:string" use="required" />
+												<xs:attribute name="index" type="xs:string" use="required" />
+												<xs:attribute name="type" type="xs:string" use="required" />
+												<xs:attribute name="blockid" type="xs:unsignedByte" use="required" />
+												<xs:attribute name="display" type="xs:string" use="required" />
+												<xs:attribute name="desc" type="xs:string" use="required" />
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="DOList">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Item">
+											<xs:complexType>
+												<xs:attribute name="name" type="xs:string" use="required" />
+												<xs:attribute name="index" type="xs:string" use="required" />
+												<xs:attribute name="type" type="xs:string" use="required" />
+												<xs:attribute name="blockid" type="xs:unsignedByte" use="required" />
+												<xs:attribute name="display" type="xs:string" use="required" />
+												<xs:attribute name="desc" type="xs:string" use="required" />
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="AIList">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Item">
+											<xs:complexType>
+												<xs:attribute name="name" type="xs:string" use="required" />
+												<xs:attribute name="index" type="xs:decimal" use="required" />
+												<xs:attribute name="type" type="xs:string" use="required" />
+												<xs:attribute name="blockid" type="xs:unsignedByte" use="required" />
+												<xs:attribute name="display" type="xs:string" use="required" />
+												<xs:attribute name="desc" type="xs:string" use="required" />
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="AOList">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Item">
+											<xs:complexType>
+												<xs:attribute name="name" type="xs:string" use="required" />
+												<xs:attribute name="index" type="xs:unsignedByte" use="required" />
+												<xs:attribute name="type" type="xs:string" use="required" />
+												<xs:attribute name="blockid" type="xs:unsignedByte" use="required" />
+												<xs:attribute name="display" type="xs:string" use="required" />
+												<xs:attribute name="desc" type="xs:string" use="required" />
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Interlock">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element maxOccurs="unbounded" name="Action">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element maxOccurs="unbounded" name="Limit">
+											<xs:complexType>
+												<xs:attribute name="di" type="xs:string" use="optional" />
+												<xs:attribute name="value" type="xs:boolean" use="required" />
+												<xs:attribute name="do" type="xs:string" use="optional" />
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+									<xs:attribute name="do" type="xs:string" use="required" />
+									<xs:attribute name="value" type="xs:boolean" use="required" />
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="module" type="xs:string" use="required" />
+			<xs:attribute name="name" type="xs:string" use="required" />
+			<xs:attribute name="buffcount" type="xs:unsignedByte" use="required" />
+			<xs:attribute name="address" type="xs:string" use="required" />
+			<xs:attribute name="class" type="xs:string" use="required" />
+			<xs:attribute name="assembly" type="xs:string" use="required" />
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

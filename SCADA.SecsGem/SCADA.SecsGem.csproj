@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFrameworks>net452;net462;net8.0</TargetFrameworks>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<Nullable>disable</Nullable>
+	</PropertyGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'net452'">
+		<PackageReference Include="SuperSocket" Version="1.6.6.1"/>
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'net462'">
+		<PackageReference Include="TouchSocket" Version="4.1.1"/>
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+		<PackageReference Include="TouchSocket" Version="4.1.1"/>
+	</ItemGroup>
+</Project>
