@@ -10,12 +10,12 @@
 		<PackageIcon>setting.png</PackageIcon>
 		<SignAssembly>True</SignAssembly>
 		<DelaySign>False</DelaySign>
-		<RepositoryUrl>https://github.com/euvsemi/ZeroGC.SCADA.git</RepositoryUrl>
-		<PackageProjectUrl>https://github.com/euvsemi/ZeroGC.SCADA.git</PackageProjectUrl>
-		<Copyright>Copyright © 2026 euvsemi</Copyright>
-		<Version>0.9.0</Version>
+		<RepositoryUrl>https://github.com/atomtick/ZeroGC.SCADA.git</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/atomtick/ZeroGC.SCADA.git</PackageProjectUrl>
+		<Copyright>Copyright © 2026 atomtick</Copyright>
+		<Version>2026.6.30.1</Version>
 		<RepositoryType>git</RepositoryType>
-		<Authors>euvsemi</Authors>
+		<Authors>atomtick</Authors>
 		<Description>A class library for high-performance read and write configuration based on XML.</Description>
 	</PropertyGroup>
 	<ItemGroup>

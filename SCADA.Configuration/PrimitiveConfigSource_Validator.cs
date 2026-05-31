@@ -12,10 +12,6 @@ namespace SCADA.Configuration
     {
         private void ValidateValue(string config, string value)
         {
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                throw new ArgumentNullException(nameof(value));
-            }
             if (string.IsNullOrWhiteSpace(config))
             {
                 throw new ArgumentException("Config item cannot be null or empty.", nameof(config));

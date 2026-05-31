@@ -6,7 +6,7 @@
     <Nullable>disable</Nullable>
     <PackageTags>SCADA</PackageTags>
     <Authors>Value Lee</Authors>
-    <Version>2025.9.1.0</Version>
+    <Version>2025.9.1.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
