@@ -55,27 +55,27 @@ namespace SCADA.Configuration
         {
             if (configValuePairs == null)
             {
-                throw new ArgumentException("At least one config item must be provided.", nameof(configValuePairs));
+                throw new ArgumentNullException(nameof(configValuePairs));
             }
             if (configValuePairs.Count() == 0)
             {
-                return; // No need to set values if the array is empty
+                throw new ArgumentException("At least one config item must be provided.", nameof(configValuePairs));
             }
-            if (configValuePairs.Any(x => string.IsNullOrWhiteSpace(x.config)))
+            if (configValuePairs.Any(x => string.IsNullOrWhiteSpace(x.Key)))
             {
                 throw new ArgumentException("Config name cannot be null or empty.", nameof(configValuePairs));
-            }
-            if (configValuePairs.Any(x => x.value == null))
-            {
-                throw new ArgumentNullException("Config value cannot be null.", nameof(configValuePairs));
             }
 
             var configItems = _configItems;
 
-            if (configValuePairs.Any(x => !configItems.ContainsKey(x.config)))
+            foreach (var configValue in configValuePairs)
             {
-                throw new KeyNotFoundException("One or more config items not found in the config file.");
+                if (!configItems.ContainsKey(configValue.Key))
+                {
+                    throw new KeyNotFoundException($"{configValue.Key} not found in the config collection.");
+                }
             }
+
             // 将新值转换成字符串形式
             var configStringValuePairs = new List<(string configItem, string value)>(configValuePairs.Count());
             foreach (var item in configValuePairs)

@@ -45,9 +45,12 @@ namespace SCADA.Configuration
             _restoreOnAppStartup = restoreOnAppStartup;
         }
 
-        public PrimitiveConfigSource(string xml, bool atomic)
+        public PrimitiveConfigSource(string xmlFile, bool supportAtomicOperations)
         {
-
+            _dbConnectionString = xmlFile;
+            _supportAtomicOperations= supportAtomicOperations;
+            _trackConfigValueModification= false;
+            _restoreOnAppStartup = true;
         }
 
         public PrimitiveConfigSource(string xmlFilePath, bool restoredEachTimeRestartingApplication,int capacity)
