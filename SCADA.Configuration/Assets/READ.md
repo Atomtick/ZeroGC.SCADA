@@ -1,8 +1,6 @@
-﻿# User Manual
+﻿# Design Idea
 
-# Design Idea
-
-## SCADA.Configuration
+## ConfigValue
 
 IConfigValue和IConfigItem的目的是配合IConfigSource暴露给用户,用户在使用时,可以拿到接口进而读写配置,但是接口内无具体实现,既保密了代码,也能让用户自己实现IConfigSource,也能使用SCADA提供的实现.
 
@@ -14,13 +12,33 @@ ConfigValue是值类型, 疯狂返回时, 不会有GC压力.
 
 
 
+## 校验流程
+
+关系校验的元素有：min, max, regex, options, CustomizeOptionsSource, ExtraValidationRule.
+
+initial_value, current_value, set_new_value, options
+
+
+
+校验顺序： options， min， max，regex，ExtraValidationRule。
+
+需要检查的有 initial_value, current_value, set_new_value, options集合内每一个元素。
 
 
 
 
 
 
-# SCADA.Configuration
+
+
+
+
+
+
+
+
+
+# User Manual
 
 1. 支持读取和修改配置
 2. 支持原子性批量读取或修改配置

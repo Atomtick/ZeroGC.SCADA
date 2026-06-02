@@ -113,7 +113,7 @@ namespace SCADA.Configuration
             return null;
         }
 
-        protected virtual Func<string, bool> CustomizeValidationRule(IConfigSourceReader configSource, string config)
+        protected virtual Func<string, bool> ExtraValidationRule(IConfigSourceReader configSource, string config)
         {
             return null;
         }

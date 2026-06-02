@@ -91,33 +91,6 @@ namespace SCADA.Configuration
 
             #endregion CS Data Type Validation
 
-            #region Regular Expression Validation
-
-            var regex = configItem.Regex;
-            var vtype = configItem.Type;
-            if (!string.IsNullOrWhiteSpace(regex))
-            {
-                if ((vtype == ConfigType.String ||
-                    vtype == ConfigType.File ||
-                    vtype == ConfigType.Folder)
-                    && !Regex.IsMatch(strValue, regex))
-                {
-                    throw new ArgumentException(ExceptionHelper.GetFormattedString("ArgumentException_RegexValidation", strValue, configItem.RegexNote, config));
-                }
-                else if (vtype == ConfigType.Integer || vtype == ConfigType.Decimal)
-                {
-                    if (StringParser.TryParse2Double(strValue, out number))
-                    {
-                        if (!Regex.IsMatch(number.ToString(CultureInfo.InvariantCulture), regex))
-                        {
-                            throw new ArgumentException(ExceptionHelper.GetFormattedString("ArgumentException_RegexValidation", number.ToString(CultureInfo.InvariantCulture), configItem.RegexNote, config));
-                        }
-                    }
-                }
-            }
-
-            #endregion Regular Expression Validation
-
             #region Options Validation
 
             var options = configItem.Options;
@@ -189,9 +162,36 @@ namespace SCADA.Configuration
 
             #endregion Max & Min Validation
 
+            #region Regular Expression Validation
+
+            var regex = configItem.Regex;
+            var vtype = configItem.Type;
+            if (!string.IsNullOrWhiteSpace(regex))
+            {
+                if ((vtype == ConfigType.String ||
+                    vtype == ConfigType.File ||
+                    vtype == ConfigType.Folder)
+                    && !Regex.IsMatch(strValue, regex))
+                {
+                    throw new ArgumentException(ExceptionHelper.GetFormattedString("ArgumentException_RegexValidation", strValue, configItem.RegexNote, config));
+                }
+                else if (vtype == ConfigType.Integer || vtype == ConfigType.Decimal)
+                {
+                    if (StringParser.TryParse2Double(strValue, out number))
+                    {
+                        if (!Regex.IsMatch(number.ToString(CultureInfo.InvariantCulture), regex))
+                        {
+                            throw new ArgumentException(ExceptionHelper.GetFormattedString("ArgumentException_RegexValidation", number.ToString(CultureInfo.InvariantCulture), configItem.RegexNote, config));
+                        }
+                    }
+                }
+            }
+
+            #endregion Regular Expression Validation
+
             #region Customized Rule Validation
 
-            var validationRule = CustomizeValidationRule(this,config);
+            var validationRule = ExtraValidationRule(this,config);
             if (validationRule != null && !validationRule.Invoke(config))
             {
                 throw new ArgumentException(ExceptionHelper.GetFormattedString("ArgumentException_CustomizeValidation", strValue, config));

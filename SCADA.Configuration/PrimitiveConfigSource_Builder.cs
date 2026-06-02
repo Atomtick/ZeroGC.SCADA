@@ -285,6 +285,34 @@ namespace SCADA.Configuration
                             }
                         }
 
+
+
+
+                        // unit
+                        unit = xmlReader.GetAttribute("unit");
+                        if (unit != null)
+                        {
+                            unit = unit.Trim();
+                        }
+
+                        // restart
+                        restart = xmlReader.GetAttribute("restart");
+                        if (restart != null)
+                        {
+                            restart = restart.Trim();
+                            if (!string.IsNullOrWhiteSpace(restart))
+
+                            {
+                                if (!bool.TryParse(restart, out _))
+                                {
+                                    throw new ArgumentException(
+                                        $"The 'restart' attribute must be a boolean value. Hint:'{GetHint()}'");
+                                }
+                            }
+                        }
+
+                        // options和initial_value的校验需要检验值是否合法，所以放在最后校验，以保证关系到值合法性的属性（type、regex等）都已经加载完毕了
+
                         // options
                         List<string> options = new List<string>();
                         string optionsText = xmlReader.GetAttribute("options");
@@ -326,26 +354,19 @@ namespace SCADA.Configuration
                                 options.Add("No");
                             }
                         }
-                        // unit
-                        unit = xmlReader.GetAttribute("unit");
-                        if (unit != null)
-                        {
-                            unit = unit.Trim();
-                        }
 
-                        // restart
-                        restart = xmlReader.GetAttribute("restart");
-                        if (restart != null)
+                        if (options != null && options.Count > 0)
                         {
-                            restart = restart.Trim();
-                            if (!string.IsNullOrWhiteSpace(restart))
-
+                            try
                             {
-                                if (!bool.TryParse(restart, out _))
+                                foreach (var option in options)
                                 {
-                                    throw new ArgumentException(
-                                        $"The 'restart' attribute must be a boolean value. Hint:'{GetHint()}'");
+                                    ValidateValue(name, option);
                                 }
+                            }
+                            catch
+                            {
+
                             }
                         }
 
@@ -408,6 +429,8 @@ namespace SCADA.Configuration
                                     $"The 'value' attribute must be a DateTime value. Hint:'{GetHint()}'");
                             }
                         }
+
+                        ValidateValue(name, initialValue);
 
                         var node = nodeStack.Peek();
                         if (node.ConfigItems.Any(c => c.Name == name))
