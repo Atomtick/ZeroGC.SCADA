@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SCADA.Configuration
 {
-    class LightWeightDictionary : IEnumerable<KeyValuePair<string, object>>
+   public class LightWeightDictionary : IEnumerable<KeyValuePair<string, object>>
     {
         /// <summary>
         /// 当前容器内元素的个数
@@ -57,6 +57,22 @@ namespace SCADA.Configuration
             _entries[_count].Key = key;
             _entries[_count].Value = value;
             _count++;
+        }
+
+        public void Remove(string key)
+        {
+            for (int i = 0; i < _count; i++)
+            {
+                if (ReferenceEquals(_entries[i].Key, key) ||
+                    string.Equals(_entries[i].Key, key, StringComparison.Ordinal))
+                {
+                    // 将最后一个元素移动到当前位置覆盖被删除的元素
+                    _entries[i] = _entries[_count - 1];
+                    _entries[_count - 1] = default; // 清除最后一个元素的引用
+                    _count--;
+                    return;
+                }
+            }
         }
 
         public void Clear()

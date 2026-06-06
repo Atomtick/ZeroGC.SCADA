@@ -18,7 +18,7 @@ namespace SCADA.Data
         private const string EnableDAQConfig = "System.Data.EnableDAQ";
         private const string EnableUIPollingConfig = "System.Data.EnableUIPolling";
         private readonly Channel<DataPoint> _channel; // 直接流转 DataPoint
-        private readonly IConfigSourceReader _configSource;
+        private readonly IConfigReader _configSource;
         private readonly NpgsqlConnection _conn;
         private readonly string _connectionString;
         private readonly Task _consumerTask;
@@ -33,7 +33,7 @@ namespace SCADA.Data
         private bool _enableDAQ;
         private bool _enableUIPolling;
 
-        public Data(IConfigSourceReader configSource)
+        public Data(IConfigReader configSource)
         {
             _configSource = configSource;
 

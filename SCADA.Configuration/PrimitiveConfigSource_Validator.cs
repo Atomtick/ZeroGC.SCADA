@@ -10,11 +10,15 @@ namespace SCADA.Configuration
 {
     public partial class PrimitiveConfigSource
     {
-        private void ValidateValue(string config, string value)
+        public void ValidateValue(string config, string value)
         {
             if (string.IsNullOrWhiteSpace(config))
             {
                 throw new ArgumentException("Config item cannot be null or empty.", nameof(config));
+            }
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new ArgumentException("Config value cannot be null or empty.", nameof(value));
             }
             if (!_configItems.TryGetValue(config, out ConfigItem configItem))
             {
@@ -25,7 +29,8 @@ namespace SCADA.Configuration
 
             #region CS Data Type Validation
 
-            double number = 0;
+            double doubleNumber = 0;
+            long longNumber = 0;
 
             if (configType == ConfigType.String)
             {
@@ -33,11 +38,7 @@ namespace SCADA.Configuration
             }
             else if (configType == ConfigType.Integer)
             {
-                if (StringParser.TryParse2Long(strValue, out long @long))
-                {
-                    number = @long;
-                }
-                else
+                if (!StringParser.TryParse2Long(strValue, out longNumber))
                 {
                     throw new InvalidCastException(ExceptionHelper.GetFormattedString("InvalidCastException_CannotConvert2Integer", strValue, config));
                 }
@@ -51,7 +52,7 @@ namespace SCADA.Configuration
             }
             else if (configType == ConfigType.Decimal)
             {
-                if (!StringParser.TryParse2Double(strValue, out number))
+                if (!StringParser.TryParse2Double(strValue, out doubleNumber))
                 {
                     throw new InvalidCastException(ExceptionHelper.GetFormattedString("InvalidCastException_CannotConvert2Double", strValue, config));
                 }
@@ -84,10 +85,6 @@ namespace SCADA.Configuration
                     throw new InvalidCastException(ExceptionHelper.GetFormattedString("InvalidCastException_CannotConvert2Color", strValue, config));
                 }
             }
-            else
-            {
-                throw new NotSupportedException($"Unsupported value type: {configType}");
-            }
 
             #endregion CS Data Type Validation
 
@@ -118,7 +115,7 @@ namespace SCADA.Configuration
                             throw new ArgumentException($"option '{option}' can't convert to a integer for '{config}'.");
                         }
                     }
-                    StringParser.TryParse2Long(strValue, out long @long); // 肯定返回true，因为前面已经调用此函数校验过字符串了。
+                    StringParser.TryParse2Long(strValue, out long @long); // 肯定返回true，因为前面已经调用此函数校验过字符串了
                     if (!longOptions.Contains(@long))
                     {
                         throw new ArgumentOutOfRangeException(nameof(value), $"The value '{strValue}' is not in the options for config item '{config}'.");
@@ -150,11 +147,21 @@ namespace SCADA.Configuration
 
             #region Max & Min Validation
 
-            if (configType == ConfigType.Integer || configType == ConfigType.Decimal)
+            if (configType == ConfigType.Integer)
+            {
+                StringParser.TryParse2Long(configItem.MaxValue, out var max);
+                StringParser.TryParse2Long(configItem.MinValue, out var min);
+                if (longNumber > max || longNumber < min)
+                {
+                    throw new ArgumentOutOfRangeException("", ExceptionHelper.GetFormattedString("ArgumentOutOfRangeException_MaxMin", strValue, config, configItem.MinValue, configItem.MaxValue));
+                }
+            }
+
+            if (configType == ConfigType.Decimal)
             {
                 StringParser.TryParse2Double(configItem.MaxValue, out var max);
                 StringParser.TryParse2Double(configItem.MinValue, out var min);
-                if (number > max || number < min)
+                if (doubleNumber > max || doubleNumber < min)
                 {
                     throw new ArgumentOutOfRangeException("", ExceptionHelper.GetFormattedString("ArgumentOutOfRangeException_MaxMin", strValue, config, configItem.MinValue, configItem.MaxValue));
                 }
@@ -170,18 +177,29 @@ namespace SCADA.Configuration
             {
                 if ((vtype == ConfigType.String ||
                     vtype == ConfigType.File ||
-                    vtype == ConfigType.Folder)
+                    vtype == ConfigType.Folder ||
+                    vtype == ConfigType.DateTime)
                     && !Regex.IsMatch(strValue, regex))
                 {
                     throw new ArgumentException(ExceptionHelper.GetFormattedString("ArgumentException_RegexValidation", strValue, configItem.RegexNote, config));
                 }
-                else if (vtype == ConfigType.Integer || vtype == ConfigType.Decimal)
+                else if (vtype == ConfigType.Decimal)
                 {
-                    if (StringParser.TryParse2Double(strValue, out number))
+                    if (StringParser.TryParse2Double(strValue, out doubleNumber))
                     {
-                        if (!Regex.IsMatch(number.ToString(CultureInfo.InvariantCulture), regex))
+                        if (!Regex.IsMatch(doubleNumber.ToString(CultureInfo.InvariantCulture), regex))
                         {
-                            throw new ArgumentException(ExceptionHelper.GetFormattedString("ArgumentException_RegexValidation", number.ToString(CultureInfo.InvariantCulture), configItem.RegexNote, config));
+                            throw new ArgumentException(ExceptionHelper.GetFormattedString("ArgumentException_RegexValidation", doubleNumber.ToString(CultureInfo.InvariantCulture), configItem.RegexNote, config));
+                        }
+                    }
+                }
+                else if (vtype == ConfigType.Integer)
+                {
+                    if (StringParser.TryParse2Long(strValue, out longNumber))
+                    {
+                        if (!Regex.IsMatch(longNumber.ToString(CultureInfo.InvariantCulture), regex))
+                        {
+                            throw new ArgumentException(ExceptionHelper.GetFormattedString("ArgumentException_RegexValidation", longNumber.ToString(CultureInfo.InvariantCulture), configItem.RegexNote, config));
                         }
                     }
                 }
@@ -189,23 +207,23 @@ namespace SCADA.Configuration
 
             #endregion Regular Expression Validation
 
-            #region Customized Rule Validation
+            #region Customized Validation Rule
 
-            var validationRule = ExtraValidationRule(this,config);
-            if (validationRule != null && !validationRule.Invoke(config))
+            if (AdditionalValidationRule?.Invoke(config, value, this) == false)
             {
                 throw new ArgumentException(ExceptionHelper.GetFormattedString("ArgumentException_CustomizeValidation", strValue, config));
             }
 
-            #endregion Customized Rule Validation
+            #endregion Customized Validation Rule
         }
 
-        private void ValidateValue(string config, object value)
+        public void ValidateValue(string config, object value)
         {
             if (value == null)
             {
                 throw new ArgumentNullException(nameof(value));
             }
+
             ValidateValue(config, Convert2String(value).Trim());
         }
     }

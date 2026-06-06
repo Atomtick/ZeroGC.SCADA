@@ -119,7 +119,7 @@ namespace SCADA.Configuration
             directoryInfo = null;
 #if NET462_OR_GREATER
             return IsValidWindowsFolderPath(directoryFullPathString, out directoryInfo);
-#elif NET10_0_OR_GREATER
+#elif NET8_0_OR_GREATER
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 return IsValidWindowsFolderPath(directoryFullPathString, out directoryInfo);
@@ -255,7 +255,7 @@ namespace SCADA.Configuration
 
 #if NET462_OR_GREATER
             return IsValidWindowsFilePath(fileFullPathString, out fileInfo);
-#elif NET10_0_OR_GREATER
+#elif NET8_0_OR_GREATER
             fileInfo = null;
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {

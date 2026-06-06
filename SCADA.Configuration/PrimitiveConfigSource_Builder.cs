@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Data.Sqlite;
+using SQLitePCL;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -10,37 +12,70 @@ namespace SCADA.Configuration
 {
     public partial class PrimitiveConfigSource
     {
-        public ConfigNode[] RootNodes { get; private set; }
         private readonly List<ConfigNode> _rootNodes = new List<ConfigNode>();
-
-        public void LoadSqlite(string dbFilePath)
+        public ConfigNode[] RootNodes { get; private set; }
+        public void LoadSqlite()
         {
-
-        }
-
-        public void LoadXml(string xml)
-        {
-            // 建议配置 XmlReaderSettings，例如忽略无关的空白节点，进一步提升性能
-            XmlReaderSettings settings = new XmlReaderSettings
+            using (SqliteConnection connection = new SqliteConnection(_dbConnectionString))
             {
-                IgnoreWhitespace = true,
-                IgnoreComments = true,
-            };
-
-            using (StringReader stream = new StringReader(xml))
-            {
-                using (XmlReader reader = XmlReader.Create(stream, settings))
+                connection.Open();
+                using (SqliteCommand command = connection.CreateCommand())
                 {
-                    reader.Read(); // XML声明
-                    reader.Read(); // root根节点
-                    Build(reader);
+                    command.CommandText = "SELECT xml FROM config_schema_document;";
+                    var xml = command.ExecuteScalar();
+                    if (xml != null && xml is string xml2)
+                    {
+                        // 建议配置 XmlReaderSettings，例如忽略无关的空白节点，进一步提升性能
+                        XmlReaderSettings settings = new XmlReaderSettings
+                        {
+                            IgnoreWhitespace = true,
+                            IgnoreComments = true,
+                        };
+
+                        using (StringReader stream = new StringReader(xml2))
+                        {
+                            using (XmlReader reader = XmlReader.Create(stream, settings))
+                            {
+                                reader.Read(); // XML声明
+                                reader.Read(); // root根节点
+                                Build(reader);
+                            }
+                        }
+                        RootNodes = _rootNodes.ToArray();
+                    }
+                    else
+                    {
+                        throw new ApplicationException("The value of 'xml' field is error in data table 'config_schema_document'.");
+                    }
+                }
+
+                UpdateOptions();
+                ValidateInitialValueAndOptions();
+
+                if (Settings.RestoreOnAppStartup == false)
+                {
+                    using (SqliteCommand command = connection.CreateCommand())
+                    {
+                        command.CommandText = "SELECT name, value FROM config_current_value;";
+                        var reader = command.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            string name = reader.GetString(0);
+                            string value = reader.GetString(1);
+                            if (_configItems.TryGetValue(name, out var configItem))
+                            {
+                                ValidateValue(name, value);
+                                configItem.StringValue = value;
+                                configItem.ObjectValue = Convert2Object(configItem.Type, value);
+                            }
+                        }
+                    }
                 }
             }
         }
 
         private void Build(XmlReader xmlReader)
         {
-
             string GetHint()
             {
                 return $"LineNumber:{(xmlReader as IXmlLineInfo)?.LineNumber}, LinePosition:{(xmlReader as IXmlLineInfo)?.LinePosition}";
@@ -285,9 +320,6 @@ namespace SCADA.Configuration
                             }
                         }
 
-
-
-
                         // unit
                         unit = xmlReader.GetAttribute("unit");
                         if (unit != null)
@@ -366,7 +398,6 @@ namespace SCADA.Configuration
                             }
                             catch
                             {
-
                             }
                         }
 
@@ -470,38 +501,35 @@ namespace SCADA.Configuration
                         nodeStack.Pop();
                 }
             }
-            foreach (var rootNode in _rootNodes)
-            {
-                Travel(rootNode);
-            }
-            RootNodes = _rootNodes.ToArray();
         }
 
-        private Dictionary<string, string> ReadConfigCurrentValues()
+        private void UpdateOptions()
         {
-            Dictionary<string, string> keyValues = new Dictionary<string, string>();
-            return keyValues;
-        }
-        private void Travel(ConfigNode configNode)
-        {
-            foreach (var item in configNode.ConfigItems)
+            foreach (var configItem in _configItems)
             {
-                string configPath = configNode.Path + "." + item.Name;
-
-                var options = CustomizeOptionsSource(this,configPath);
+                var options = Settings.CustomizeOptions?.Invoke(configItem.Key, this);
                 if (options != null && options.Length > 0)
                 {
-                    item.Options = options;
+                    configItem.Value.Options = options;
                 }
-
-                item.ValidationRule = new Action<string>((string text) => { ValidateValue(configPath, text); });
-            }
-
-            foreach (var node in configNode.Children)
-            {
-                Travel(node);
             }
         }
 
+        private void ValidateInitialValueAndOptions()
+        {
+            foreach (var configItem in _configItems)
+            {
+                string initialValue = configItem.Value.StringValue;
+                ValidateValue(configItem.Key, initialValue);
+                var options = configItem.Value.Options;
+                if (options != null && options.Length > 0)
+                {
+                    foreach (var option in options)
+                    {
+                        ValidateValue(configItem.Key, option);
+                    }
+                }
+            }
+        }
     }
 }

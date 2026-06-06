@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace SCADA.Configuration
 {
     // 对用户应用暴露的接口,提供原子性的读取多个配置项的值的能力.但是不暴露修改配置项值的能力
-    public partial class PrimitiveConfigSource : IConfigSourceReader
+    public partial class PrimitiveConfigSource : IConfigReader
     {
         public void Read(IConfigItem configItem, out IConfigValue value)
         {

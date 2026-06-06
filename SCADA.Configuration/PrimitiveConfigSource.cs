@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime;
 using System.Text;
 using System.Threading;
 using System.Threading.Channels;
@@ -14,12 +15,14 @@ using System.Xml;
 
 namespace SCADA.Configuration
 {
+    public delegate string[] CustomizeOptions(string config, PrimitiveConfigSource configSource);
+    public delegate bool AppendValidationRule(string config, string value, PrimitiveConfigSource configSource);
+
     // 要支持以字符串方式读取配置值，目的是UI可查询，SECS-GEM亦可查询。
     // Save时,考虑使用AppendLine优化,既不会产生大于85KB的大对象,也不会产生几万个小片段字符串.
     public partial class PrimitiveConfigSource : IDisposable
     {
-   
-        private readonly Channel<IEnumerable<(string configItem, string value)>> _channel = Channel.CreateUnbounded<IEnumerable<(string configItem, string value)>>();
+        private readonly Channel<LightWeightDictionary> _channel = Channel.CreateUnbounded<LightWeightDictionary>();
 
         private readonly Task _saveTask;
 
@@ -33,33 +36,18 @@ namespace SCADA.Configuration
         private SequenceLock _seqLock = new SequenceLock();
 
         private readonly string _dbConnectionString;
-        readonly bool _supportAtomicOperations;
-        readonly bool _trackConfigValueModification;
-        readonly bool _restoreOnAppStartup;
 
-        public PrimitiveConfigSource(string sqliteDB, bool supportAtomicOperations, bool trackConfigValueModification, bool restoreOnAppStartup = false)
+        public ConfigSourceSettings Settings { get; set; }
+
+        public PrimitiveConfigSource(string sqliteDB, ConfigSourceSettings settings = null)
         {
+            Settings = settings ?? new ConfigSourceSettings();
             _dbConnectionString = $"Data Source={sqliteDB};Version=3;";
-            _supportAtomicOperations = supportAtomicOperations;
-            _trackConfigValueModification = trackConfigValueModification;
-            _restoreOnAppStartup = restoreOnAppStartup;
-        }
-
-        public PrimitiveConfigSource(string xmlFile, bool supportAtomicOperations)
-        {
-            _dbConnectionString = xmlFile;
-            _supportAtomicOperations= supportAtomicOperations;
-            _trackConfigValueModification= false;
-            _restoreOnAppStartup = true;
+            LoadSqlite();
         }
 
         public PrimitiveConfigSource(string xmlFilePath, bool restoredEachTimeRestartingApplication,int capacity)
         {
-            foreach (var item in _configItems)
-            {
-                ValidateValue(item.Key, item.Value.StringValue);
-            }
-
             async Task Function()
             {
                 try
@@ -72,7 +60,7 @@ namespace SCADA.Configuration
                             var pairs = asyncEnumerator.Current;
                             if (pairs.Count() > 0)
                             {
-                                if (!_restoreOnAppStartup)
+                                if (!Settings.RestoreOnAppStartup)
                                 {
                                     Save(pairs);
                                 }
@@ -95,7 +83,7 @@ namespace SCADA.Configuration
             _saveTask = Function();
         }
 
-        public event Action<IEnumerable<(string config, string oldValue, string newValue)>> ValueSet;
+        public event Action<LightWeightDictionary> ValueSet;
 
         public void Dispose()
         {
@@ -106,16 +94,6 @@ namespace SCADA.Configuration
                 // GC.SuppressFinalize(this); // 不是必须的，因为没析构函数
                 _disposed = true;
             }
-        }
-
-        protected virtual string[] CustomizeOptionsSource(IConfigSourceReader configSource, string config)
-        {
-            return null;
-        }
-
-        protected virtual Func<string, bool> ExtraValidationRule(IConfigSourceReader configSource, string config)
-        {
-            return null;
         }
 
         private string[] CheckConfigItemFormatting(string config)
@@ -198,7 +176,7 @@ namespace SCADA.Configuration
 
         // 正常情况下看到的文件是：app.config(新) app.config.bk(旧)
         // Replace失败的话看到的文件是： app.config.tmp.bk(新) app.config(旧) app.config.bk(更旧)
-        private void Save(IEnumerable<(string config, string value)> changedItems)
+        private void Save(LightWeightDictionary changedItems)
         {
             if (changedItems != null && changedItems.Count() != 0)
             {

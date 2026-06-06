@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SCADA.Common.Interfaces
 {
-    public interface IConfigSourceReader
+    public interface IConfigReader
     {
         IConfigItem SelectConfigItem(string config);
         void Read(IConfigItem configItem, out IConfigValue value);
