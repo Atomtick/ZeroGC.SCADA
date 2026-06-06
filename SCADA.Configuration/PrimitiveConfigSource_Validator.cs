@@ -209,7 +209,7 @@ namespace SCADA.Configuration
 
             #region Customized Validation Rule
 
-            if (AdditionalValidationRule?.Invoke(config, value, this) == false)
+            if (Settings.AdditionalValidationRule?.Invoke(config, value, this) == false)
             {
                 throw new ArgumentException(ExceptionHelper.GetFormattedString("ArgumentException_CustomizeValidation", strValue, config));
             }

@@ -18,7 +18,7 @@ namespace SCADA.Common
                 {
 #if NET462_OR_GREATER
                     number = (T)(object)res;
-#elif NET10_0_OR_GREATER
+#elif NET8_0_OR_GREATER
                     number = Unsafe.As<sbyte, T>(ref res);// 0 开销强制转换
 #endif
                     return true;
@@ -36,7 +36,7 @@ namespace SCADA.Common
                 {
 #if NET462_OR_GREATER
                     number = (T)(object)res;
-#elif NET10_0_OR_GREATER
+#elif NET8_0_OR_GREATER
                     number = Unsafe.As<byte, T>(ref res);// 0 开销强制转换
 #endif
                     return true;
@@ -54,7 +54,7 @@ namespace SCADA.Common
                 {
 #if NET462_OR_GREATER
                     number = (T)(object)res;
-#elif NET10_0_OR_GREATER
+#elif NET8_0_OR_GREATER
                     number = Unsafe.As<short, T>(ref res);// 0 开销强制转换
 #endif
                     return true;
@@ -72,7 +72,7 @@ namespace SCADA.Common
                 {
 #if NET462_OR_GREATER
                     number = (T)(object)res;
-#elif NET10_0_OR_GREATER
+#elif NET8_0_OR_GREATER
                     number = Unsafe.As<ushort, T>(ref res);// 0 开销强制转换
 #endif
                     return true;
@@ -90,7 +90,7 @@ namespace SCADA.Common
                 {
 #if NET462_OR_GREATER
                     number = (T)(object)res;
-#elif NET10_0_OR_GREATER
+#elif NET8_0_OR_GREATER
                     number = Unsafe.As<int, T>(ref res);// 0 开销强制转换
 #endif
                     return true;
@@ -108,7 +108,7 @@ namespace SCADA.Common
                 {
 #if NET462_OR_GREATER
                     number = (T)(object)res;
-#elif NET10_0_OR_GREATER
+#elif NET8_0_OR_GREATER
                     number = Unsafe.As<uint, T>(ref res);// 0 开销强制转换
 #endif
                     return true;
@@ -126,7 +126,7 @@ namespace SCADA.Common
                 {
 #if NET462_OR_GREATER
                     number = (T)(object)res;
-#elif NET10_0_OR_GREATER
+#elif NET8_0_OR_GREATER
                     number = Unsafe.As<long, T>(ref res);// 0 开销强制转换
 #endif
                     return true;
@@ -144,7 +144,7 @@ namespace SCADA.Common
                 {
 #if NET462_OR_GREATER
                     number = (T)(object)res;
-#elif NET10_0_OR_GREATER
+#elif NET8_0_OR_GREATER
                     number = Unsafe.As<ulong, T>(ref res);// 0 开销强制转换
 #endif
                     return true;
@@ -162,7 +162,7 @@ namespace SCADA.Common
                 {
 #if NET462_OR_GREATER
                     number = (T)(object)res;
-#elif NET10_0_OR_GREATER
+#elif NET8_0_OR_GREATER
                     number = Unsafe.As<decimal, T>(ref res);// 0 开销强制转换
 #endif
                     return true;
@@ -180,7 +180,7 @@ namespace SCADA.Common
                 {
 #if NET462_OR_GREATER
                     number = (T)(object)res;
-#elif NET10_0_OR_GREATER
+#elif NET8_0_OR_GREATER
                     number = Unsafe.As<double, T>(ref res);// 0 开销强制转换
 #endif
                     return true;
@@ -198,7 +198,7 @@ namespace SCADA.Common
                 {
 #if NET462_OR_GREATER
                     number = (T)(object)res;
-#elif NET10_0_OR_GREATER
+#elif NET8_0_OR_GREATER
                     number = Unsafe.As<float, T>(ref res);// 0 开销强制转换
 #endif
                     return true;

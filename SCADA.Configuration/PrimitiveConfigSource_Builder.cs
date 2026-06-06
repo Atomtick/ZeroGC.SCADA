@@ -16,10 +16,10 @@ namespace SCADA.Configuration
         public ConfigNode[] RootNodes { get; private set; }
         public void LoadSqlite()
         {
-            using (SqliteConnection connection = new SqliteConnection(_dbConnectionString))
+            using (var connection = new SqliteConnection(_dbConnectionString))
             {
                 connection.Open();
-                using (SqliteCommand command = connection.CreateCommand())
+                using (var command = connection.CreateCommand())
                 {
                     command.CommandText = "SELECT xml FROM config_schema_document;";
                     var xml = command.ExecuteScalar();

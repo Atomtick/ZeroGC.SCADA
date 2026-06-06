@@ -12,14 +12,14 @@ using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using System.Xml;
+using Microsoft.Data.Sqlite;
 
 namespace SCADA.Configuration
 {
     public delegate string[] CustomizeOptions(string config, PrimitiveConfigSource configSource);
+
     public delegate bool AppendValidationRule(string config, string value, PrimitiveConfigSource configSource);
 
-    // 要支持以字符串方式读取配置值，目的是UI可查询，SECS-GEM亦可查询。
-    // Save时,考虑使用AppendLine优化,既不会产生大于85KB的大对象,也不会产生几万个小片段字符串.
     public partial class PrimitiveConfigSource : IDisposable
     {
         private readonly Channel<LightWeightDictionary> _channel = Channel.CreateUnbounded<LightWeightDictionary>();
@@ -30,57 +30,52 @@ namespace SCADA.Configuration
 
         private volatile IDictionary<string, ConfigItem> _configItems;
 
-        private bool _disposed = false;
+        private bool _disposed;
 
         // 实例化一个顺序锁
         private SequenceLock _seqLock = new SequenceLock();
 
         private readonly string _dbConnectionString;
 
-        public ConfigSourceSettings Settings { get; set; }
+        public ConfigSourceSettings Settings { get; }
 
         public PrimitiveConfigSource(string sqliteDB, ConfigSourceSettings settings = null)
         {
+            if (!File.Exists(sqliteDB))
+                throw new FileNotFoundException("The sqlite DB file does not exist.", sqliteDB);
             Settings = settings ?? new ConfigSourceSettings();
             _dbConnectionString = $"Data Source={sqliteDB};Version=3;";
             LoadSqlite();
+            _saveTask = Function();
         }
 
-        public PrimitiveConfigSource(string xmlFilePath, bool restoredEachTimeRestartingApplication,int capacity)
+        private async Task Function()
         {
-            async Task Function()
+            try
             {
+                var asyncEnumerator = _channel.Reader.ReadAllAsync().GetAsyncEnumerator();
                 try
                 {
-                    var asyncEnumerator = _channel.Reader.ReadAllAsync().GetAsyncEnumerator();
-                    try
+                    while (await asyncEnumerator.MoveNextAsync().ConfigureAwait(false))
                     {
-                        while (await asyncEnumerator.MoveNextAsync().ConfigureAwait(false))
+                        var pairs = asyncEnumerator.Current;
+                        if (pairs.Any())
                         {
-                            var pairs = asyncEnumerator.Current;
-                            if (pairs.Count() > 0)
-                            {
-                                if (!Settings.RestoreOnAppStartup)
-                                {
-                                    Save(pairs);
-                                }
-                            }
-                        }
-                    }
-                    finally
-                    {
-                        if (asyncEnumerator != null)
-                        {
-                            await asyncEnumerator.DisposeAsync().ConfigureAwait(false);
+                            SaveToSqlite(pairs);
                         }
                     }
                 }
-                catch
+                finally
                 {
+                    if (asyncEnumerator != null)
+                    {
+                        await asyncEnumerator.DisposeAsync().ConfigureAwait(false);
+                    }
                 }
             }
-
-            _saveTask = Function();
+            catch
+            {
+            }
         }
 
         public event Action<LightWeightDictionary> ValueSet;
@@ -102,16 +97,22 @@ namespace SCADA.Configuration
             {
                 throw new ArgumentNullException(nameof(config));
             }
+
             config = config.Trim();
             if (string.IsNullOrWhiteSpace(config))
             {
                 throw new ArgumentException("ConfigItem cannot be white space.", nameof(config));
             }
+
             var names = config.Split('.');
-            if (config.StartsWith(".") || config.EndsWith(".") || names.Length < 2 || names.Any(x => string.IsNullOrWhiteSpace(x)))
+            if (config.StartsWith(".") || config.EndsWith(".") || names.Length < 2 ||
+                names.Any(x => string.IsNullOrWhiteSpace(x)))
             {
-                throw new ArgumentException($"There must be at least one dot in the middle of the {config}, and it cannot appear at both ends, and it cannot appear consecutively", nameof(config));
+                throw new ArgumentException(
+                    $"There must be at least one dot in the middle of the {config}, and it cannot appear at both ends, and it cannot appear consecutively",
+                    nameof(config));
             }
+
             return names;
         }
 
@@ -153,10 +154,7 @@ namespace SCADA.Configuration
                     return null;
             }
         }
-        private void WriteConfigValues(LightWeightDictionary keyValuePairs)
-        {
 
-        }
         private string Convert2String(object value)
         {
             if (value is DateTime dateTime)
@@ -174,109 +172,67 @@ namespace SCADA.Configuration
             return value.ToString();
         }
 
-        // 正常情况下看到的文件是：app.config(新) app.config.bk(旧)
-        // Replace失败的话看到的文件是： app.config.tmp.bk(新) app.config(旧) app.config.bk(更旧)
-        private void Save(LightWeightDictionary changedItems)
+        private bool _hasTable_config_current_value = false;
+
+        private void SaveToSqlite(LightWeightDictionary changedItems)
         {
-            if (changedItems != null && changedItems.Count() != 0)
+            if (!Settings.RestoreOnAppStartup)
             {
-                foreach (var item in changedItems)
+                if (!_hasTable_config_current_value)
                 {
-                    foreach (var node in RootNodes)
+                    string hasTableSql =
+                        "SELECT count(*) as has_table\nFROM sqlite_master \nWHERE type = 'table' AND name = 'config_current_value';";
+                    using (var connection = new SqliteConnection(_dbConnectionString))
                     {
-                        GetConfigNode(item.config).ConfigItems.First(x => x.Name == item.config.Substring(item.config.LastIndexOf('.'))).StringValue = item.value;
-                    }
-                }
-
-                string fileFolder = Path.GetDirectoryName(_xmlFilePath);
-                string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(_xmlFilePath);
-                string extension = Path.GetExtension(_xmlFilePath);
-                string bkFileName = fileNameWithoutExtension + ".bk" + extension;
-                string bkFilePath = Path.Combine(fileFolder, bkFileName);
-                string tmpFileName = fileNameWithoutExtension + ".tmp.bk" + extension;
-                string tmpFilePath = Path.Combine(fileFolder, tmpFileName);
-
-                using (FileStream fs = new FileStream(tmpFilePath, FileMode.Create, FileAccess.Write, FileShare.None, 8192))
-                {
-                    XmlWriterSettings settings = new XmlWriterSettings
-                    {
-                        Indent = true,                      // 是否需要缩进（按需开启，会稍微增加文件大小）
-                        CloseOutput = false, // 让 using 块自己处理 FileStream 的关闭
-                    };
-                    // 3. 将 XmlWriter 绑定到 FileStream
-                    using (XmlWriter writer = XmlWriter.Create(fs, settings))
-                    {
-                        writer.WriteStartDocument();
-                        writer.WriteStartElement("root");
-
-                        // 4. 循环生成节点，边写边刷入磁盘，不保留任何大集合
-                        foreach (var node in RootNodes)
+                        connection.Open();
+                        using (var command = connection.CreateCommand())
                         {
-                            Write(writer, node);
-                        }
+                            command.CommandText = hasTableSql;
+                            var hasTable = command.ExecuteNonQuery();
+                            if (hasTable == 0)
+                            {
+                                string createTableSql =
+                                    "CREATE TABLE \"config_current_value\" (\n\t\"name\"\tTEXT,\n\t\"value\"\tTEXT NOT NULL,\n\t\"time\"\tINTEGER NOT NULL,\n\tPRIMARY KEY(\"name\")\n)";
+                                using (var command2 = connection.CreateCommand())
+                                {
+                                    command2.CommandText = createTableSql;
+                                    command2.ExecuteNonQuery();
+                                }
 
-                        writer.WriteEndElement(); // 结束 <root>
-                        writer.WriteEndDocument();
-
-                        // writer 和 fs 的 using 块结束时会自动调用 Flush() 和 Dispose()
-                        // 这会将剩余的少量缓冲数据写入磁盘。
-                    }
-                }
-                File.Replace(tmpFilePath, _xmlFilePath, bkFilePath);
-
-                void Write(XmlWriter writer, ConfigNode node)
-                {
-                    writer.WriteStartElement("config");
-                    writer.WriteAttributeString("name", node.Name);
-                    if (!string.IsNullOrWhiteSpace(node.Display))
-                        writer.WriteAttributeString("display", node.Display);
-                    if (node.Visible == false)
-                        writer.WriteAttributeString("visible", node.Visible ? "true" : "false");
-                    if (node.Enable == false)
-                        writer.WriteAttributeString("enable", node.Enable ? "true" : "false");
-
-                    foreach (var item in node.ConfigItems)
-                    {
-                        writer.WriteElementString("config", null);
-                        writer.WriteAttributeString("value", item.StringValue);
-                        writer.WriteAttributeString("name", item.Name);
-                        writer.WriteAttributeString("type", item.Type.ToString());
-                        if (!string.IsNullOrWhiteSpace(item.MinValue))
-                            writer.WriteAttributeString("min", item.MinValue);
-                        if (!string.IsNullOrWhiteSpace(item.MaxValue))
-                            writer.WriteAttributeString("max", item.MaxValue);
-                        if (item.Options != null && item.Options.Length > 0)
-                            writer.WriteAttributeString("options", string.Join(";", item.Options));
-                        if (!string.IsNullOrWhiteSpace(item.Regex))
-                            writer.WriteAttributeString("regex", item.Regex);
-                        if (!string.IsNullOrWhiteSpace(item.RegexNote))
-                            writer.WriteAttributeString("regexnote", item.RegexNote);
-                        if (!string.IsNullOrWhiteSpace(item.Unit))
-                            writer.WriteAttributeString("unit", item.Unit);
-                        if (!string.IsNullOrWhiteSpace(item.Display))
-                            writer.WriteAttributeString("display", item.Display);
-                        if (!string.IsNullOrWhiteSpace(item.Description))
-                            writer.WriteAttributeString("desc", item.Description);
-                        if (item.Restart == true)
-                            writer.WriteAttributeString("restart", item.Restart ? "true" : "false");
-                        if (node.Visible == false)
-                            writer.WriteAttributeString("visible", item.Visible ? "true" : "false");
-                        if (node.Enable == false)
-                            writer.WriteAttributeString("enable", item.Enable ? "true" : "false");
-                    }
-
-                    if (node.Children != null && node.Children.Count > 0)
-                    {
-                        foreach (var child in node.Children)
-                        {
-                            Write(writer, child);
+                                _hasTable_config_current_value = true;
+                            }
                         }
                     }
-                    else
+                }
+
+                using (var connection = new SqliteConnection(_dbConnectionString))
+                {
+                    connection.Open();
+                    // 开启事务
+                    using (var transaction = connection.BeginTransaction())
                     {
-                        writer.WriteEndElement();
+                        var command = connection.CreateCommand();
+                        command.CommandText =
+                            "INSERT INTO config_current_value (name, value, time) \nVALUES ($name, $value,$time )\nON CONFLICT(name) DO UPDATE SET \n    value = excluded.value,\n\ttime = excluded.time;";
+                        var paramName = command.Parameters.AddWithValue("$name", "");
+                        var paramValue = command.Parameters.AddWithValue("$value", "");
+                        var paramTime = command.Parameters.AddWithValue("$time", "");
+
+                        foreach (var changedItem in changedItems)
+                        {
+                            paramName.Value = changedItem.Key;
+                            paramValue.Value = changedItem.Value as string;
+                            paramTime.Value = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                            command.ExecuteNonQuery();
+                        }
+                        // 提交事务（这个时候才真正执行一次集中的磁盘 I/O）
+                        transaction.Commit();
                     }
                 }
+            }
+
+            if (Settings.TrackConfigValueModification)
+            {
             }
         }
     }

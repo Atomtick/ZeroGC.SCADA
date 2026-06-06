@@ -15,7 +15,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@sbyte, out sbyte res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<sbyte, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -33,7 +33,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@sbyte, out byte res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<byte, T>(ref res);// 0 开销强制转换
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -51,7 +51,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@sbyte, out short res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<short, T>(ref res);// 0 开销强制转换
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -69,7 +69,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@sbyte, out ushort res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<ushort, T>(ref res);// 0 开销强制转换
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -87,7 +87,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@sbyte, out int res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<int, T>(ref res);// 0 开销强制转换
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -105,7 +105,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@sbyte, out uint res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<uint, T>(ref res);// 0 开销强制转换
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -123,7 +123,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@sbyte, out long res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<long, T>(ref res);// 0 开销强制转换
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -141,7 +141,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@sbyte, out ulong res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<ulong, T>(ref res);// 0 开销强制转换
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -159,7 +159,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@sbyte, out decimal res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<decimal, T>(ref res);// 0 开销强制转换
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -177,7 +177,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@sbyte, out double res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<double, T>(ref res);// 0 开销强制转换
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -195,7 +195,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@sbyte, out float res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<float, T>(ref res);// 0 开销强制转换
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -218,7 +218,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@byte, out sbyte res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<sbyte, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -232,7 +232,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@byte, out byte res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<byte, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -246,7 +246,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@byte, out short res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<short, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -260,7 +260,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@byte, out ushort res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<ushort, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -274,7 +274,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@byte, out int res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<int, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -288,7 +288,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@byte, out uint res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<uint, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -302,7 +302,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@byte, out long res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<long, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -316,7 +316,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@byte, out ulong res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<ulong, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -330,7 +330,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@byte, out decimal res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<decimal, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -344,7 +344,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@byte, out double res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<double, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -358,7 +358,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@byte, out float res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<float, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -378,7 +378,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@short, out sbyte res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<sbyte, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -392,7 +392,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@short, out byte res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<byte, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -406,7 +406,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@short, out short res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<short, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -420,7 +420,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@short, out ushort res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<ushort, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -434,7 +434,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@short, out int res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<int, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -448,7 +448,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@short, out uint res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<uint, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -462,7 +462,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@short, out long res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<long, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -476,7 +476,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@short, out ulong res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<ulong, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -490,7 +490,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@short, out decimal res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<decimal, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -504,7 +504,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@short, out double res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<double, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -518,7 +518,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@short, out float res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<float, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -538,7 +538,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@ushort, out sbyte res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<sbyte, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -552,7 +552,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@ushort, out byte res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<byte, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -566,7 +566,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@ushort, out short res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<short, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -580,7 +580,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@ushort, out ushort res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<ushort, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -594,7 +594,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@ushort, out int res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<int, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -608,7 +608,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@ushort, out uint res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<uint, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -622,7 +622,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@ushort, out long res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<long, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -636,7 +636,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@ushort, out ulong res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<ulong, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -650,7 +650,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@ushort, out decimal res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<decimal, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -664,7 +664,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@ushort, out double res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<double, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -678,7 +678,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@ushort, out float res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<float, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -698,7 +698,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@int, out sbyte res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<sbyte, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -712,7 +712,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@int, out byte res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<byte, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -726,7 +726,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@int, out short res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<short, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -740,7 +740,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@int, out ushort res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<ushort, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -754,7 +754,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@int, out int res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<int, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -768,7 +768,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@int, out uint res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<uint, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -782,7 +782,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@int, out long res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<long, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -796,7 +796,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@int, out ulong res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<ulong, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -810,7 +810,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@int, out decimal res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<decimal, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -824,7 +824,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@int, out double res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<double, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -838,7 +838,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@int, out float res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<float, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -858,7 +858,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@uint, out sbyte res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<sbyte, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -872,7 +872,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@uint, out byte res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<byte, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -886,7 +886,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@uint, out short res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<short, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -900,7 +900,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@uint, out ushort res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<ushort, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -914,7 +914,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@uint, out int res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<int, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -928,7 +928,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@uint, out uint res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<uint, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -942,7 +942,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@uint, out long res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<long, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -956,7 +956,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@uint, out ulong res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<ulong, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -970,7 +970,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@uint, out decimal res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<decimal, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -984,7 +984,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@uint, out double res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<double, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -998,7 +998,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@uint, out float res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<float, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1018,7 +1018,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@long, out sbyte res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<sbyte, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1032,7 +1032,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@long, out byte res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<byte, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1046,7 +1046,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@long, out short res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<short, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1060,7 +1060,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@long, out ushort res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<ushort, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1074,7 +1074,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@long, out int res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<int, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1088,7 +1088,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@long, out uint res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<uint, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1100,7 +1100,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(long))
             {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                 number = Unsafe.As<long, T>(ref @long);
 #elif NET462_OR_GREATER
                 number = (T)(object)@long;
@@ -1112,7 +1112,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@long, out ulong res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<ulong, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1126,7 +1126,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@long, out decimal res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<decimal, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1140,7 +1140,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@long, out double res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<double, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1154,7 +1154,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@long, out float res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<float, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1174,7 +1174,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@ulong, out sbyte res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<sbyte, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1188,7 +1188,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@ulong, out byte res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<byte, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1202,7 +1202,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@ulong, out short res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<short, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1216,7 +1216,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@ulong, out ushort res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<ushort, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1230,7 +1230,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@ulong, out int res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<int, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1244,7 +1244,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@ulong, out uint res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<uint, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1258,7 +1258,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@ulong, out long res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<long, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1270,7 +1270,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(ulong))
             {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                 number = Unsafe.As<ulong, T>(ref @ulong);
 #elif NET462_OR_GREATER
                 number = (T)(object)@ulong;
@@ -1282,7 +1282,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@ulong, out decimal res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<decimal, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1296,7 +1296,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@ulong, out double res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<double, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1310,7 +1310,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@ulong, out float res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<float, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1330,7 +1330,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@decimal, out sbyte res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<sbyte, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1344,7 +1344,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@decimal, out byte res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<byte, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1358,7 +1358,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@decimal, out short res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<short, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1372,7 +1372,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@decimal, out ushort res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<ushort, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1386,7 +1386,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@decimal, out int res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<int, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1400,7 +1400,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@decimal, out uint res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<uint, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1414,7 +1414,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@decimal, out long res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<long, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1428,7 +1428,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@decimal, out ulong res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<ulong, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1440,7 +1440,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(decimal))
             {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                 number = Unsafe.As<decimal, T>(ref @decimal);
 #elif NET462_OR_GREATER
                 number = (T)(object)@decimal;
@@ -1452,7 +1452,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@decimal, out double res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<double, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1466,7 +1466,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@decimal, out float res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<float, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1486,7 +1486,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@double, out sbyte res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<sbyte, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1500,7 +1500,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@double, out byte res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<byte, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1514,7 +1514,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@double, out short res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<short, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1528,7 +1528,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@double, out ushort res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<ushort, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1542,7 +1542,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@double, out int res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<int, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1556,7 +1556,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@double, out uint res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<uint, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1570,7 +1570,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@double, out long res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<long, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1584,7 +1584,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@double, out ulong res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<ulong, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1598,7 +1598,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@double, out decimal res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<decimal, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1610,7 +1610,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(double))
             {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                 number = Unsafe.As<double, T>(ref @double);
 #elif NET462_OR_GREATER
                 number = (T)(object)@double;
@@ -1622,7 +1622,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@double, out float res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<float, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1642,7 +1642,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@float, out sbyte res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<sbyte, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1656,7 +1656,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@float, out byte res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<byte, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1670,7 +1670,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@float, out short res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<short, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1684,7 +1684,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@float, out ushort res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<ushort, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1698,7 +1698,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@float, out int res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<int, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1712,7 +1712,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@float, out uint res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<uint, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1726,7 +1726,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@float, out long res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<long, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1740,7 +1740,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@float, out ulong res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<ulong, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1754,7 +1754,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@float, out decimal res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<decimal, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1768,7 +1768,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@float, out double res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<double, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
@@ -1782,7 +1782,7 @@ namespace SCADA.Common
             {
                 if (TryConvert(@float, out float res, rule))
                 {
-#if NET10_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     number = Unsafe.As<float, T>(ref res);
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
