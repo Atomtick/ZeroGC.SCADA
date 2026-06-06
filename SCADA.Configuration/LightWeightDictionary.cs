@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SCADA.Configuration
 {
-   public class LightWeightDictionary : IEnumerable<KeyValuePair<string, object>>
+    public class LightWeightDictionary : IEnumerable<KeyValuePair<string, object>>
     {
         /// <summary>
         /// 当前容器内元素的个数

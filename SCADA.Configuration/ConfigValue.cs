@@ -1,11 +1,8 @@
 ﻿using SCADA.Common;
 using SCADA.Common.Interfaces;
 using System;
-using System.Data.SqlTypes;
 using System.Drawing;
 using System.IO;
-using System.Reflection;
-using System.Xml.Linq;
 
 namespace SCADA.Configuration
 {
