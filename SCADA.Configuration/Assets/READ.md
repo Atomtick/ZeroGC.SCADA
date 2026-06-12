@@ -28,6 +28,12 @@ initial_value, current_value, set_new_value, options
 
 
 
+最小值和最大值不参与校验!
+
+
+
+
+
 
 
 
@@ -891,6 +897,8 @@ Console.WriteLine(source.GetValue<bool>("System.IsSimulatorMode"));
 
 ## TODO
 
+- DateTime 的字符串形式的值,要支持 仅有日期, 仅有时间, 日期+时间 三种形式, 这样UI控件可以根据字符串形式决定是否支持日期编辑或时间编辑!
+- File和Folder要同时支持绝对路径和相对路径!
 - File和Folder目前仅支持Windows路径，后续应当补充支持Linux和Mac。
 - 加载XML字符串时，检查它不能含有不允许出现的属性和节点。
 - 字典操作全部替换成ConcurrentDictionary的API。

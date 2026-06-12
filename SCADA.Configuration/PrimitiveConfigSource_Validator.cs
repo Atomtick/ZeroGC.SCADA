@@ -206,12 +206,11 @@ namespace SCADA.Configuration
             #endregion Regular Expression Validation
 
             #region Appended Validation Rule
-
-            if (Settings.AppendedValidationRule?.Invoke(config, value, this) == false)
-            {
-                throw new ArgumentException(ExceptionHelper.GetFormattedString("ArgumentException_CustomizeValidation", strValue, config));
-            }
-
+            if (Settings.AppendedValidationRule != null)
+                if (Settings.AppendedValidationRule?.Invoke(config, value, this) == false)
+                {
+                    throw new ArgumentException(ExceptionHelper.GetFormattedString("ArgumentException_CustomizeValidation", strValue, config));
+                }
             #endregion Appended Validation Rule
         }
 

@@ -37,7 +37,7 @@ namespace SCADA.Configuration
             throw new InvalidOperationException($"This transaction '{transactionId}' has not been created or committed");
         }
 
-        public IConfigWriter Set(long transactionId, string config, object value)
+        public IConfigWriter Write(long transactionId, string config, object value)
         {
             if (string.IsNullOrWhiteSpace(config))
             {

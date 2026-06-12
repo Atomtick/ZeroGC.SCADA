@@ -51,7 +51,8 @@ namespace SCADA.Configuration
 
                 UpdateOptions();
 
-                ValidateInitialValueAndOptions();
+                ValidateInitialValue();
+                ValidateOptions();
 
                 if (Settings.RestoreOnAppStartup == false)
                 {
@@ -106,7 +107,6 @@ namespace SCADA.Configuration
                         throw new ArgumentException(
                             $"The 'name' attribute cannot be empty. Hint:'{GetHint()}'");
                     }
-
                     if (name.Contains("."))
                     {
                         throw new ArgumentException(
@@ -330,24 +330,22 @@ namespace SCADA.Configuration
 
                         // restart
                         restart = xmlReader.GetAttribute("restart");
-                        if (restart != null)
+                        if(restart == null)
+                        {
+                            restart = false.ToString();
+                        }
+                        else
                         {
                             restart = restart.Trim();
-                            if (!string.IsNullOrWhiteSpace(restart))
-
+                            if (!bool.TryParse(restart, out _))
                             {
-                                if (!bool.TryParse(restart, out _))
-                                {
-                                    throw new ArgumentException(
-                                        $"The 'restart' attribute must be a boolean value. Hint:'{GetHint()}'");
-                                }
+                                throw new ArgumentException(
+                                    $"The 'restart' attribute must be a boolean value. Hint:'{GetHint()}'");
                             }
                         }
 
-                        // options和initial_value的校验需要检验值是否合法，所以放在最后校验，以保证关系到值合法性的属性（type、regex等）都已经加载完毕了
-
                         // options
-                        List<string> options = new List<string>();
+                        var options = new List<string>();
                         string optionsText = xmlReader.GetAttribute("options");
                         if (optionsText != null)
                         {
@@ -385,20 +383,6 @@ namespace SCADA.Configuration
                             {
                                 options.Add("Yes");
                                 options.Add("No");
-                            }
-                        }
-
-                        if (options != null && options.Count > 0)
-                        {
-                            try
-                            {
-                                foreach (var option in options)
-                                {
-                                    ValidateValue(name, option);
-                                }
-                            }
-                            catch
-                            {
                             }
                         }
 
@@ -462,8 +446,6 @@ namespace SCADA.Configuration
                             }
                         }
 
-                        ValidateValue(name, initialValue);
-
                         var node = nodeStack.Peek();
                         if (node.ConfigItems.Any(c => c.Name == name))
                         {
@@ -506,22 +488,30 @@ namespace SCADA.Configuration
 
         private void UpdateOptions()
         {
-            foreach (var configItem in _configItems)
-            {
-                var options = Settings.CustomizeOptions?.Invoke(configItem.Key, this);
-                if (options != null && options.Length > 0)
+            if (Settings.CustomizeOptions != null)
+                foreach (var configItem in _configItems)
                 {
-                    configItem.Value.Options = options;
+                    var options = Settings.CustomizeOptions?.Invoke(configItem.Key, this);
+                    if (options != null && options.Length > 0)
+                    {
+                        configItem.Value.Options = options;
+                    }
                 }
-            }
         }
 
-        private void ValidateInitialValueAndOptions()
+        private void ValidateInitialValue()
         {
             foreach (var configItem in _configItems)
             {
                 string initialValue = configItem.Value.StringValue;
                 ValidateValue(configItem.Key, initialValue);
+            }
+        }
+
+        private void ValidateOptions()
+        {
+            foreach (var configItem in _configItems)
+            {
                 var options = configItem.Value.Options;
                 if (options != null && options.Length > 0)
                 {

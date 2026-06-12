@@ -4,6 +4,6 @@
     {
         IConfigWriter BeginTransaction(out long transactionId);
         void CommitTransaction(long transactionId);
-        IConfigWriter Set(long transactionId, string config, object value);
+        IConfigWriter Write(long transactionId, string config, object value);
     }
 }
