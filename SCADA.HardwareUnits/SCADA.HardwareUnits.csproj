@@ -10,8 +10,4 @@
     <ProjectReference Include="..\SCADA.Common\SCADA.Common.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Aligners\" />
-  </ItemGroup>
-
 </Project>
