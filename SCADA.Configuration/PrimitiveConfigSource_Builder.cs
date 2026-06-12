@@ -11,7 +11,9 @@ namespace SCADA.Configuration
     public partial class PrimitiveConfigSource
     {
         private readonly List<ConfigNode> _rootNodes = new List<ConfigNode>();
+
         public ConfigNode[] RootNodes { get; private set; }
+
         public void LoadSqlite()
         {
             using (var connection = new SqliteConnection(_dbConnectionString))
@@ -48,6 +50,7 @@ namespace SCADA.Configuration
                 }
 
                 UpdateOptions();
+
                 ValidateInitialValueAndOptions();
 
                 if (Settings.RestoreOnAppStartup == false)

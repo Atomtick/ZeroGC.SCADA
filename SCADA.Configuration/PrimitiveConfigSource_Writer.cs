@@ -123,7 +123,7 @@ namespace SCADA.Configuration
                     }
 
                     // 触发事件,一般用于日志记录
-                    ValueSet?.Invoke(modificationConfigs);
+                    ValueChanged?.Invoke(modificationConfigs);
                 }
             }
         }

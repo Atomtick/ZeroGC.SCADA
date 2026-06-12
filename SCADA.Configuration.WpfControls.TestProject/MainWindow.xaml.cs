@@ -23,10 +23,10 @@ namespace SCADA.Configuration.WpfControls.TestProject
         private void BtnCancel_Click(object sender, RoutedEventArgs e)
         {
             valueChangedCache.Clear();
-            PrimitiveConfigSourceView.PrimitiveConfigSource.ValueSet -= PrimitiveConfigSource_ValueSet;
+            PrimitiveConfigSourceView.PrimitiveConfigSource.ValueChanged -= PrimitiveConfigSource_ValueSet;
             PrimitiveConfigSourceView.PrimitiveConfigSource.Dispose();
             PrimitiveConfigSourceView.PrimitiveConfigSource = new PrimitiveConfigSource(PrimitiveConfigSource.XmlString);
-            PrimitiveConfigSourceView.PrimitiveConfigSource.ValueSet += PrimitiveConfigSource_ValueSet;
+            PrimitiveConfigSourceView.PrimitiveConfigSource.ValueChanged += PrimitiveConfigSource_ValueSet;
         }
 
         private void BtnSubmit_Click(object sender, RoutedEventArgs e)
@@ -133,7 +133,7 @@ namespace SCADA.Configuration.WpfControls.TestProject
         private void Self_Loaded(object sender, RoutedEventArgs e)
         {
             PrimitiveConfigSourceView.PrimitiveConfigSource = new PrimitiveConfigSource(PrimitiveConfigSource.XmlString);
-            PrimitiveConfigSourceView.PrimitiveConfigSource.ValueSet += PrimitiveConfigSource_ValueSet;
+            PrimitiveConfigSourceView.PrimitiveConfigSource.ValueChanged += PrimitiveConfigSource_ValueSet;
         }
     }
 }

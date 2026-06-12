@@ -39,7 +39,8 @@ namespace SCADA.Configuration
             _saveTask = Function();
         }
 
-        public event Action<LightWeightDictionary> ValueSet;
+        public event Action<LightWeightDictionary> ValueChanged;
+        public event Action<LightWeightDictionary> ValueChanging;
 
         public ConfigSourceSettings Settings { get; }
 

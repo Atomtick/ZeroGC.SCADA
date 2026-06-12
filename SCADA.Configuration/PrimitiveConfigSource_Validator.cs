@@ -205,14 +205,14 @@ namespace SCADA.Configuration
 
             #endregion Regular Expression Validation
 
-            #region Customized Validation Rule
+            #region Appended Validation Rule
 
-            if (Settings.AdditionalValidationRule?.Invoke(config, value, this) == false)
+            if (Settings.AppendedValidationRule?.Invoke(config, value, this) == false)
             {
                 throw new ArgumentException(ExceptionHelper.GetFormattedString("ArgumentException_CustomizeValidation", strValue, config));
             }
 
-            #endregion Customized Validation Rule
+            #endregion Appended Validation Rule
         }
 
         public void ValidateValue(string config, object value)
