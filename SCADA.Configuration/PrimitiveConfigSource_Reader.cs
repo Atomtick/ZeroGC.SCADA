@@ -13,7 +13,7 @@ namespace SCADA.Configuration
             {
                 var item = configItem as ConfigItem;
                 version = _seqLock.ReadBegin();
-                value = new ConfigValue(item.ObjectValue, item.StringValue, item.Name, item.Type);
+                value = new ConfigValue(item.ObjectValue, item.StringValue, item.Path, item.Type);
             } while (_seqLock.ReadRetry(version));
         }
 
@@ -25,8 +25,8 @@ namespace SCADA.Configuration
                 var item1 = configItem1 as ConfigItem;
                 var item2 = configItem2 as ConfigItem;
                 version = _seqLock.ReadBegin();
-                value1 = new ConfigValue(item1.ObjectValue, item1.StringValue, item1.Name, item1.Type);
-                value2 = new ConfigValue(item2.ObjectValue, item2.StringValue, item2.Name, item2.Type);
+                value1 = new ConfigValue(item1.ObjectValue, item1.StringValue, item1.Path, item1.Type);
+                value2 = new ConfigValue(item2.ObjectValue, item2.StringValue, item2.Path, item2.Type);
             } while (_seqLock.ReadRetry(version));
         }
 
@@ -39,9 +39,9 @@ namespace SCADA.Configuration
                 var item2 = configItem2 as ConfigItem;
                 var item3 = configItem3 as ConfigItem;
                 version = _seqLock.ReadBegin();
-                value1 = new ConfigValue(item1.ObjectValue, item1.StringValue, item1.Name, item1.Type);
-                value2 = new ConfigValue(item2.ObjectValue, item2.StringValue, item2.Name, item2.Type);
-                value3 = new ConfigValue(item3.ObjectValue, item3.StringValue, item3.Name, item3.Type);
+                value1 = new ConfigValue(item1.ObjectValue, item1.StringValue, item1.Path, item1.Type);
+                value2 = new ConfigValue(item2.ObjectValue, item2.StringValue, item2.Path, item2.Type);
+                value3 = new ConfigValue(item3.ObjectValue, item3.StringValue, item3.Path, item3.Type);
             } while (_seqLock.ReadRetry(version));
         }
 
@@ -55,10 +55,11 @@ namespace SCADA.Configuration
             {
                 result = new ConfigItem()
                 {
-                    Name = config,
+                    Name = string.Empty,
+                    Path = config,
                     ObjectValue = null,
                     StringValue = null,
-                    Type = 0
+                    Type = ConfigType.Unknown
                 };
             }
             return result;

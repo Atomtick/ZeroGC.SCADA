@@ -1,32 +1,42 @@
-﻿using NUnit;
-using NUnit.Framework;
-using SCADA.Common.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using SCADA.Common.Interfaces;
 
 namespace SCADA.Configuration.UnitTests
 {
-    [TestFixture]
     public class Setter_UnitTest
     {
         //private PrimitiveConfigSource primitiveConfigSource =
         //    new PrimitiveConfigSource("C:\\Users\\Admin\\Desktop\\1.xml",false,1000);
 
-        [Test]
+        [Fact]
         public void Test()
         {
-            PrimitiveConfigSource primitiveConfigSource =
-           new PrimitiveConfigSource("C:\\Users\\Admin\\Desktop\\1.xml", false, 1000);
+            PrimitiveConfigSource primitiveConfigSource = new PrimitiveConfigSource(
+                "D:\\CodeRepo\\ZeroGC.SCADA\\SCADA.Configuration\\configs.db"
+            );
 
-            primitiveConfigSource.BeginTransaction(out long transactionId)
-                .Set(transactionId, "System.IP", "192.168.0.1")
-                .Set(transactionId, "System.Port", 5432)
-                .Set(transactionId, "System.Enabled", true)
-                .Set(transactionId, "System.AlarmColor", System.Drawing.Color.Red)
-                .Set(transactionId, "System.StartTime", new DateTime(2026, 4, 10, 0, 20, 0))
-                .Set(transactionId, "System.LogPath", "C:\\Logs")
-                .Set(transactionId, "System.UserInfo", "D:\\UserInfo.json")
+
+            var IsSimulatorMode = primitiveConfigSource.SelectConfigItem("System.IsSimulatorMode");
+            primitiveConfigSource.Read(IsSimulatorMode, out IConfigValue isSimulatorModeValue);
+            var result = isSimulatorModeValue.ToBool();
+
+            var VentBasePressure = primitiveConfigSource.SelectConfigItem("VCE.Vent.VentBasePressure");
+            primitiveConfigSource.Read(VentBasePressure, out IConfigValue VentBasePressureValue);
+            var result2 = VentBasePressureValue.ToDouble();
+
+
+
+            primitiveConfigSource
+                .BeginTransaction(out long transactionId)
+                .Write(transactionId, "System.IP", "192.168.0.1")
+                .Write(transactionId, "System.Port", 5432)
+                .Write(transactionId, "System.Enabled", true)
+                .Write(transactionId, "System.AlarmColor", System.Drawing.Color.Red)
+                .Write(transactionId, "System.StartTime", new DateTime(2026, 4, 10, 0, 20, 0))
+                .Write(transactionId, "System.LogPath", "C:\\Logs")
+                .Write(transactionId, "System.UserInfo", "D:\\UserInfo.json")
                 .CommitTransaction(transactionId);
         }
 

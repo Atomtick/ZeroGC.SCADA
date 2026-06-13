@@ -28,7 +28,7 @@ namespace SCADA.Common.Interfaces
 
         DirectoryInfo ToDirectory();
 
-        double ToDoble();
+        double ToDouble();
 
         double ToDouble(double defaultValue);
 

@@ -56,7 +56,20 @@ namespace SCADA.Configuration
                 dateTime = default;
                 return false;
             }
-            return DateTime.TryParseExact(datetimeString, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime);
+            if (DateTime.TryParseExact(datetimeString, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
+            {
+                return true;
+            }
+            else if (DateTime.TryParseExact(datetimeString, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
+            {
+                return true;
+            }
+            else if (DateTime.TryParseExact(datetimeString, "HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
+            {
+                return true;
+            }
+            dateTime = default;
+            return false;
         }
 
         internal static bool TryParse2Directory(string directoryFullPathString, out DirectoryInfo directoryInfo)
@@ -178,17 +191,9 @@ namespace SCADA.Configuration
                 @double = @long;
                 return true;
             }
-            else if (decimal.TryParse(doubleString, NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands | NumberStyles.Float, CultureInfo.InvariantCulture, out decimal decValue))
+            else if (double.TryParse(doubleString, NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands | NumberStyles.Float, CultureInfo.InvariantCulture, out double decValue))
             {
-                double tempDouble = (double)decValue;
-                decimal castBackDec = (decimal)tempDouble; // C# 底层会在这里强制截取 15 位有效数字
-
-                if (decValue != castBackDec)
-                {
-                    @double = default;
-                    return false; // 发生精度丢失！
-                }
-                @double = tempDouble;
+                @double = decValue;
                 return true;
             }
             else

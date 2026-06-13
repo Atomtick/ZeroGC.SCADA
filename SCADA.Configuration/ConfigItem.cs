@@ -41,6 +41,8 @@ namespace SCADA.Configuration
             get; set;
         }
 
+        public string Path { get; set; }
+
         public object ObjectValue { get; set; }
 
         public string[] Options
