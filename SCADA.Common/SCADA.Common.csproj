@@ -5,8 +5,8 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>disable</Nullable>
     <PackageTags>SCADA</PackageTags>
-    <Authors>Value Lee</Authors>
-    <Version>2025.9.1.1</Version>
+    <Authors>atomtick</Authors>
+    <Version>2026.6.13.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
