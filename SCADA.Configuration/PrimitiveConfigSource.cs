@@ -9,18 +9,13 @@ using SCADA.Common;
 
 namespace SCADA.Configuration
 {
-    public delegate bool AppendValidationRule(
-        string config,
-        string value,
-        PrimitiveConfigSource configSource
-    );
+    public delegate bool AppendValidationRule(string config, string value, PrimitiveConfigSource configSource);
 
     public delegate string[] CustomizeOptions(string config, PrimitiveConfigSource configSource);
 
     public partial class PrimitiveConfigSource : IDisposable
     {
-        private readonly Channel<LightWeightDictionary> _channel =
-            Channel.CreateUnbounded<LightWeightDictionary>();
+        private readonly Channel<LightWeightDictionary> _channel = Channel.CreateUnbounded<LightWeightDictionary>();
 
         private readonly string _dbConnectionString;
         private readonly Task _saveTask;
@@ -96,8 +91,7 @@ namespace SCADA.Configuration
                     using (var connection = new SqliteConnection(_dbConnectionString))
                     {
                         connection.Open();
-                        string createTableSql =
-                            "CREATE TABLE \"config_current_value\" (\n\t\"name\"\tTEXT,\n\t\"value\"\tTEXT NOT NULL,\n\t\"time\"\tINTEGER NOT NULL,\n\tPRIMARY KEY(\"name\")\n)";
+                        string createTableSql = "CREATE TABLE \"config_current_value\" (\n\t\"name\"\tTEXT,\n\t\"value\"\tTEXT NOT NULL,\n\t\"time\"\tINTEGER NOT NULL,\n\tPRIMARY KEY(\"name\")\n)";
                         using (var command = connection.CreateCommand())
                         {
                             command.CommandText = createTableSql;

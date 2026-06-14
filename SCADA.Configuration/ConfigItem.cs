@@ -1,93 +1,58 @@
-﻿using SCADA.Common;
-using SCADA.Common.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
+using SCADA.Common;
+using SCADA.Common.Interfaces;
 
 namespace SCADA.Configuration
 {
-    public partial class ConfigItem : ICloneable,IConfigItem
+    public partial class ConfigItem : ICloneable
     {
-        private static readonly ConcurrentDictionary<string, ConfigItem> _absentConfigCache = new ConcurrentDictionary<string, ConfigItem>();
+        private static readonly ConcurrentDictionary<string, ConfigItem> _absentConfigCache =
+            new ConcurrentDictionary<string, ConfigItem>();
 
-        public string Description
-        {
-            get; set;
-        }
+        public string Description { get; set; }
 
-        public string Display
-        {
-            get; set;
-        }
+        public string Display { get; set; }
 
         public bool Enable { get; set; }
 
-        public string MaxValue
-        {
-            get; set;
-        }
+        public string MaxValue { get; set; }
 
-        public string MinValue
-        {
-            get; set;
-        }
+        public string MinValue { get; set; }
 
-        public string Name
-        {
-            get; set;
-        }
+        public string Name { get; set; }
 
         public string Path { get; set; }
 
         public object ObjectValue { get; set; }
 
-        public string[] Options
-        {
-            get; set;
-        }
+        public string[] Options { get; set; }
 
-        public string Regex
-        {
-            get; set;
-        }
+        public string Regex { get; set; }
 
         public string RegexNote { get; set; }
 
-        public bool Restart
-        {
-            get; set;
-        }
+        public bool Restart { get; set; }
 
         /// <summary>
         /// ECID
         /// </summary>
         public int SlotIndex { get; set; }
 
-        public string StringValue
-        {
-            get; set;
-        }
+        public string StringValue { get; set; }
 
-        public ConfigType Type
-        {
-            get; set;
-        }
+        public ConfigType Type { get; set; }
 
-        public string Unit
-        {
-            get; set;
-        }
+        public string Unit { get; set; }
 
         public Action<string> ValidationRule { get; set; }
 
-        public bool Visible
-        {
-            get; set;
-        }
+        public bool Visible { get; set; }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ThrowConfigNotFoundException(string config)
@@ -173,21 +138,26 @@ namespace SCADA.Configuration
         {
             if (@object == null)
             {
-                @string = default; return false;
+                @string = default;
+                return false;
             }
-            @string = StringValue; return true;
+            @string = StringValue;
+            return true;
         }
 
         internal static ConfigItem CreteAbsent(string name)
         {
             return string.IsNullOrWhiteSpace(name)
                 ? throw new ArgumentException("Config name can't be null or empty")
-                : _absentConfigCache.GetOrAdd(name, _ => new ConfigItem()
-                {
-                    Name = name,
-                    ObjectValue = null,
-                    StringValue = null,
-                });
+                : _absentConfigCache.GetOrAdd(
+                    name,
+                    _ => new ConfigItem()
+                    {
+                        Name = name,
+                        ObjectValue = null,
+                        StringValue = null,
+                    }
+                );
         }
     }
 }
