@@ -27,8 +27,7 @@ namespace SCADA.Configuration
 
         private bool HasDataTableConfigCurrentValue()
         {
-            string hasTableSql =
-                "SELECT count(*) as has_table\nFROM sqlite_master \nWHERE type = 'table' AND name = 'config_current_value';";
+            string hasTableSql = "SELECT count(*) as has_table\nFROM sqlite_master \nWHERE type = 'table' AND name = 'config_current_value';";
             using (var connection = new SqliteConnection(_dbConnectionString))
             {
                 connection.Open();
@@ -53,11 +52,7 @@ namespace SCADA.Configuration
                     if (xml != null && xml is string xml2)
                     {
                         // 建议配置 XmlReaderSettings，例如忽略无关的空白节点，进一步提升性能
-                        XmlReaderSettings settings = new XmlReaderSettings
-                        {
-                            IgnoreWhitespace = true,
-                            IgnoreComments = true,
-                        };
+                        XmlReaderSettings settings = new XmlReaderSettings { IgnoreWhitespace = true, IgnoreComments = true };
 
                         using (StringReader stream = new StringReader(xml2))
                         {
@@ -71,9 +66,7 @@ namespace SCADA.Configuration
                     }
                     else
                     {
-                        throw new ApplicationException(
-                            "The value of 'xml' field is error in data table 'config_schema_document'."
-                        );
+                        throw new ApplicationException("The value of 'xml' field is error in data table 'config_schema_document'.");
                     }
                 }
             }
@@ -113,23 +106,7 @@ namespace SCADA.Configuration
             var rootNodes = new List<ConfigNode>();
 
             var nodeAllowedAttributes = new string[] { "name", "display", "visible", "enable" };
-            var itemAllowedAttributes = new string[]
-            {
-                "initial_value",
-                "name",
-                "display",
-                "type",
-                "desc",
-                "min",
-                "max",
-                "options",
-                "regex",
-                "regex_note",
-                "unit",
-                "visible",
-                "enable",
-                "restart",
-            };
+            var itemAllowedAttributes = new string[] { "initial_value", "name", "display", "type", "desc", "min", "max", "options", "regex", "regex_note", "unit", "visible", "enable", "restart" };
             var nodeStack = new Stack<ConfigNode>(10);
             while (xmlReader.Read())
             {
@@ -139,29 +116,20 @@ namespace SCADA.Configuration
                     // name
                     name = xmlReader.GetAttribute("name");
                     if (name == null)
-                        throw new ArgumentException(
-                            $"The 'name' attribute is required. Hint:'{GetHint()}'"
-                        );
+                        throw new ArgumentException($"The 'name' attribute is required. Hint:'{GetHint()}'");
                     name = name.Trim();
                     if (string.IsNullOrWhiteSpace(name))
                     {
-                        throw new ArgumentException(
-                            $"The 'name' attribute cannot be empty. Hint:'{GetHint()}'"
-                        );
+                        throw new ArgumentException($"The 'name' attribute cannot be empty. Hint:'{GetHint()}'");
                     }
                     if (name.Contains("."))
                     {
-                        throw new ArgumentException(
-                            $"The 'name' attribute can't contain '.'. Hint:'{GetHint()}'"
-                        );
+                        throw new ArgumentException($"The 'name' attribute can't contain '.'. Hint:'{GetHint()}'");
                     }
 
                     // display
                     var display = xmlReader.GetAttribute("display");
-                    display =
-                        display == null || string.IsNullOrWhiteSpace(display)
-                            ? name
-                            : display.Trim();
+                    display = display == null || string.IsNullOrWhiteSpace(display) ? name : display.Trim();
                     // visible
                     var visible = xmlReader.GetAttribute("visible");
                     if (visible == null || string.IsNullOrWhiteSpace(visible))
@@ -173,9 +141,7 @@ namespace SCADA.Configuration
                         visible = visible.Trim();
                         if (!bool.TryParse(visible, out _))
                         {
-                            throw new ArgumentException(
-                                $"The 'visible' attribute must be a boolean value. Hint:'{GetHint()}'"
-                            );
+                            throw new ArgumentException($"The 'visible' attribute must be a boolean value. Hint:'{GetHint()}'");
                         }
                     }
                     // enable
@@ -189,17 +155,12 @@ namespace SCADA.Configuration
                         enable = enable.Trim();
                         if (!bool.TryParse(enable, out _))
                         {
-                            throw new ArgumentException(
-                                $"The 'enable' attribute must be a boolean value. Hint:'{GetHint()}'"
-                            );
+                            throw new ArgumentException($"The 'enable' attribute must be a boolean value. Hint:'{GetHint()}'");
                         }
                     }
 
                     // 配置类别节点
-                    if (
-                        xmlReader.GetAttribute("type") == null
-                        && xmlReader.GetAttribute("initial_value") == null
-                    )
+                    if (xmlReader.GetAttribute("type") == null && xmlReader.GetAttribute("initial_value") == null)
                     {
                         if (xmlReader.AttributeCount > 0)
                         {
@@ -207,9 +168,7 @@ namespace SCADA.Configuration
                             {
                                 if (!nodeAllowedAttributes.Any(x => x.Equals(xmlReader.Name)))
                                 {
-                                    throw new ArgumentException(
-                                        $"Unsupported  attribute '{xmlReader.Name}'. Hint:'{GetHint()}'"
-                                    );
+                                    throw new ArgumentException($"Unsupported  attribute '{xmlReader.Name}'. Hint:'{GetHint()}'");
                                 }
                             }
                             // 永远不要忘记在遍历完属性后调用 reader.MoveToElement()，让读取器的指针从“属性上下文”退回到“元素上下文”
@@ -227,9 +186,7 @@ namespace SCADA.Configuration
                         {
                             if (nodeStack.Peek().Children.Any(c => c.Name == name))
                             {
-                                throw new ArgumentException(
-                                    $"The 'name' attribute must be unique within the same node's children. Hint:'{GetHint()}'"
-                                );
+                                throw new ArgumentException($"The 'name' attribute must be unique within the same node's children. Hint:'{GetHint()}'");
                             }
                             nodeStack.Peek().Children.Add(node);
                             node.Parent = nodeStack.Peek();
@@ -239,19 +196,14 @@ namespace SCADA.Configuration
                         {
                             if (rootNodes.Any(c => c.Name == name))
                             {
-                                throw new ArgumentException(
-                                    $"The 'name' attribute must be unique for top-level nodes. Hint:'{GetHint()}'"
-                                );
+                                throw new ArgumentException($"The 'name' attribute must be unique for top-level nodes. Hint:'{GetHint()}'");
                             }
                             rootNodes.Add(node);
                             nodeStack.Push(node);
                         }
                     }
                     // 配置项节点
-                    else if (
-                        xmlReader.GetAttribute("type") != null
-                        && xmlReader.GetAttribute("initial_value") != null
-                    )
+                    else if (xmlReader.GetAttribute("type") != null && xmlReader.GetAttribute("initial_value") != null)
                     {
                         if (xmlReader.AttributeCount > 0)
                         {
@@ -259,9 +211,7 @@ namespace SCADA.Configuration
                             {
                                 if (!itemAllowedAttributes.Any(x => x.Equals(xmlReader.Name)))
                                 {
-                                    throw new ArgumentException(
-                                        $"Unsupported  attribute '{xmlReader.Name}'. Hint:'{GetHint()}'"
-                                    );
+                                    throw new ArgumentException($"Unsupported  attribute '{xmlReader.Name}'. Hint:'{GetHint()}'");
                                 }
                             }
                             // 永远不要忘记在遍历完属性后调用 reader.MoveToElement()，让读取器的指针从“属性上下文”退回到“元素上下文”
@@ -278,24 +228,18 @@ namespace SCADA.Configuration
                         var type = xmlReader.GetAttribute("type");
                         if (string.IsNullOrWhiteSpace(type))
                         {
-                            throw new ArgumentException(
-                                $"The 'type' attribute cannot be empty. Hint:'{GetHint()}'"
-                            );
+                            throw new ArgumentException($"The 'type' attribute cannot be empty. Hint:'{GetHint()}'");
                         }
 
                         type = type.Trim();
                         if (!Enum.TryParse<ConfigType>(type, true, out var configType))
                         {
-                            throw new ArgumentException(
-                                $"Invalid value for 'type' attribute: '{type}'. Hint:'{GetHint()}'"
-                            );
+                            throw new ArgumentException($"Invalid value for 'type' attribute: '{type}'. Hint:'{GetHint()}'");
                         }
 
                         // description
                         description = xmlReader.GetAttribute("desc");
-                        description = string.IsNullOrWhiteSpace(description)
-                            ? string.Empty
-                            : description.Trim();
+                        description = string.IsNullOrWhiteSpace(description) ? string.Empty : description.Trim();
 
                         // min
                         // decimal 和 integer 才允许配置 min
@@ -304,9 +248,7 @@ namespace SCADA.Configuration
                         {
                             if (!string.IsNullOrWhiteSpace(min))
                             {
-                                throw new ArgumentException(
-                                    $"Non-numeric config item cannot have the 'min' attribute configured. Hint:'{GetHint()}'"
-                                );
+                                throw new ArgumentException($"Non-numeric config item cannot have the 'min' attribute configured. Hint:'{GetHint()}'");
                             }
                         }
 
@@ -325,20 +267,9 @@ namespace SCADA.Configuration
                         else
                         {
                             min = min.Trim();
-                            if (
-                                (
-                                    configType == ConfigType.Decimal
-                                    && !StringParser.TryParse2Double(min, out _)
-                                )
-                                || (
-                                    configType == ConfigType.Integer
-                                    && !StringParser.TryParse2Long(min, out _)
-                                )
-                            )
+                            if ((configType == ConfigType.Decimal && !StringParser.TryParse2Double(min, out _)) || (configType == ConfigType.Integer && !StringParser.TryParse2Long(min, out _)))
                             {
-                                throw new ArgumentException(
-                                    $"Invalid value for 'min' attribute: '{min}'. Hint:'{GetHint()}'"
-                                );
+                                throw new ArgumentException($"Invalid value for 'min' attribute: '{min}'. Hint:'{GetHint()}'");
                             }
                         }
 
@@ -348,9 +279,7 @@ namespace SCADA.Configuration
                         {
                             if (!string.IsNullOrWhiteSpace(max))
                             {
-                                throw new ArgumentException(
-                                    $"Non-numeric config item cannot have the 'max' attribute configured. Hint:'{GetHint()}'"
-                                );
+                                throw new ArgumentException($"Non-numeric config item cannot have the 'max' attribute configured. Hint:'{GetHint()}'");
                             }
                         }
 
@@ -369,20 +298,9 @@ namespace SCADA.Configuration
                         else
                         {
                             max = max.Trim();
-                            if (
-                                (
-                                    configType == ConfigType.Decimal
-                                    && !StringParser.TryParse2Double(max, out _)
-                                )
-                                || (
-                                    configType == ConfigType.Integer
-                                    && !StringParser.TryParse2Long(max, out _)
-                                )
-                            )
+                            if ((configType == ConfigType.Decimal && !StringParser.TryParse2Double(max, out _)) || (configType == ConfigType.Integer && !StringParser.TryParse2Long(max, out _)))
                             {
-                                throw new ArgumentException(
-                                    $"Invalid value for 'max' attribute: '{max}'. Hint:'{GetHint()}'"
-                                );
+                                throw new ArgumentException($"Invalid value for 'max' attribute: '{max}'. Hint:'{GetHint()}'");
                             }
                         }
 
@@ -422,9 +340,7 @@ namespace SCADA.Configuration
                             restart = restart.Trim();
                             if (!bool.TryParse(restart, out _))
                             {
-                                throw new ArgumentException(
-                                    $"The 'restart' attribute must be a boolean value. Hint:'{GetHint()}'"
-                                );
+                                throw new ArgumentException($"The 'restart' attribute must be a boolean value. Hint:'{GetHint()}'");
                             }
                         }
 
@@ -438,9 +354,7 @@ namespace SCADA.Configuration
                             {
                                 if (optionsText.Split(';').Any(x => string.IsNullOrWhiteSpace(x)))
                                 {
-                                    throw new ArgumentException(
-                                        $"Comma cannot appear at both ends, and it cannot appear consecutively. Hint:'{GetHint()}'"
-                                    );
+                                    throw new ArgumentException($"Comma cannot appear at both ends, and it cannot appear consecutively. Hint:'{GetHint()}'");
                                 }
 
                                 options = optionsText.Split(';').Select(o => o.Trim()).ToList();
@@ -448,9 +362,7 @@ namespace SCADA.Configuration
                                 {
                                     if (options.Count != 2)
                                     {
-                                        throw new ArgumentException(
-                                            $"The 'options' attribute must contain only two options for boolean type. Hint:'{GetHint()}'"
-                                        );
+                                        throw new ArgumentException($"The 'options' attribute must contain only two options for boolean type. Hint:'{GetHint()}'");
                                     }
                                 }
                             }
@@ -479,72 +391,56 @@ namespace SCADA.Configuration
                         {
                             if (!bool.TryParse(initialValue, out _))
                             {
-                                throw new ArgumentException(
-                                    $"The 'value' attribute must be a boolean value. Hint:'{GetHint()}'"
-                                );
+                                throw new ArgumentException($"The 'value' attribute must be a boolean value. Hint:'{GetHint()}'");
                             }
                         }
                         else if (configType == ConfigType.Integer)
                         {
                             if (!StringParser.TryParse2Long(initialValue, out _))
                             {
-                                throw new ArgumentException(
-                                    $"The 'value' attribute must be a integer value. Hint:'{GetHint()}'"
-                                );
+                                throw new ArgumentException($"The 'value' attribute must be a integer value. Hint:'{GetHint()}'");
                             }
                         }
                         else if (configType == ConfigType.Decimal)
                         {
                             if (!StringParser.TryParse2Double(initialValue, out _))
                             {
-                                throw new ArgumentException(
-                                    $"The 'value' attribute must be a numeric value. Hint:'{GetHint()}'"
-                                );
+                                throw new ArgumentException($"The 'value' attribute must be a numeric value. Hint:'{GetHint()}'");
                             }
                         }
                         else if (configType == ConfigType.File)
                         {
                             if (!StringParser.TryParse2File(initialValue, out _))
                             {
-                                throw new ArgumentException(
-                                    $"The 'value' attribute must be a file value. Hint:'{GetHint()}'"
-                                );
+                                throw new ArgumentException($"The 'value' attribute must be a file value. Hint:'{GetHint()}'");
                             }
                         }
                         else if (configType == ConfigType.Folder)
                         {
                             if (!StringParser.TryParse2Directory(initialValue, out _))
                             {
-                                throw new ArgumentException(
-                                    $"The 'value' attribute must be a folder value. Hint:'{GetHint()}'"
-                                );
+                                throw new ArgumentException($"The 'value' attribute must be a folder value. Hint:'{GetHint()}'");
                             }
                         }
                         else if (configType == ConfigType.Color)
                         {
                             if (!StringParser.TryParse2Color(initialValue, out _))
                             {
-                                throw new ArgumentException(
-                                    $"The 'value' attribute must be a color value. Hint:'{GetHint()}'"
-                                );
+                                throw new ArgumentException($"The 'value' attribute must be a color value. Hint:'{GetHint()}'");
                             }
                         }
                         else if (configType == ConfigType.DateTime)
                         {
                             if (!StringParser.TryParse2DateTime(initialValue, out _))
                             {
-                                throw new ArgumentException(
-                                    $"The 'value' attribute must be a DateTime value. Hint:'{GetHint()}'"
-                                );
+                                throw new ArgumentException($"The 'value' attribute must be a DateTime value. Hint:'{GetHint()}'");
                             }
                         }
 
                         var node = nodeStack.Peek();
                         if (node.ConfigItems.Any(c => c.Name == name))
                         {
-                            throw new ArgumentException(
-                                $"The 'name' attribute must be unique within the same node's configItems. Hint:'{GetHint()}'"
-                            );
+                            throw new ArgumentException($"The 'name' attribute must be unique within the same node's configItems. Hint:'{GetHint()}'");
                         }
                         var configItem = new ConfigItem()
                         {

@@ -1,5 +1,5 @@
 ﻿using System;
-using SCADA.Common.Interfaces;
+using SCADA.Configuration.Interfaces;
 
 namespace SCADA.Configuration
 {

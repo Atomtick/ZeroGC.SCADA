@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using SCADA.Configuration;
 
-namespace SCADA.Common.Interfaces
+namespace SCADA.Configuration.Interfaces
 {
     public interface IConfigReader
     {

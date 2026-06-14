@@ -1,4 +1,4 @@
-﻿namespace SCADA.Common.Interfaces
+﻿namespace SCADA.Configuration.Interfaces
 {
     public interface IConfigWriter
     {
