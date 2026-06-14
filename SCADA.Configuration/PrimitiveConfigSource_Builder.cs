@@ -267,7 +267,7 @@ namespace SCADA.Configuration
                         else
                         {
                             min = min.Trim();
-                            if ((configType == ConfigType.Decimal && !StringParser.TryParse2Double(min, out _)) || (configType == ConfigType.Integer && !StringParser.TryParse2Long(min, out _)))
+                            if ((configType == ConfigType.Decimal && !StringParser.TryParse2Double(min, out _)) || (configType == ConfigType.Integer && !StringParser.TryParse2Int64(min, out _)))
                             {
                                 throw new ArgumentException($"Invalid value for 'min' attribute: '{min}'. Hint:'{GetHint()}'");
                             }
@@ -298,7 +298,7 @@ namespace SCADA.Configuration
                         else
                         {
                             max = max.Trim();
-                            if ((configType == ConfigType.Decimal && !StringParser.TryParse2Double(max, out _)) || (configType == ConfigType.Integer && !StringParser.TryParse2Long(max, out _)))
+                            if ((configType == ConfigType.Decimal && !StringParser.TryParse2Double(max, out _)) || (configType == ConfigType.Integer && !StringParser.TryParse2Int64(max, out _)))
                             {
                                 throw new ArgumentException($"Invalid value for 'max' attribute: '{max}'. Hint:'{GetHint()}'");
                             }
@@ -396,7 +396,7 @@ namespace SCADA.Configuration
                         }
                         else if (configType == ConfigType.Integer)
                         {
-                            if (!StringParser.TryParse2Long(initialValue, out _))
+                            if (!StringParser.TryParse2Int64(initialValue, out _))
                             {
                                 throw new ArgumentException($"The 'value' attribute must be a integer value. Hint:'{GetHint()}'");
                             }

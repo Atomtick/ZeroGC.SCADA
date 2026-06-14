@@ -43,9 +43,7 @@ namespace SCADA.Configuration
             }
             if (type != ConfigType.Bool)
             {
-                throw new ArgumentException(
-                    $"Config item '{path}' type is not '{ConfigType.Bool}'."
-                );
+                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.Bool}'.");
             }
             if (@object is bool @bool)
             {
@@ -62,9 +60,7 @@ namespace SCADA.Configuration
             }
             if (type != ConfigType.Color)
             {
-                throw new ArgumentException(
-                    $"Config item '{path}' type is not '{ConfigType.Color}'."
-                );
+                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.Color}'.");
             }
 
             if (@object is Color color)
@@ -82,9 +78,7 @@ namespace SCADA.Configuration
             }
             if (type != ConfigType.DateTime)
             {
-                throw new ArgumentException(
-                    $"Config item '{path}' type is not '{ConfigType.DateTime}'."
-                );
+                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.DateTime}'.");
             }
             if (@object is DateTime dateTime)
             {
@@ -103,9 +97,7 @@ namespace SCADA.Configuration
 
             if (type != ConfigType.Folder)
             {
-                throw new ArgumentException(
-                    $"Config item '{path}' type is not '{ConfigType.Folder}'."
-                );
+                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.Folder}'.");
             }
 
             if (@object is DirectoryInfo folder)
@@ -124,9 +116,7 @@ namespace SCADA.Configuration
             }
             if (type != ConfigType.Decimal)
             {
-                throw new ArgumentException(
-                    $"Config item '{path}' type is not '{ConfigType.Decimal}'."
-                );
+                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.Decimal}'.");
             }
             if (@object is double @double)
             {
@@ -145,9 +135,7 @@ namespace SCADA.Configuration
 
             if (type != ConfigType.File)
             {
-                throw new ArgumentException(
-                    $"Config item '{path}' type is not '{ConfigType.File}'."
-                );
+                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.File}'.");
             }
 
             if (@object is FileInfo fileInfo)
@@ -167,21 +155,13 @@ namespace SCADA.Configuration
 
             if (type != ConfigType.Integer)
             {
-                throw new ArgumentException(
-                    $"Config item '{path}' type is not '{ConfigType.Integer}'."
-                );
+                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.Integer}'.");
             }
             if (@object is long @long)
             {
-                return NumericConverter.TryConvert(
-                    @long,
-                    out short result,
-                    ConversionRule.CheckOverflow
-                )
+                return NumericConverter.TryConvert(@long, out short result, ConversionRule.CheckOverflow)
                     ? result
-                    : throw new ArgumentException(
-                        $"Integer Overflow occurred for Config item '{path}'."
-                    );
+                    : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
             }
 
             throw new ApplicationException();
@@ -195,21 +175,11 @@ namespace SCADA.Configuration
             }
             if (type != ConfigType.Integer)
             {
-                throw new ArgumentException(
-                    $"Config item '{path}' type is not '{ConfigType.Integer}'."
-                );
+                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.Integer}'.");
             }
             if (@object is long @long)
             {
-                return NumericConverter.TryConvert(
-                    @long,
-                    out int result,
-                    ConversionRule.CheckOverflow
-                )
-                    ? result
-                    : throw new ArgumentException(
-                        $"Integer Overflow occurred for Config item '{path}'."
-                    );
+                return NumericConverter.TryConvert(@long, out int result, ConversionRule.CheckOverflow) ? result : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
             }
 
             throw new ApplicationException();
@@ -223,9 +193,7 @@ namespace SCADA.Configuration
             }
             if (type != ConfigType.Integer)
             {
-                throw new ArgumentException(
-                    $"Config item '{path}' type is not '{ConfigType.Integer}'."
-                );
+                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.Integer}'.");
             }
             if (@object is long @long)
             {
@@ -243,22 +211,14 @@ namespace SCADA.Configuration
             }
             if (type != ConfigType.Integer)
             {
-                throw new ArgumentException(
-                    $"Config item '{path}' type is not '{ConfigType.Integer}'."
-                );
+                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.Integer}'.");
             }
 
             if (@object is long @long)
             {
-                return NumericConverter.TryConvert(
-                    @long,
-                    out sbyte result,
-                    ConversionRule.CheckOverflow
-                )
+                return NumericConverter.TryConvert(@long, out sbyte result, ConversionRule.CheckOverflow)
                     ? result
-                    : throw new ArgumentException(
-                        $"Integer Overflow occurred for Config item '{path}'."
-                    );
+                    : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
             }
 
             throw new ApplicationException();
@@ -272,21 +232,13 @@ namespace SCADA.Configuration
             }
             if (type != ConfigType.Decimal)
             {
-                throw new ArgumentException(
-                    $"Config item '{path}' type is not '{ConfigType.Decimal}'."
-                );
+                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.Decimal}'.");
             }
             if (@object is double @double)
             {
-                return NumericConverter.TryConvert(
-                    @double,
-                    out float result,
-                    ConversionRule.CheckOverflow | ConversionRule.CheckPrecision
-                )
+                return NumericConverter.TryConvert(@double, out float result, ConversionRule.CheckOverflow | ConversionRule.CheckPrecision)
                     ? result
-                    : throw new ArgumentException(
-                        $"Overflow or precision loss occurred for Config item '{path}'."
-                    );
+                    : throw new ArgumentException($"Overflow or precision loss occurred for Config item '{path}'.");
             }
 
             throw new ApplicationException();
@@ -309,21 +261,13 @@ namespace SCADA.Configuration
             }
             if (type != ConfigType.Integer)
             {
-                throw new ArgumentException(
-                    $"Config item '{path}' type is not '{ConfigType.Integer}'."
-                );
+                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.Integer}'.");
             }
             if (@object is long @long)
             {
-                return NumericConverter.TryConvert(
-                    @long,
-                    out ushort result,
-                    ConversionRule.CheckOverflow
-                )
+                return NumericConverter.TryConvert(@long, out ushort result, ConversionRule.CheckOverflow)
                     ? result
-                    : throw new ArgumentException(
-                        $"Integer Overflow occurred for Config item '{path}'."
-                    );
+                    : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
             }
 
             throw new ApplicationException();
@@ -337,21 +281,11 @@ namespace SCADA.Configuration
             }
             if (type != ConfigType.Integer)
             {
-                throw new ArgumentException(
-                    $"Config item '{path}' type is not '{ConfigType.Integer}'."
-                );
+                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.Integer}'.");
             }
             if (@object is long @long)
             {
-                return NumericConverter.TryConvert(
-                    @long,
-                    out uint result,
-                    ConversionRule.CheckOverflow
-                )
-                    ? result
-                    : throw new ArgumentException(
-                        $"Integer Overflow occurred for Config item '{path}'."
-                    );
+                return NumericConverter.TryConvert(@long, out uint result, ConversionRule.CheckOverflow) ? result : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
             }
 
             throw new ApplicationException();
@@ -365,21 +299,13 @@ namespace SCADA.Configuration
             }
             if (type != ConfigType.Integer)
             {
-                throw new ArgumentException(
-                    $"Config item '{path}' type is not '{ConfigType.Integer}'."
-                );
+                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.Integer}'.");
             }
             if (@object is long @long)
             {
-                return NumericConverter.TryConvert(
-                    @long,
-                    out ulong result,
-                    ConversionRule.CheckOverflow
-                )
+                return NumericConverter.TryConvert(@long, out ulong result, ConversionRule.CheckOverflow)
                     ? result
-                    : throw new ArgumentException(
-                        $"Integer Overflow occurred for Config item '{path}'."
-                    );
+                    : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
             }
 
             throw new ApplicationException();
@@ -393,22 +319,12 @@ namespace SCADA.Configuration
             }
             if (type != ConfigType.Integer)
             {
-                throw new ArgumentException(
-                    $"Config item '{path}' type is not '{ConfigType.Integer}'."
-                );
+                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.Integer}'.");
             }
 
             if (@object is long @long)
             {
-                return NumericConverter.TryConvert(
-                    @long,
-                    out byte result,
-                    ConversionRule.CheckOverflow
-                )
-                    ? result
-                    : throw new ArgumentException(
-                        $"Integer Overflow occurred for Config item '{path}'."
-                    );
+                return NumericConverter.TryConvert(@long, out byte result, ConversionRule.CheckOverflow) ? result : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
             }
 
             throw new ApplicationException();
@@ -426,9 +342,7 @@ namespace SCADA.Configuration
             }
             if (type != ConfigType.Bool)
             {
-                throw new ArgumentException(
-                    $"Config item '{path}' type is not '{ConfigType.Bool}'."
-                );
+                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.Bool}'.");
             }
             if (@object is bool @bool)
             {
@@ -445,9 +359,7 @@ namespace SCADA.Configuration
             }
             if (type != ConfigType.Color)
             {
-                throw new ArgumentException(
-                    $"Config item '{path}' type is not '{ConfigType.Color}'."
-                );
+                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.Color}'.");
             }
 
             if (@object is Color color)
@@ -466,9 +378,7 @@ namespace SCADA.Configuration
             }
             if (type != ConfigType.DateTime)
             {
-                throw new ArgumentException(
-                    $"Config item '{path}' type is not '{ConfigType.DateTime}'."
-                );
+                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.DateTime}'.");
             }
 
             if (@object is DateTime dateTime)
@@ -488,9 +398,7 @@ namespace SCADA.Configuration
 
             if (type != ConfigType.Folder)
             {
-                throw new ArgumentException(
-                    $"Config item '{path}' type is not '{ConfigType.Folder}'."
-                );
+                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.Folder}'.");
             }
 
             if (@object is DirectoryInfo folder)
@@ -509,9 +417,7 @@ namespace SCADA.Configuration
             }
             if (type != ConfigType.Decimal)
             {
-                throw new ArgumentException(
-                    $"Config item '{path}' type is not '{ConfigType.Decimal}'."
-                );
+                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.Decimal}'.");
             }
 
             if (@object is double @double)
@@ -531,9 +437,7 @@ namespace SCADA.Configuration
 
             if (type != ConfigType.File)
             {
-                throw new ArgumentException(
-                    $"Config item '{path}' type is not '{ConfigType.File}'."
-                );
+                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.File}'.");
             }
 
             if (@object is FileInfo file)
@@ -553,21 +457,13 @@ namespace SCADA.Configuration
 
             if (type != ConfigType.Integer)
             {
-                throw new ArgumentException(
-                    $"Config item '{path}' type is not '{ConfigType.Integer}'."
-                );
+                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.Integer}'.");
             }
             if (@object is long @long)
             {
-                return NumericConverter.TryConvert(
-                    @long,
-                    out short result,
-                    ConversionRule.CheckOverflow
-                )
+                return NumericConverter.TryConvert(@long, out short result, ConversionRule.CheckOverflow)
                     ? result
-                    : throw new ArgumentException(
-                        $"Integer Overflow occurred for Config item '{path}'."
-                    );
+                    : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
             }
 
             throw new ApplicationException();
@@ -581,21 +477,11 @@ namespace SCADA.Configuration
             }
             if (type != ConfigType.Integer)
             {
-                throw new ArgumentException(
-                    $"Config item '{path}' type is not '{ConfigType.Integer}'."
-                );
+                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.Integer}'.");
             }
             if (@object is long @long)
             {
-                return NumericConverter.TryConvert(
-                    @long,
-                    out int result,
-                    ConversionRule.CheckOverflow
-                )
-                    ? result
-                    : throw new ArgumentException(
-                        $"Integer Overflow occurred for Config item '{path}'."
-                    );
+                return NumericConverter.TryConvert(@long, out int result, ConversionRule.CheckOverflow) ? result : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
             }
 
             throw new ApplicationException();
@@ -609,9 +495,7 @@ namespace SCADA.Configuration
             }
             if (type != ConfigType.Integer)
             {
-                throw new ArgumentException(
-                    $"Config item '{path}' type is not '{ConfigType.Integer}'."
-                );
+                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.Integer}'.");
             }
             if (@object is long @long)
             {
@@ -629,21 +513,13 @@ namespace SCADA.Configuration
             }
             if (type != ConfigType.Integer)
             {
-                throw new ArgumentException(
-                    $"Config item '{path}' type is not '{ConfigType.Integer}'."
-                );
+                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.Integer}'.");
             }
             if (@object is long @long)
             {
-                return NumericConverter.TryConvert(
-                    @long,
-                    out sbyte result,
-                    ConversionRule.CheckOverflow
-                )
+                return NumericConverter.TryConvert(@long, out sbyte result, ConversionRule.CheckOverflow)
                     ? result
-                    : throw new ArgumentException(
-                        $"Integer Overflow occurred for Config item '{path}'."
-                    );
+                    : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
             }
 
             throw new ApplicationException();
@@ -657,21 +533,13 @@ namespace SCADA.Configuration
             }
             if (type != ConfigType.Decimal)
             {
-                throw new ArgumentException(
-                    $"Config item '{path}' type is not '{ConfigType.Decimal}'."
-                );
+                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.Decimal}'.");
             }
             if (@object is double @double)
             {
-                return NumericConverter.TryConvert(
-                    @double,
-                    out float result,
-                    ConversionRule.CheckOverflow | ConversionRule.CheckPrecision
-                )
+                return NumericConverter.TryConvert(@double, out float result, ConversionRule.CheckOverflow | ConversionRule.CheckPrecision)
                     ? result
-                    : throw new ArgumentException(
-                        $"Overflow or precision loss occurred for Config item '{path}'."
-                    );
+                    : throw new ArgumentException($"Overflow or precision loss occurred for Config item '{path}'.");
             }
 
             throw new ApplicationException();
@@ -690,21 +558,13 @@ namespace SCADA.Configuration
             }
             if (type != ConfigType.Integer)
             {
-                throw new ArgumentException(
-                    $"Config item '{path}' type is not '{ConfigType.Integer}'."
-                );
+                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.Integer}'.");
             }
             if (@object is long @long)
             {
-                return NumericConverter.TryConvert(
-                    @long,
-                    out ushort result,
-                    ConversionRule.CheckOverflow
-                )
+                return NumericConverter.TryConvert(@long, out ushort result, ConversionRule.CheckOverflow)
                     ? result
-                    : throw new ArgumentException(
-                        $"Integer Overflow occurred for Config item '{path}'."
-                    );
+                    : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
             }
             throw new ApplicationException();
         }
@@ -717,21 +577,11 @@ namespace SCADA.Configuration
             }
             if (type != ConfigType.Integer)
             {
-                throw new ArgumentException(
-                    $"Config item '{path}' type is not '{ConfigType.Integer}'."
-                );
+                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.Integer}'.");
             }
             if (@object is long @long)
             {
-                return NumericConverter.TryConvert(
-                    @long,
-                    out uint result,
-                    ConversionRule.CheckOverflow
-                )
-                    ? result
-                    : throw new ArgumentException(
-                        $"Integer Overflow occurred for Config item '{path}'."
-                    );
+                return NumericConverter.TryConvert(@long, out uint result, ConversionRule.CheckOverflow) ? result : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
             }
 
             throw new ApplicationException();
@@ -746,21 +596,13 @@ namespace SCADA.Configuration
 
             if (type != ConfigType.Integer)
             {
-                throw new ArgumentException(
-                    $"Config item '{path}' type is not '{ConfigType.Integer}'."
-                );
+                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.Integer}'.");
             }
             if (@object is long @long)
             {
-                return NumericConverter.TryConvert(
-                    @long,
-                    out ulong result,
-                    ConversionRule.CheckOverflow
-                )
+                return NumericConverter.TryConvert(@long, out ulong result, ConversionRule.CheckOverflow)
                     ? result
-                    : throw new ArgumentException(
-                        $"Integer Overflow occurred for Config item '{path}'."
-                    );
+                    : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
             }
 
             throw new ApplicationException();
@@ -774,22 +616,12 @@ namespace SCADA.Configuration
             }
             if (type != ConfigType.Integer)
             {
-                throw new ArgumentException(
-                    $"Config item '{path}' type is not '{ConfigType.Integer}'."
-                );
+                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.Integer}'.");
             }
 
             if (@object is long @long)
             {
-                return NumericConverter.TryConvert(
-                    @long,
-                    out byte result,
-                    ConversionRule.CheckOverflow
-                )
-                    ? result
-                    : throw new ArgumentException(
-                        $"Integer Overflow occurred for Config item '{path}'."
-                    );
+                return NumericConverter.TryConvert(@long, out byte result, ConversionRule.CheckOverflow) ? result : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
             }
 
             throw new ApplicationException();
@@ -944,15 +776,9 @@ namespace SCADA.Configuration
 
             if (@object is long @long)
             {
-                @short = NumericConverter.TryConvert(
-                    @long,
-                    out short result,
-                    ConversionRule.CheckOverflow
-                )
+                @short = NumericConverter.TryConvert(@long, out short result, ConversionRule.CheckOverflow)
                     ? result
-                    : throw new ArgumentException(
-                        $"Integer overflow occurred for Config item '{path}'."
-                    );
+                    : throw new ArgumentException($"Integer overflow occurred for Config item '{path}'.");
 
                 return true;
             }
@@ -975,15 +801,7 @@ namespace SCADA.Configuration
 
             if (@object is long @long)
             {
-                @int = NumericConverter.TryConvert(
-                    @long,
-                    out int result,
-                    ConversionRule.CheckOverflow
-                )
-                    ? result
-                    : throw new ArgumentException(
-                        $"Integer overflow occurred for Config item '{path}'."
-                    );
+                @int = NumericConverter.TryConvert(@long, out int result, ConversionRule.CheckOverflow) ? result : throw new ArgumentException($"Integer overflow occurred for Config item '{path}'.");
 
                 return true;
             }
@@ -1026,15 +844,9 @@ namespace SCADA.Configuration
 
             if (@object is long @long)
             {
-                @sbyte = NumericConverter.TryConvert(
-                    @long,
-                    out sbyte result,
-                    ConversionRule.CheckOverflow
-                )
+                @sbyte = NumericConverter.TryConvert(@long, out sbyte result, ConversionRule.CheckOverflow)
                     ? result
-                    : throw new ArgumentException(
-                        $"Integer overflow occurred for Config item '{path}'."
-                    );
+                    : throw new ArgumentException($"Integer overflow occurred for Config item '{path}'.");
 
                 return true;
             }
@@ -1055,15 +867,9 @@ namespace SCADA.Configuration
 
             if (@object is double @double)
             {
-                @float = NumericConverter.TryConvert(
-                    @double,
-                    out float result,
-                    ConversionRule.CheckOverflow | ConversionRule.CheckPrecision
-                )
+                @float = NumericConverter.TryConvert(@double, out float result, ConversionRule.CheckOverflow | ConversionRule.CheckPrecision)
                     ? result
-                    : throw new ArgumentException(
-                        $"Overflow or precision loss occurred for Config item '{path}'."
-                    );
+                    : throw new ArgumentException($"Overflow or precision loss occurred for Config item '{path}'.");
                 return true;
             }
             throw new ApplicationException();
@@ -1093,15 +899,9 @@ namespace SCADA.Configuration
             }
             if (@object is long @long)
             {
-                @ushort = NumericConverter.TryConvert(
-                    @long,
-                    out ushort result,
-                    ConversionRule.CheckOverflow
-                )
+                @ushort = NumericConverter.TryConvert(@long, out ushort result, ConversionRule.CheckOverflow)
                     ? result
-                    : throw new ArgumentException(
-                        $"Integer overflow occurred for Config item '{path}'."
-                    );
+                    : throw new ArgumentException($"Integer overflow occurred for Config item '{path}'.");
                 return true;
             }
             throw new ApplicationException();
@@ -1121,15 +921,9 @@ namespace SCADA.Configuration
 
             if (@object is long @long)
             {
-                @uint = NumericConverter.TryConvert(
-                    @long,
-                    out uint result,
-                    ConversionRule.CheckOverflow
-                )
+                @uint = NumericConverter.TryConvert(@long, out uint result, ConversionRule.CheckOverflow)
                     ? result
-                    : throw new ArgumentException(
-                        $"Integer overflow occurred for Config item '{path}'."
-                    );
+                    : throw new ArgumentException($"Integer overflow occurred for Config item '{path}'.");
                 return true;
             }
             throw new ApplicationException();
@@ -1149,15 +943,9 @@ namespace SCADA.Configuration
 
             if (@object is long @long)
             {
-                @ulong = NumericConverter.TryConvert(
-                    @long,
-                    out ulong result,
-                    ConversionRule.CheckOverflow
-                )
+                @ulong = NumericConverter.TryConvert(@long, out ulong result, ConversionRule.CheckOverflow)
                     ? result
-                    : throw new ArgumentException(
-                        $"Integer overflow occurred for Config item '{path}'."
-                    );
+                    : throw new ArgumentException($"Integer overflow occurred for Config item '{path}'.");
                 return true;
             }
             throw new ApplicationException();
@@ -1177,15 +965,9 @@ namespace SCADA.Configuration
 
             if (@object is long @long)
             {
-                @byte = NumericConverter.TryConvert(
-                    @long,
-                    out byte result,
-                    ConversionRule.CheckOverflow
-                )
+                @byte = NumericConverter.TryConvert(@long, out byte result, ConversionRule.CheckOverflow)
                     ? result
-                    : throw new ArgumentException(
-                        $"Integer overflow occurred for Config item '{path}'."
-                    );
+                    : throw new ArgumentException($"Integer overflow occurred for Config item '{path}'.");
                 ;
 
                 return true;

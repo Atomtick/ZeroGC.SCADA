@@ -37,7 +37,7 @@ namespace SCADA.Configuration
                     return bool.Parse(value);
 
                 case ConfigType.Integer:
-                    StringParser.TryParse2Long(value, out long @long);
+                    StringParser.TryParse2Int64(value, out long @long);
                     return @long;
 
                 case ConfigType.Decimal:
