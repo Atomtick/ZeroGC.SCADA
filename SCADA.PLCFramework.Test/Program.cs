@@ -14,3 +14,68 @@ namespace SCADA.PLCFramework.Test
         }
     }
 }
+
+
+class Test
+{
+    private Dictionary<string, uint> _dict = new Dictionary<string, uint>();
+
+    public Test()
+    {
+        _dict.Add(nameof(SetTemp), 0);
+    }
+    // 相当于单通道的串口通信. 因为PLC交互地址只有一份.
+    public void SetTemp(float temp)
+    {
+        var transcationId  = Interlocked.Increment(ref _dict[nameof(SetTemp)]);
+
+        var a = 1;
+        var b = 2;
+        var c = a + b;
+    }
+
+}
+
+class PLC
+{
+    void Read();
+    void Write();
+}
+class InactiveHandler
+{
+    private ushort _transactionId = 0;
+    private ushort echoTransactionId = 0;
+    private byte ErrorCode = 0;
+    object[] _queue = new object[100];
+    public InactiveHandler(PLC plc)
+    { 
+    }
+
+    void Monitor()
+    {
+    }
+
+    void Reset()
+    {
+        _queue.Clear();
+    }
+
+    ushort Action<T>(string reqParam)
+    {
+        var id = Interlocked.Increment(ref _transactionId);
+        return id;
+    }
+
+    byte IsCompleted(uint transactionId, string echoId)
+    {
+         if(int.Parse(echoId) == _transactionId)
+         {
+             return 0;
+         }
+         else
+         {
+             return 1;
+        }
+    }
+
+}
