@@ -21,12 +21,9 @@ namespace SCADA.Configuration
             }
 
             var names = config.Split('.');
-            if (config.StartsWith(".") || config.EndsWith(".") || names.Length < 2 ||
-                names.Any(x => string.IsNullOrWhiteSpace(x)))
+            if (config.StartsWith(".") || config.EndsWith(".") || names.Length < 2 || names.Any(x => string.IsNullOrWhiteSpace(x)))
             {
-                throw new ArgumentException(
-                    $"There must be at least one dot in the middle of the {config}, and it cannot appear at both ends, and it cannot appear consecutively",
-                    nameof(config));
+                throw new ArgumentException($"There must be at least one dot in the middle of the {config}, and it cannot appear at both ends, and it cannot appear consecutively", nameof(config));
             }
 
             return names;
@@ -40,7 +37,7 @@ namespace SCADA.Configuration
                     return bool.Parse(value);
 
                 case ConfigType.Integer:
-                    StringParser.TryParse2Long(value, out long @long);
+                    StringParser.TryParse2Int64(value, out long @long);
                     return @long;
 
                 case ConfigType.Decimal:

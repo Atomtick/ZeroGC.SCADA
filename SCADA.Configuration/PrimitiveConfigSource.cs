@@ -1,11 +1,11 @@
-﻿using Microsoft.Data.Sqlite;
-using SCADA.Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
+using SCADA.Common;
 
 namespace SCADA.Configuration
 {
@@ -20,7 +20,7 @@ namespace SCADA.Configuration
         private readonly string _dbConnectionString;
         private readonly Task _saveTask;
 
-        private volatile IDictionary<string, ConfigItem> _configItems;
+        private volatile IDictionary<string, ConfigItem> _configItems = new Dictionary<string, ConfigItem>();
 
         private bool _disposed;
 
@@ -34,12 +34,13 @@ namespace SCADA.Configuration
             if (!File.Exists(sqliteDB))
                 throw new FileNotFoundException("The sqlite DB file does not exist.", sqliteDB);
             Settings = settings ?? new ConfigSourceSettings();
-            _dbConnectionString = $"Data Source={sqliteDB};Version=3;";
-            LoadSqlite();
+            _dbConnectionString = $"Data Source={sqliteDB}";
+            Initialize();
             _saveTask = Function();
         }
 
-        public event Action<LightWeightDictionary> ValueSet;
+        public event Action<LightWeightDictionary> ValueChanged;
+        public event Action<LightWeightDictionary> ValueChanging;
 
         public ConfigSourceSettings Settings { get; }
 
@@ -78,9 +79,7 @@ namespace SCADA.Configuration
                     }
                 }
             }
-            catch
-            {
-            }
+            catch { }
         }
 
         private void SaveToSqlite(LightWeightDictionary changedItems)
@@ -89,27 +88,15 @@ namespace SCADA.Configuration
             {
                 if (!_hasTable_config_current_value)
                 {
-                    string hasTableSql =
-                        "SELECT count(*) as has_table\nFROM sqlite_master \nWHERE type = 'table' AND name = 'config_current_value';";
                     using (var connection = new SqliteConnection(_dbConnectionString))
                     {
                         connection.Open();
+                        string createTableSql = "CREATE TABLE \"config_current_value\" (\n\t\"name\"\tTEXT,\n\t\"value\"\tTEXT NOT NULL,\n\t\"time\"\tINTEGER NOT NULL,\n\tPRIMARY KEY(\"name\")\n)";
                         using (var command = connection.CreateCommand())
                         {
-                            command.CommandText = hasTableSql;
-                            var hasTable = command.ExecuteNonQuery();
-                            if (hasTable == 0)
-                            {
-                                string createTableSql =
-                                    "CREATE TABLE \"config_current_value\" (\n\t\"name\"\tTEXT,\n\t\"value\"\tTEXT NOT NULL,\n\t\"time\"\tINTEGER NOT NULL,\n\tPRIMARY KEY(\"name\")\n)";
-                                using (var command2 = connection.CreateCommand())
-                                {
-                                    command2.CommandText = createTableSql;
-                                    command2.ExecuteNonQuery();
-                                }
-
-                                _hasTable_config_current_value = true;
-                            }
+                            command.CommandText = createTableSql;
+                            command.ExecuteNonQuery();
+                            _hasTable_config_current_value = true;
                         }
                     }
                 }
@@ -140,9 +127,7 @@ namespace SCADA.Configuration
                 }
             }
 
-            if (Settings.TrackConfigValueModification)
-            {
-            }
+            if (Settings.TrackConfigValueModification) { }
         }
     }
 }

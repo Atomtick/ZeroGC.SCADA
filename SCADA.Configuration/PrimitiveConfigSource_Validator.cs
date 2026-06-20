@@ -36,7 +36,7 @@ namespace SCADA.Configuration
             }
             else if (configType == ConfigType.Integer)
             {
-                if (!StringParser.TryParse2Long(strValue, out longNumber))
+                if (!StringParser.TryParse2Int64(strValue, out longNumber))
                 {
                     throw new InvalidCastException(ExceptionHelper.GetFormattedString("InvalidCastException_CannotConvert2Integer", strValue, config));
                 }
@@ -104,7 +104,7 @@ namespace SCADA.Configuration
                     var longOptions = new List<long>();
                     foreach (var option in options)
                     {
-                        if (StringParser.TryParse2Long(option, out long longValue))
+                        if (StringParser.TryParse2Int64(option, out long longValue))
                         {
                             longOptions.Add(longValue);
                         }
@@ -113,7 +113,7 @@ namespace SCADA.Configuration
                             throw new ArgumentException($"option '{option}' can't convert to a integer for '{config}'.");
                         }
                     }
-                    StringParser.TryParse2Long(strValue, out long @long); // 肯定返回true，因为前面已经调用此函数校验过字符串了
+                    StringParser.TryParse2Int64(strValue, out long @long); // 肯定返回true，因为前面已经调用此函数校验过字符串了
                     if (!longOptions.Contains(@long))
                     {
                         throw new ArgumentOutOfRangeException(nameof(value), $"The value '{strValue}' is not in the options for config item '{config}'.");
@@ -147,8 +147,8 @@ namespace SCADA.Configuration
 
             if (configType == ConfigType.Integer)
             {
-                StringParser.TryParse2Long(configItem.MaxValue, out var max);
-                StringParser.TryParse2Long(configItem.MinValue, out var min);
+                StringParser.TryParse2Int64(configItem.MaxValue, out var max);
+                StringParser.TryParse2Int64(configItem.MinValue, out var min);
                 if (longNumber > max || longNumber < min)
                 {
                     throw new ArgumentOutOfRangeException("", ExceptionHelper.GetFormattedString("ArgumentOutOfRangeException_MaxMin", strValue, config, configItem.MinValue, configItem.MaxValue));
@@ -173,11 +173,7 @@ namespace SCADA.Configuration
             var vtype = configItem.Type;
             if (!string.IsNullOrWhiteSpace(regex))
             {
-                if ((vtype == ConfigType.String ||
-                    vtype == ConfigType.File ||
-                    vtype == ConfigType.Folder ||
-                    vtype == ConfigType.DateTime)
-                    && !Regex.IsMatch(strValue, regex))
+                if ((vtype == ConfigType.String || vtype == ConfigType.File || vtype == ConfigType.Folder || vtype == ConfigType.DateTime) && !Regex.IsMatch(strValue, regex))
                 {
                     throw new ArgumentException(ExceptionHelper.GetFormattedString("ArgumentException_RegexValidation", strValue, configItem.RegexNote, config));
                 }
@@ -187,17 +183,21 @@ namespace SCADA.Configuration
                     {
                         if (!Regex.IsMatch(doubleNumber.ToString(CultureInfo.InvariantCulture), regex))
                         {
-                            throw new ArgumentException(ExceptionHelper.GetFormattedString("ArgumentException_RegexValidation", doubleNumber.ToString(CultureInfo.InvariantCulture), configItem.RegexNote, config));
+                            throw new ArgumentException(
+                                ExceptionHelper.GetFormattedString("ArgumentException_RegexValidation", doubleNumber.ToString(CultureInfo.InvariantCulture), configItem.RegexNote, config)
+                            );
                         }
                     }
                 }
                 else if (vtype == ConfigType.Integer)
                 {
-                    if (StringParser.TryParse2Long(strValue, out longNumber))
+                    if (StringParser.TryParse2Int64(strValue, out longNumber))
                     {
                         if (!Regex.IsMatch(longNumber.ToString(CultureInfo.InvariantCulture), regex))
                         {
-                            throw new ArgumentException(ExceptionHelper.GetFormattedString("ArgumentException_RegexValidation", longNumber.ToString(CultureInfo.InvariantCulture), configItem.RegexNote, config));
+                            throw new ArgumentException(
+                                ExceptionHelper.GetFormattedString("ArgumentException_RegexValidation", longNumber.ToString(CultureInfo.InvariantCulture), configItem.RegexNote, config)
+                            );
                         }
                     }
                 }
@@ -205,14 +205,13 @@ namespace SCADA.Configuration
 
             #endregion Regular Expression Validation
 
-            #region Customized Validation Rule
-
-            if (Settings.AdditionalValidationRule?.Invoke(config, value, this) == false)
-            {
-                throw new ArgumentException(ExceptionHelper.GetFormattedString("ArgumentException_CustomizeValidation", strValue, config));
-            }
-
-            #endregion Customized Validation Rule
+            #region Appended Validation Rule
+            if (Settings.AppendedValidationRule != null)
+                if (Settings.AppendedValidationRule?.Invoke(config, value, this) == false)
+                {
+                    throw new ArgumentException(ExceptionHelper.GetFormattedString("ArgumentException_CustomizeValidation", strValue, config));
+                }
+            #endregion Appended Validation Rule
         }
 
         public void ValidateValue(string config, object value)

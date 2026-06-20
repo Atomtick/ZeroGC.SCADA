@@ -12,6 +12,6 @@ namespace SCADA.Configuration
         public bool TrackConfigValueModification { get; set; } = true;
         public bool RestoreOnAppStartup { get; set; } = false;
         public CustomizeOptions CustomizeOptions { get; set; }
-        public AppendValidationRule AdditionalValidationRule { get; set; }
+        public AppendValidationRule AppendedValidationRule { get; set; }
     }
 }

@@ -17,50 +17,80 @@ namespace SCADA.Configuration
         /// <summary>
         ///
         /// </summary>
-        /// <param name="ColorString">必须是#XXXXXX或#XXXXXXXX;X是16进制字符,不区分大小写</param>
+        /// <param name="string">必须是#XXXXXX或#XXXXXXXX;X是16进制字符,不区分大小写</param>
         /// <param name="color"></param>
         /// <returns></returns>
-        internal static bool TryParse2Color(string ColorString, out System.Drawing.Color color)
+        internal static bool TryParse2Color(string @string, out System.Drawing.Color color)
         {
             color = System.Drawing.Color.Empty;
-            if (string.IsNullOrWhiteSpace(ColorString))
+            if (string.IsNullOrWhiteSpace(@string))
             {
                 return false;
             }
-            if (!ColorString.StartsWith("#"))
+            if (!@string.StartsWith("#"))
             {
                 return false;
             }
-            if (ColorString.Length != 7 && ColorString.Length != 9)
+            if (@string.Length != 7 && @string.Length != 9)
             {
                 return false;
             }
-            if (!Regex.IsMatch(ColorString, @"^#[0-9a-fA-F]+$"))
+            if (!Regex.IsMatch(@string, @"^#[0-9a-fA-F]+$"))
             {
                 return false;
             }
-            color = System.Drawing.ColorTranslator.FromHtml(ColorString);
+            color = System.Drawing.ColorTranslator.FromHtml(@string);
             return true;
         }
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="datetimeString">字符串格式必须严格是yyyyMMddHHmmss;共计14个字符,多一个少一个都不行</param>
+        /// <param name="string">字符串格式必须严格是yyyyMMddHHmmss;共计14个字符,多一个少一个都不行</param>
         /// <param name="dateTime"></param>
         /// <returns></returns>
-        internal static bool TryParse2DateTime(string datetimeString, out DateTime dateTime)
+        internal static bool TryParse2DateTime(string @string, out DateTime dateTime)
         {
-            if (string.IsNullOrWhiteSpace(datetimeString))
+            if (string.IsNullOrWhiteSpace(@string))
             {
                 dateTime = default;
                 return false;
             }
-            return DateTime.TryParseExact(datetimeString, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime);
+            if (DateTime.TryParseExact(@string, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
+            {
+                return true;
+            }
+            else if (DateTime.TryParseExact(@string, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
+            {
+                return true;
+            }
+            else if (DateTime.TryParseExact(@string, "HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
+            {
+                return true;
+            }
+            dateTime = default;
+            return false;
         }
 
-        internal static bool TryParse2Directory(string directoryFullPathString, out DirectoryInfo directoryInfo)
+        internal static bool TryParse2Directory(string @string, out DirectoryInfo directoryInfo)
         {
+            if (@string.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
+            {
+                directoryInfo = null;
+                return false;
+            }
+            Environment.CurrentDirectory = AppContext.BaseDirectory;
+            try
+            {
+                directoryInfo = new DirectoryInfo(Path.GetFullPath(@string));
+                return true;
+            }
+            catch
+            {
+                directoryInfo = null;
+                return false;
+            }
+
             bool IsValidWindowsFolderPath(string directoryFullPath, out DirectoryInfo directory)
             {
                 directory = null;
@@ -118,45 +148,47 @@ namespace SCADA.Configuration
             }
             directoryInfo = null;
 #if NET462_OR_GREATER
-            return IsValidWindowsFolderPath(directoryFullPathString, out directoryInfo);
+            return IsValidWindowsFolderPath(@string, out directoryInfo);
 #elif NET8_0_OR_GREATER
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                return IsValidWindowsFolderPath(directoryFullPathString, out directoryInfo);
+                return IsValidWindowsFolderPath(@string, out directoryInfo);
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
                 // Linux / macOS 规则 (POSIX)
-                if (!Path.IsPathRooted(directoryFullPathString))
+                if (!Path.IsPathRooted(@string))
                 {
                     return false;
                 }
                 // 1. 必须是绝对路径（以 / 开头）
-                if (directoryFullPathString[0] != '/') return false;
+                if (@string[0] != '/')
+                    return false;
 
                 // 2. 单遍扫描
-                for (int i = 0; i < directoryFullPathString.Length; i++)
+                for (int i = 0; i < @string.Length; i++)
                 {
-                    char c = directoryFullPathString[i];
+                    char c = @string[i];
 
                     // 规则 A: POSIX 唯一硬性规定的非法字符是 \0
-                    if (c == '\0') return false;
+                    if (c == '\0')
+                        return false;
 
                     // 规则 B: 拒绝连续斜杠 (拦截 //usr//bin)
-                    if (c == '/' && i > 0 && directoryFullPathString[i - 1] == '/')
+                    if (c == '/' && i > 0 && @string[i - 1] == '/')
                         return false;
                 }
-                directoryInfo = new DirectoryInfo(directoryFullPathString);
+                directoryInfo = new DirectoryInfo(@string);
                 return true;
             }
             throw new InvalidOperationException("Not supported OS.");
 #endif
         }
 
-        internal static bool TryParse2Double(string doubleString, out double @double)
+        internal static bool TryParse2Double(string @string, out double @double)
         {
             // 允许整数形式的字符串转换成double
-            if (long.TryParse(doubleString, NumberStyles.Integer | NumberStyles.AllowThousands | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out long @long))
+            if (long.TryParse(@string, NumberStyles.Integer | NumberStyles.AllowThousands | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out long @long))
             {
                 // long太大转换成double时会有精度损失
                 if (@long < _longMin || @long > _longMax)
@@ -167,7 +199,7 @@ namespace SCADA.Configuration
                 @double = @long;
                 return true;
             }
-            else if (doubleString.StartsWith("0x", StringComparison.OrdinalIgnoreCase) && long.TryParse(doubleString.TrimStart('0', 'x', 'X'), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out @long))
+            else if (@string.StartsWith("0x", StringComparison.OrdinalIgnoreCase) && long.TryParse(@string.TrimStart('0', 'x', 'X'), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out @long))
             {
                 // long太大转换成double时会有精度损失
                 if (@long < _longMin || @long > _longMax)
@@ -178,17 +210,9 @@ namespace SCADA.Configuration
                 @double = @long;
                 return true;
             }
-            else if (decimal.TryParse(doubleString, NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands | NumberStyles.Float, CultureInfo.InvariantCulture, out decimal decValue))
+            else if (double.TryParse(@string, NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands | NumberStyles.Float, CultureInfo.InvariantCulture, out double decValue))
             {
-                double tempDouble = (double)decValue;
-                decimal castBackDec = (decimal)tempDouble; // C# 底层会在这里强制截取 15 位有效数字
-
-                if (decValue != castBackDec)
-                {
-                    @double = default;
-                    return false; // 发生精度丢失！
-                }
-                @double = tempDouble;
+                @double = decValue;
                 return true;
             }
             else
@@ -198,8 +222,25 @@ namespace SCADA.Configuration
             }
         }
 
-        internal static bool TryParse2File(string fileFullPathString, out FileInfo fileInfo)
+        internal static bool TryParse2File(string @string, out FileInfo fileInfo)
         {
+            if (@string.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
+            {
+                fileInfo = null;
+                return false;
+            }
+            Environment.CurrentDirectory = AppContext.BaseDirectory;
+            try
+            {
+                fileInfo = new FileInfo(Path.GetFullPath(@string));
+                return true;
+            }
+            catch
+            {
+                fileInfo = null;
+                return false;
+            }
+
             bool IsValidWindowsFilePath(string fileFullPath, out FileInfo file)
             {
                 file = null;
@@ -254,53 +295,55 @@ namespace SCADA.Configuration
             }
 
 #if NET462_OR_GREATER
-            return IsValidWindowsFilePath(fileFullPathString, out fileInfo);
+            return IsValidWindowsFilePath(@string, out fileInfo);
 #elif NET8_0_OR_GREATER
             fileInfo = null;
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                return IsValidWindowsFilePath(fileFullPathString, out fileInfo);
+                return IsValidWindowsFilePath(@string, out fileInfo);
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
                 // Linux / macOS 规则 (POSIX)
-                if (!Path.IsPathRooted(fileFullPathString))
+                if (!Path.IsPathRooted(@string))
                 {
                     return false;
                 }
                 // 1. 必须是绝对路径（以 / 开头）
-                if (fileFullPathString[0] != '/') return false;
+                if (@string[0] != '/')
+                    return false;
 
                 // 2. 单遍扫描
-                for (int i = 0; i < fileFullPathString.Length; i++)
+                for (int i = 0; i < @string.Length; i++)
                 {
-                    char c = fileFullPathString[i];
+                    char c = @string[i];
 
                     // 规则 A: POSIX 唯一硬性规定的非法字符是 \0
-                    if (c == '\0') return false;
+                    if (c == '\0')
+                        return false;
 
                     // 规则 B: 拒绝连续斜杠 (拦截 //usr//bin)
-                    if (c == '/' && i > 0 && fileFullPathString[i - 1] == '/')
+                    if (c == '/' && i > 0 && @string[i - 1] == '/')
                         return false;
                 }
 
                 // 结尾不能带斜杠,因为是文件!
-                if (fileFullPathString.Length > 1 && fileFullPathString[fileFullPathString.Length - 1] == '/')
+                if (@string.Length > 1 && @string[@string.Length - 1] == '/')
                     return false;
-                fileInfo = new FileInfo(fileFullPathString);
+                fileInfo = new FileInfo(@string);
                 return true;
             }
             throw new InvalidOperationException("Not supported OS.");
 #endif
         }
 
-        internal static bool TryParse2Long(string longString, out long @long)
+        internal static bool TryParse2Int64(string @string, out long @long)
         {
-            if (long.TryParse(longString, NumberStyles.Integer | NumberStyles.AllowThousands | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out @long))
+            if (long.TryParse(@string, NumberStyles.Integer | NumberStyles.AllowThousands | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out @long))
             {
                 return true;
             }
-            else if (longString.StartsWith("0x", StringComparison.OrdinalIgnoreCase) && long.TryParse(longString.TrimStart('0', 'x', 'X'), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out @long))
+            else if (@string.StartsWith("0X", StringComparison.OrdinalIgnoreCase) && long.TryParse(@string.TrimStart('0', 'x', 'X'), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out @long))
             {
                 return true;
             }

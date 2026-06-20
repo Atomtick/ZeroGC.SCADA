@@ -2,6 +2,7 @@
 {
     public enum ConfigType
     {
+        Unknown,
         Bool,
         Integer,
         Decimal,

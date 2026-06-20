@@ -14,29 +14,28 @@ ConfigValue是值类型, 疯狂返回时, 不会有GC压力.
 
 ## 校验流程
 
-关系校验的元素有：min, max, regex, options, CustomizeOptionsSource, ExtraValidationRule.
+**校验的相关元素**
 
-initial_value, current_value, set_new_value, options
+​	min, max, regex, options, CustomizeOptions, AppendValidationRule.
 
+**校验顺序**
 
+1. 值字符串是否可以转换成相应的类型
+2. 如果是数字类型, 是否超出min和max范围
+3. 是否是options集合中的某一元素
+4. 值字符串是否满足regex正则表达式
+5. 是否满足AppendValidationRule
 
-校验顺序： options， min， max，regex，ExtraValidationRule。
+**检查位置**
 
-需要检查的有 initial_value, current_value, set_new_value, options集合内每一个元素。
-
-
-
-
-
-
-
-
-
-
-
+	- initial_value, 加载XML后校验初始值
+	- options, 加载XML后校验options的每一个元素
+	- current_value, 校验从数据表读取到的当前值
+	- new_value, 修改配置项的值时检验新值
 
 
 
+> 不需要对min和max校验, 因为它并不是配置项的值, 只是指定极值范围.
 
 # User Manual
 
@@ -891,6 +890,8 @@ Console.WriteLine(source.GetValue<bool>("System.IsSimulatorMode"));
 
 ## TODO
 
+- DateTime 的字符串形式的值,要支持 仅有日期, 仅有时间, 日期+时间 三种形式, 这样UI控件可以根据字符串形式决定是否支持日期编辑或时间编辑!
+- File和Folder要同时支持绝对路径和相对路径!
 - File和Folder目前仅支持Windows路径，后续应当补充支持Linux和Mac。
 - 加载XML字符串时，检查它不能含有不允许出现的属性和节点。
 - 字典操作全部替换成ConcurrentDictionary的API。

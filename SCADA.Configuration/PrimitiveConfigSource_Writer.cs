@@ -1,9 +1,10 @@
-﻿using SCADA.Common.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using SCADA.Common.Interfaces;
+using SCADA.Configuration.Interfaces;
 
 namespace SCADA.Configuration
 {
@@ -37,7 +38,7 @@ namespace SCADA.Configuration
             throw new InvalidOperationException($"This transaction '{transactionId}' has not been created or committed");
         }
 
-        public IConfigWriter Set(long transactionId, string config, object value)
+        public IConfigWriter Write(long transactionId, string config, object value)
         {
             if (string.IsNullOrWhiteSpace(config))
             {
@@ -77,8 +78,7 @@ namespace SCADA.Configuration
             }
             else
             {
-                throw new InvalidOperationException(
-                    $"Try to set the value on a non-existent transaction(id={transactionId}).");
+                throw new InvalidOperationException($"Try to set the value on a non-existent transaction(id={transactionId}).");
             }
 
             return this;
@@ -107,8 +107,7 @@ namespace SCADA.Configuration
                     foreach (var pair in modificationConfigs)
                     {
                         _configItems[pair.Key].StringValue = pair.Value as string;
-                        _configItems[pair.Key].ObjectValue =
-                            Convert2Object(_configItems[pair.Key].Type, pair.Value as string);
+                        _configItems[pair.Key].ObjectValue = Convert2Object(_configItems[pair.Key].Type, pair.Value as string);
                     }
                 }
 
@@ -123,7 +122,7 @@ namespace SCADA.Configuration
                     }
 
                     // 触发事件,一般用于日志记录
-                    ValueSet?.Invoke(modificationConfigs);
+                    ValueChanged?.Invoke(modificationConfigs);
                 }
             }
         }
