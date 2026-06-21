@@ -15,7 +15,7 @@ namespace SCADA.Configuration
 
     public partial class PrimitiveConfigSource : IDisposable
     {
-        private readonly Channel<LightWeightDictionary> _channel = Channel.CreateUnbounded<LightWeightDictionary>();
+        private readonly Channel<LightWeightMap> _channel = Channel.CreateUnbounded<LightWeightMap>();
 
         private readonly string _dbConnectionString;
         private readonly Task _saveTask;
@@ -39,8 +39,8 @@ namespace SCADA.Configuration
             _saveTask = Function();
         }
 
-        public event Action<LightWeightDictionary> ValueChanged;
-        public event Action<LightWeightDictionary> ValueChanging;
+        public event Action<LightWeightMap> ValueChanged;
+        public event Action<LightWeightMap> ValueChanging;
 
         public ConfigSourceSettings Settings { get; }
 
@@ -82,7 +82,7 @@ namespace SCADA.Configuration
             catch { }
         }
 
-        private void SaveToSqlite(LightWeightDictionary changedItems)
+        private void SaveToSqlite(LightWeightMap changedItems)
         {
             if (!Settings.RestoreOnAppStartup)
             {

@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace SCADA.Common
+namespace SCADA.Common.Triggers
 {
     /// <summary>
     /// 下降沿信号检测类
@@ -35,10 +35,7 @@ namespace SCADA.Common
                     Q = false;
                 M = value;
             }
-            get
-            {
-                return M;
-            }
+            get { return M; }
         }
 
         /// <summary>
@@ -97,10 +94,7 @@ namespace SCADA.Common
                     Q = false;
                 M = value;
             }
-            get
-            {
-                return M;
-            }
+            get { return M; }
         }
 
         /// <summary>
@@ -168,11 +162,7 @@ namespace SCADA.Common
 
                 M = value;
             }
-
-            get
-            {
-                return M;
-            }
+            get { return M; }
         }
 
         /// <summary>

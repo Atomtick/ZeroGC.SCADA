@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SCADA.Configuration
 {
-    public class LightWeightDictionary : IEnumerable<KeyValuePair<string, object>>
+    public class LightWeightMap : IEnumerable<KeyValuePair<string, object>>
     {
         /// <summary>
         /// 当前容器内元素的个数
@@ -13,7 +13,7 @@ namespace SCADA.Configuration
 
         private Entry[] _entries;
 
-        public LightWeightDictionary(int initialCapacity = 16)
+        public LightWeightMap(int initialCapacity = 16)
         {
             _entries = new Entry[initialCapacity];
         }
@@ -98,10 +98,10 @@ namespace SCADA.Configuration
         // 嵌套的 struct 枚举器，可以直接访问外部类的私有字段 _entries 和 _count
         public struct Enumerator : IEnumerator<KeyValuePair<string, object>>
         {
-            private readonly LightWeightDictionary _dict;
+            private readonly LightWeightMap _dict;
             private int _index;
 
-            internal Enumerator(LightWeightDictionary dict)
+            internal Enumerator(LightWeightMap dict)
             {
                 _dict = dict;
                 _index = -1; // 初始状态游标在第一个元素之前

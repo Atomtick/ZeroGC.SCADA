@@ -1,7 +1,4 @@
-﻿using MoreLinq;
-using SCADA.Common;
-using SCADA.ObjectModel;
-using System;
+﻿using System;
 using System.Buffers.Binary;
 using System.Collections.Concurrent;
 using System.Collections.Frozen;
@@ -18,6 +15,10 @@ using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using MoreLinq;
+using SCADA.Common;
+using SCADA.Common.Triggers;
+using SCADA.ObjectModel;
 
 namespace SCADA.PLCFramework
 {
@@ -57,7 +58,8 @@ namespace SCADA.PLCFramework
 
         public long GetNextWriteId() => Interlocked.Increment(ref _writeIdGenerator);
 
-        public PlcAdapterWrapper(PlcInfo plcInfo) : base(plcInfo.Module, plcInfo.Name)
+        public PlcAdapterWrapper(PlcInfo plcInfo)
+            : base(plcInfo.Module, plcInfo.Name)
         {
             _plcInfo = plcInfo;
 
@@ -97,17 +99,10 @@ namespace SCADA.PLCFramework
             _plcInfo.AOs.ForEach(x => _dict.Add(x.Key, x.Value));
             _registItems = _dict.ToFrozenDictionary();
 
-            _plcAdapter = Assembly.LoadFrom(plcInfo.Assembly)
-                .GetType(plcInfo.Class)
-                .GetConstructor([typeof(string)])
-                .Invoke([plcInfo.Address]) as IPlcAdapter;
+            _plcAdapter = Assembly.LoadFrom(plcInfo.Assembly).GetType(plcInfo.Class).GetConstructor([typeof(string)]).Invoke([plcInfo.Address]) as IPlcAdapter;
 
             // 启动定时读写PLC缓存到上位机线程
-            Thread poller = new(new ThreadStart(PollingWorker))
-            {
-                IsBackground = true,
-                Priority = ThreadPriority.AboveNormal
-            };
+            Thread poller = new(new ThreadStart(PollingWorker)) { IsBackground = true, Priority = ThreadPriority.AboveNormal };
             poller.Start();
         }
 
@@ -115,7 +110,8 @@ namespace SCADA.PLCFramework
 
         #region Read
 
-        private ReadResult<T> Read<T>(string name, Dictionary<string, double> snapshot) where T : IConvertible, IComparable
+        private ReadResult<T> Read<T>(string name, Dictionary<string, double> snapshot)
+            where T : IConvertible, IComparable
         {
             long timestamp;
             T value;
@@ -127,7 +123,9 @@ namespace SCADA.PLCFramework
                 case ValueType.@bool:
                     if (t != typeof(bool))
                     {
-                        throw new InvalidCastException($"{name}'s type is configured as a bool in the (module:{_plcInfo.Module}-name:{_plcInfo.Name}-address:{_plcInfo.Address}) file instead of a {t.Name}.");
+                        throw new InvalidCastException(
+                            $"{name}'s type is configured as a bool in the (module:{_plcInfo.Module}-name:{_plcInfo.Name}-address:{_plcInfo.Address}) file instead of a {t.Name}."
+                        );
                     }
                     bool boolValue = _currentIOValueSnapshot[name] == 1;
                     value = Unsafe.As<bool, T>(ref boolValue);
@@ -136,7 +134,9 @@ namespace SCADA.PLCFramework
                 case ValueType.int8:
                     if (t != typeof(sbyte))
                     {
-                        throw new InvalidCastException($"{name}'s type is configured as a int8 in the (module:{_plcInfo.Module}-name:{_plcInfo.Name}-address:{_plcInfo.Address}) file instead of a {t.Name}.");
+                        throw new InvalidCastException(
+                            $"{name}'s type is configured as a int8 in the (module:{_plcInfo.Module}-name:{_plcInfo.Name}-address:{_plcInfo.Address}) file instead of a {t.Name}."
+                        );
                     }
                     sbyte int8Value = Convert.ToSByte(snapshot[name]);
                     value = Unsafe.As<sbyte, T>(ref int8Value);
@@ -145,7 +145,9 @@ namespace SCADA.PLCFramework
                 case ValueType.int16:
                     if (t != typeof(short))
                     {
-                        throw new InvalidCastException($"{name}'s type is configured as a int16 in the (module:{_plcInfo.Module}-name:{_plcInfo.Name}-address:{_plcInfo.Address}) file instead of a {t.Name}.");
+                        throw new InvalidCastException(
+                            $"{name}'s type is configured as a int16 in the (module:{_plcInfo.Module}-name:{_plcInfo.Name}-address:{_plcInfo.Address}) file instead of a {t.Name}."
+                        );
                     }
                     short int16Value = Convert.ToInt16(snapshot[name]);
                     value = Unsafe.As<short, T>(ref int16Value);
@@ -154,7 +156,9 @@ namespace SCADA.PLCFramework
                 case ValueType.int32:
                     if (t != typeof(int))
                     {
-                        throw new InvalidCastException($"{name}'s type is configured as a int32 in the (module:{_plcInfo.Module}-name:{_plcInfo.Name}-address:{_plcInfo.Address}) file instead of a {t.Name}.");
+                        throw new InvalidCastException(
+                            $"{name}'s type is configured as a int32 in the (module:{_plcInfo.Module}-name:{_plcInfo.Name}-address:{_plcInfo.Address}) file instead of a {t.Name}."
+                        );
                     }
                     int int32Value = Convert.ToInt32(snapshot[name]);
                     value = Unsafe.As<int, T>(ref int32Value);
@@ -163,7 +167,9 @@ namespace SCADA.PLCFramework
                 case ValueType.int64:
                     if (t != typeof(long))
                     {
-                        throw new InvalidCastException($"{name}'s type is configured as a int64 in the (module:{_plcInfo.Module}-name:{_plcInfo.Name}-address:{_plcInfo.Address}) file instead of a {t.Name}.");
+                        throw new InvalidCastException(
+                            $"{name}'s type is configured as a int64 in the (module:{_plcInfo.Module}-name:{_plcInfo.Name}-address:{_plcInfo.Address}) file instead of a {t.Name}."
+                        );
                     }
                     long int64Value = Convert.ToInt64(snapshot[name]);
                     value = Unsafe.As<long, T>(ref int64Value);
@@ -172,7 +178,9 @@ namespace SCADA.PLCFramework
                 case ValueType.uint8:
                     if (t != typeof(byte))
                     {
-                        throw new InvalidCastException($"{name}'s type is configured as a uint8 in the (module:{_plcInfo.Module}-name:{_plcInfo.Name}-address:{_plcInfo.Address}) file instead of a {t.Name}.");
+                        throw new InvalidCastException(
+                            $"{name}'s type is configured as a uint8 in the (module:{_plcInfo.Module}-name:{_plcInfo.Name}-address:{_plcInfo.Address}) file instead of a {t.Name}."
+                        );
                     }
                     byte uint8Value = Convert.ToByte(snapshot[name]);
                     value = Unsafe.As<byte, T>(ref uint8Value);
@@ -181,7 +189,9 @@ namespace SCADA.PLCFramework
                 case ValueType.uint16:
                     if (t != typeof(ushort))
                     {
-                        throw new InvalidCastException($"{name}'s type is configured as a uint16 in the (module:{_plcInfo.Module}-name:{_plcInfo.Name}-address:{_plcInfo.Address}) file instead of a {t.Name}.");
+                        throw new InvalidCastException(
+                            $"{name}'s type is configured as a uint16 in the (module:{_plcInfo.Module}-name:{_plcInfo.Name}-address:{_plcInfo.Address}) file instead of a {t.Name}."
+                        );
                     }
                     ushort uint16Value = Convert.ToUInt16(snapshot[name]);
                     value = Unsafe.As<ushort, T>(ref uint16Value);
@@ -190,7 +200,9 @@ namespace SCADA.PLCFramework
                 case ValueType.uint32:
                     if (t != typeof(uint))
                     {
-                        throw new InvalidCastException($"{name}'s type is configured as a uint32 in the (module:{_plcInfo.Module}-name:{_plcInfo.Name}-address:{_plcInfo.Address}) file instead of a {t.Name}.");
+                        throw new InvalidCastException(
+                            $"{name}'s type is configured as a uint32 in the (module:{_plcInfo.Module}-name:{_plcInfo.Name}-address:{_plcInfo.Address}) file instead of a {t.Name}."
+                        );
                     }
                     uint uint32Value = Convert.ToUInt32(snapshot[name]);
                     value = Unsafe.As<uint, T>(ref uint32Value);
@@ -199,7 +211,9 @@ namespace SCADA.PLCFramework
                 case ValueType.uint64:
                     if (t != typeof(ulong))
                     {
-                        throw new InvalidCastException($"{name}'s type is configured as a uint64 in the (module:{_plcInfo.Module}-name:{_plcInfo.Name}-address:{_plcInfo.Address}) file instead of a {t.Name}.");
+                        throw new InvalidCastException(
+                            $"{name}'s type is configured as a uint64 in the (module:{_plcInfo.Module}-name:{_plcInfo.Name}-address:{_plcInfo.Address}) file instead of a {t.Name}."
+                        );
                     }
                     ulong uint64Value = Convert.ToUInt64(snapshot[name]);
                     value = Unsafe.As<ulong, T>(ref uint64Value);
@@ -208,7 +222,9 @@ namespace SCADA.PLCFramework
                 case ValueType.@float:
                     if (t != typeof(float))
                     {
-                        throw new InvalidCastException($"{name}'s type is configured as a float in the (module:{_plcInfo.Module}-name:{_plcInfo.Name}-address:{_plcInfo.Address}) file instead of a {t.Name}.");
+                        throw new InvalidCastException(
+                            $"{name}'s type is configured as a float in the (module:{_plcInfo.Module}-name:{_plcInfo.Name}-address:{_plcInfo.Address}) file instead of a {t.Name}."
+                        );
                     }
                     float floatValue = Convert.ToSingle(snapshot[name]);
                     value = Unsafe.As<float, T>(ref floatValue);
@@ -217,7 +233,9 @@ namespace SCADA.PLCFramework
                 case ValueType.@double:
                     if (t != typeof(double))
                     {
-                        throw new InvalidCastException($"{name}'s type is configured as a double in the (module:{_plcInfo.Module}-name:{_plcInfo.Name}-address:{_plcInfo.Address}) file instead of a {t.Name}.");
+                        throw new InvalidCastException(
+                            $"{name}'s type is configured as a double in the (module:{_plcInfo.Module}-name:{_plcInfo.Name}-address:{_plcInfo.Address}) file instead of a {t.Name}."
+                        );
                     }
                     double doubleValue = snapshot[name];
                     value = Unsafe.As<double, T>(ref doubleValue);
@@ -242,30 +260,45 @@ namespace SCADA.PLCFramework
             return new ReadResult<T>(timestamp, value);
         }
 
-        public ReadResult<T> Read<T>(string name) where T : IConvertible, IComparable
+        public ReadResult<T> Read<T>(string name)
+            where T : IConvertible, IComparable
         {
             return Read<T>(name, _currentIOValueSnapshot);
         }
 
-        public ReadResult<T1, T2> Read<T1, T2>(string name1, string name2) where T1 : IConvertible, IComparable where T2 : IConvertible, IComparable
+        public ReadResult<T1, T2> Read<T1, T2>(string name1, string name2)
+            where T1 : IConvertible, IComparable
+            where T2 : IConvertible, IComparable
         {
             var snapshot = _currentIOValueSnapshot;
             return new ReadResult<T1, T2>(Read<T1>(name1, snapshot), Read<T2>(name2, snapshot));
         }
 
-        public ReadResult<T1, T2, T3> Read<T1, T2, T3>(string name1, string name2, string name3) where T1 : IConvertible, IComparable where T2 : IConvertible, IComparable where T3 : IConvertible, IComparable
+        public ReadResult<T1, T2, T3> Read<T1, T2, T3>(string name1, string name2, string name3)
+            where T1 : IConvertible, IComparable
+            where T2 : IConvertible, IComparable
+            where T3 : IConvertible, IComparable
         {
             var snapshot = _currentIOValueSnapshot;
             return new ReadResult<T1, T2, T3>(Read<T1>(name1, snapshot), Read<T2>(name2, snapshot), Read<T3>(name3, snapshot));
         }
 
-        public ReadResult<T1, T2, T3, T4> Read<T1, T2, T3, T4>(string name1, string name2, string name3, string name4) where T1 : IConvertible, IComparable where T2 : IConvertible, IComparable where T3 : IConvertible, IComparable where T4 : IConvertible, IComparable
+        public ReadResult<T1, T2, T3, T4> Read<T1, T2, T3, T4>(string name1, string name2, string name3, string name4)
+            where T1 : IConvertible, IComparable
+            where T2 : IConvertible, IComparable
+            where T3 : IConvertible, IComparable
+            where T4 : IConvertible, IComparable
         {
             var snapshot = _currentIOValueSnapshot;
             return new ReadResult<T1, T2, T3, T4>(Read<T1>(name1, snapshot), Read<T2>(name2, snapshot), Read<T3>(name3, snapshot), Read<T4>(name4, snapshot));
         }
 
-        public ReadResult<T1, T2, T3, T4, T5> Read<T1, T2, T3, T4, T5>(string name1, string name2, string name3, string name4, string name5) where T1 : IConvertible, IComparable where T2 : IConvertible, IComparable where T3 : IConvertible, IComparable where T4 : IConvertible, IComparable where T5 : IConvertible, IComparable
+        public ReadResult<T1, T2, T3, T4, T5> Read<T1, T2, T3, T4, T5>(string name1, string name2, string name3, string name4, string name5)
+            where T1 : IConvertible, IComparable
+            where T2 : IConvertible, IComparable
+            where T3 : IConvertible, IComparable
+            where T4 : IConvertible, IComparable
+            where T5 : IConvertible, IComparable
         {
             var snapshot = _currentIOValueSnapshot;
             return new ReadResult<T1, T2, T3, T4, T5>(Read<T1>(name1, snapshot), Read<T2>(name2, snapshot), Read<T3>(name3, snapshot), Read<T4>(name4, snapshot), Read<T5>(name5, snapshot));
@@ -288,17 +321,11 @@ namespace SCADA.PLCFramework
             return id;
         }
 
-        public long Write((string name, object value) nameValuePair)
-        {
-        }
+        public long Write((string name, object value) nameValuePair) { }
 
-        public long Write((string name, object value) nameValuePair1, (string name, object value) nameValuePair2)
-        {
-        }
+        public long Write((string name, object value) nameValuePair1, (string name, object value) nameValuePair2) { }
 
-        public long Write((string name, object value) nameValuePair1, (string name, object value) nameValuePair2, (string name, object value) nameValuePair3)
-        {
-        }
+        public long Write((string name, object value) nameValuePair1, (string name, object value) nameValuePair2, (string name, object value) nameValuePair3) { }
 
         #endregion Write
 
@@ -393,11 +420,7 @@ namespace SCADA.PLCFramework
                     }
                     if (isPresent == false)
                     {
-                        writeData.Entities.ForEach(x => _toWriteOutputEntities.Add(new WriteData.Entity()
-                        {
-                            Name = x.Name,
-                            Value = x.Value,
-                        }));
+                        writeData.Entities.ForEach(x => _toWriteOutputEntities.Add(new WriteData.Entity() { Name = x.Name, Value = x.Value }));
                         if (_writeDataQueue.TryDequeue(out var removed))
                             _toDeleteWriteId.Add(removed.ID);
                     }
@@ -418,9 +441,7 @@ namespace SCADA.PLCFramework
                         switch (registItem.Type)
                         {
                             case ValueType.@bool:
-                                if (block.Type == "di")
-                                {
-                                }
+                                if (block.Type == "di") { }
                                 break;
 
                             case ValueType.int8:

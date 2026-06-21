@@ -3,18 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SCADA.Common;
 
 namespace SCADA.PLCFramework.Test
 {
     internal class Program
     {
-        static void Main(string[] args)
-        {
-
-        }
+        static void Main(string[] args) { }
     }
 }
-
 
 class Test
 {
@@ -24,58 +21,58 @@ class Test
     {
         _dict.Add(nameof(SetTemp), 0);
     }
+
     // 相当于单通道的串口通信. 因为PLC交互地址只有一份.
     public void SetTemp(float temp)
     {
-        var transcationId  = Interlocked.Increment(ref _dict[nameof(SetTemp)]);
+        var transcationId = Interlocked.Increment(ref _dict[nameof(SetTemp)]);
 
         var a = 1;
         var b = 2;
         var c = a + b;
     }
-
 }
 
 class PLC
 {
     void Read();
+
     void Write();
 }
+
 class InactiveHandler
 {
-    private ushort _transactionId = 0;
+    private uint _cmdId = 0;
+    private ushort _cmdTransactionId = 0;
     private ushort echoTransactionId = 0;
-    private byte ErrorCode = 0;
-    object[] _queue = new object[100];
-    public InactiveHandler(PLC plc)
-    { 
-    }
+    private byte _errorCode = 0;
+    SpScRingBuffer<int> _spScRingBuffer = new SpScRingBuffer<int>(100);
 
-    void Monitor()
-    {
-    }
+    public InactiveHandler(PLC plc) { }
+
+    void Initialize() { }
+
+    void Monitor() { }
 
     void Reset()
     {
-        _queue.Clear();
+        _spScRingBuffer.UnsafeClear();
     }
 
     ushort Action<T>(string reqParam)
     {
-        var id = Interlocked.Increment(ref _transactionId);
-        return id;
+        return (ushort)(Interlocked.Increment(ref _cmdId) % ushort.MaxValue);
     }
 
     byte IsCompleted(uint transactionId, string echoId)
     {
-         if(int.Parse(echoId) == _transactionId)
-         {
-             return 0;
-         }
-         else
-         {
-             return 1;
+        if (int.Parse(echoId) == _cmdTransactionId)
+        {
+            return 0;
+        }
+        else
+        {
+            return 1;
         }
     }
-
 }

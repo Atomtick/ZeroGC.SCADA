@@ -12,7 +12,7 @@ namespace SCADA.Configuration
     {
         // long 事务id,允许多个事务并行.
         // ConcurrentDictionary<string, object> 单个事务需要修改的的配置项集合.使用字典的好处是如果在同一个事务中多次修改同一个配置项的值,会以最后一次为准!
-        private readonly ConcurrentDictionary<long, LightWeightDictionary> _transactionCache;
+        private readonly ConcurrentDictionary<long, LightWeightMap> _transactionCache;
 
         private readonly List<string> _equalsKeys = new List<string>();
         private long _id;
@@ -21,7 +21,7 @@ namespace SCADA.Configuration
         {
             // _id: 0,1,2...long.max,long.min(overflow),long.min + 1...0...long.max...如此循环往复.
             transactionId = Interlocked.Increment(ref _id);
-            _transactionCache.TryAdd(transactionId, new LightWeightDictionary());
+            _transactionCache.TryAdd(transactionId, new LightWeightMap());
             return this;
         }
 
@@ -58,7 +58,7 @@ namespace SCADA.Configuration
 
             ValidateValue(config, value);
 
-            if (_transactionCache.TryGetValue(transactionId, out LightWeightDictionary configs))
+            if (_transactionCache.TryGetValue(transactionId, out LightWeightMap configs))
             {
                 // 把object类型的值转换成字符串形式,在Set方法中进行合法性校验,如果不合法就抛异常,保证事务中的所有配置项都合法才会真正修改配置并写磁盘,具备原子性.如果在这里就修改了_configItems中的配置项的值,一旦有一个配置项的值不合法抛异常了,就会导致部分配置项被修改了值,部分配置项没有被修改值的情况发生,不具备原子性.
                 if (value is string stringValue)
@@ -84,7 +84,7 @@ namespace SCADA.Configuration
             return this;
         }
 
-        private void Save(LightWeightDictionary modificationConfigs)
+        private void Save(LightWeightMap modificationConfigs)
         {
             if (modificationConfigs != null && modificationConfigs.Any())
             {

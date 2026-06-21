@@ -1,6 +1,4 @@
-﻿using HslCommunication.Profinet.Melsec;
-using HslCommunication.Reflection;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +9,7 @@ namespace SCADA.PLCFramework.Test
     public class MCPlcAdapter : IPlcAdapter
     {
         private MelsecMcNet _melsecMcNet;
+
         public MCPlcAdapter()
         {
             _melsecMcNet = new MelsecMcNet();

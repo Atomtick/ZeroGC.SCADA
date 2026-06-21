@@ -1,8 +1,8 @@
-﻿using SCADA.Common;
-using SCADA.TimerFSM.Enums;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using SCADA.Common.Triggers;
+using SCADA.TimerFSM.Enums;
 
 namespace SCADA.TimerFSM.Samples.TrafficLightSample
 {
@@ -12,13 +12,14 @@ namespace SCADA.TimerFSM.Samples.TrafficLightSample
         {
             Red,
             Green,
-            Yellow
+            Yellow,
         }
+
         public enum TrafficLightCommand
         {
             Red,
             Green,
-            Yellow
+            Yellow,
         }
 
         public TrafficLight()
@@ -29,7 +30,6 @@ namespace SCADA.TimerFSM.Samples.TrafficLightSample
         }
 
         private StateMachine _stateMachine;
-
 
         public void PostMsg(Enum msg)
         {
@@ -45,29 +45,38 @@ namespace SCADA.TimerFSM.Samples.TrafficLightSample
             _stateMachine.Register(TrafficLightState.Green, FsmState.None, TrafficLightCommand.Red);
 
             /***/
-            _stateMachine.SetMonitor(TrafficLightState.Green, () =>
-            {
-                if (_countdownTimer.IsTimeout)
+            _stateMachine.SetMonitor(
+                TrafficLightState.Green,
+                () =>
                 {
-                    _stateMachine.PostMsg(TrafficLightCommand.Yellow);
+                    if (_countdownTimer.IsTimeout)
+                    {
+                        _stateMachine.PostMsg(TrafficLightCommand.Yellow);
+                    }
                 }
-            });
+            );
 
-            _stateMachine.SetMonitor(TrafficLightState.Yellow, () =>
-            {
-                if (_countdownTimer.IsTimeout)
+            _stateMachine.SetMonitor(
+                TrafficLightState.Yellow,
+                () =>
                 {
-                    _stateMachine.PostMsg(TrafficLightCommand.Red);
+                    if (_countdownTimer.IsTimeout)
+                    {
+                        _stateMachine.PostMsg(TrafficLightCommand.Red);
+                    }
                 }
-            });
+            );
 
-            _stateMachine.SetMonitor(TrafficLightState.Red, () =>
-            {
-                if (_countdownTimer.IsTimeout)
+            _stateMachine.SetMonitor(
+                TrafficLightState.Red,
+                () =>
                 {
-                    _stateMachine.PostMsg(TrafficLightCommand.Green);
+                    if (_countdownTimer.IsTimeout)
+                    {
+                        _stateMachine.PostMsg(TrafficLightCommand.Green);
+                    }
                 }
-            });
+            );
 
             _stateMachine.StateEntered += StateMachine_StateEntered;
         }

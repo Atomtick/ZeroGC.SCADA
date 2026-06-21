@@ -1,9 +1,9 @@
-﻿using SCADA.Common;
-using SCADA.TimerFSM.Enums;
-using SCADA.TimerFSM.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using SCADA.Common.Triggers;
+using SCADA.TimerFSM.Enums;
+using SCADA.TimerFSM.Interfaces;
 
 namespace SCADA.TimerFSM
 {
@@ -112,6 +112,7 @@ namespace SCADA.TimerFSM
 
         // 瞬时操作
         protected abstract void Abort();
+
         // 瞬时操作
         protected abstract void Error();
 
