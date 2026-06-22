@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SCADA.Common\SCADA.Common.csproj" />
+    <ProjectReference Include="..\SCADA.Configuration\SCADA.Configuration.csproj" />
   </ItemGroup>
 
 </Project>

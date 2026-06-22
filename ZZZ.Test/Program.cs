@@ -2,12 +2,28 @@
 using System.Diagnostics;
 using System.Threading;
 using SCADA.Common.Triggers;
+using SCADA.Configuration;
 
 namespace ZZZ.Test
 {
     internal class Program
     {
-        private static void Main(string[] args) { }
+        private static void Main(string[] args)
+        {
+            var configSource = new PrimitiveConfigSource("configs.db");
+
+            configSource.BeginTransaction(out long transactionId);
+
+            configSource
+                .Write(transactionId, "Cylinder.Timeout", 5 * 1000)
+                .Write(transactionId, "EAP.IP", "192.168.1.29")
+                .Write(transactionId, "Log.Enable", true)
+                .Write(transactionId, "FlowRate.Tolerance", 1.5)
+                .Write(transactionId, "Alarm.Color", System.Drawing.Color.Red)
+                .Write(transactionId, "Data.Folder", "C:\\Logs");
+
+            configSource.CommitTransaction(transactionId);
+        }
     }
 
     namespace IndustrialControl.Components

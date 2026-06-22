@@ -352,121 +352,120 @@ DateTime dateTime = source.GetValue<DateTime>("System.ResetDate");
 
 
 
-### Modify config item's value using SetValue
+### 批量修改单个或多个配置项(原子操作)
 
 ```c#
-primitiveConfigSource.BeginTransaction(out long transactionId)
-    .Set(transactionId, "System.IP", "192.168.0.1")
-    .Set(transactionId, "System.Port", 5432)
-    .Set(transactionId, "System.Enabled", true)
-    .Set(transactionId, "System.AlarmColor", System.Drawing.Color.Red)
-    .Set(transactionId, "System.StartTime", new DateTime(2026, 4, 10, 0, 20, 0))
-    .Set(transactionId, "System.LogPath", "C:\\Logs")
-    .Set(transactionId, "System.UserInfo", "D:\\UserInfo.json")
-    .CommitTransaction(transactionId);
+var configSource = new PrimitiveConfigSource("configs.db");
+
+configSource.BeginTransaction(out long transactionId);
+
+configSource
+    .Write(transactionId, "Cylinder.Timeout", 5 * 1000)
+    .Write(transactionId, "EAP.IP", "192.168.1.29")
+    .Write(transactionId, "Log.Enable", true)
+    .Write(transactionId, "FlowRate.Tolerance", 1.5)
+    .Write(transactionId, "Alarm.Color", System.Drawing.Color.Red)
+    .Write(transactionId, "Data.Folder", "C:\\Logs");
+
+configSource.CommitTransaction(transactionId);
 ```
-
-
-
-
 
 #### value="Boolean"
 
 ```c#
-source.SetValue("System.IsSimulatorMode", true);
+configSource.Write(transactionId,"System.IsSimulatorMode", true);
 ```
 
 ```c#
-source.SetValue("System.IsSimulatorMode", false);
+configSource.Write(transactionId,"System.IsSimulatorMode", false);
 ```
 
 ```c#
-source.SetValue("System.IsSimulatorMode", "fAlsE");
+configSource.Write(transactionId,"System.IsSimulatorMode", "fAlsE");
 ```
 
 ```c#
-source.SetValue("System.IsSimulatorMode", "TRUE");
+configSource.Write(transactionId,"System.IsSimulatorMode", "TRUE");
 ```
-
 
 #### value="Integer"
 
 ```c#
-source.SetValue("System.CycleCount", 13);
+configSource.Write(transactionId,"System.CycleCount", 13);
 ```
 
 ```c#
-source.SetValue("System.CycleCount", "-13");
+configSource.Write(transactionId,"System.CycleCount", "-13");
 ```
 
 ```c#
-source.SetValue("System.CycleCount", 13.0);
+configSource.Write(transactionId,"System.CycleCount", 13.0);
 ```
 
 ```c#
-source.SetValue("System.CycleCount", "13.0");
+configSource.Write(transactionId,"System.CycleCount", "13.0");
 ```
 
 ```c#
-source.SetValue("System.CycleCount", 0xA2);
+configSource.Write(transactionId,"System.CycleCount", 0xA2);
 ```
 
 ```c#
-source.SetValue("System.CycleCount", "0xA2");
+configSource.Write(transactionId,"System.CycleCount", "0xA2");
 ```
 
 ```c#
-source.SetValue("System.CycleCount", "0XA01");
+configSource.Write(transactionId,"System.CycleCount", "0XA01");
 ```
 
 ```c#
-source.SetValue("System.CycleCount", 123,456);
+configSource.Write(transactionId,"System.CycleCount", 123,456);
 ```
 
 ```c#
-source.SetValue("System.CycleCount", 12,34,56);
+configSource.Write(transactionId,"System.CycleCount", 12,34,56);
 ```
 
 ```c#
-source.SetValue("System.CycleCount", "123,456");
+configSource.Write(transactionId,"System.CycleCount", "123,456");
 ```
 
 #### value="Decimal"
 
 ```c#
-source.SetValue("System.SetUp.DiskFreeSpaceAlarmTolerance", -23.01);
+configSource.Write(transactionId,"System.SetUp.DiskFreeSpaceAlarmTolerance", -23.01);
 ```
 
 ```c#
-source.SetValue("System.SetUp.DiskFreeSpaceAlarmTolerance", -1,234.61);
+configSource.Write(transactionId,"System.SetUp.DiskFreeSpaceAlarmTolerance", -1,234.61);
 ```
 
 ```c#
- source.SetValue("System.SetUp.DiskFreeSpaceAlarmTolerance", "34.55");
+ configSource.Write(transactionId,"System.SetUp.DiskFreeSpaceAlarmTolerance", "34.55");
 ```
 
 ```c#
-source.SetValue("System.SetUp.DiskFreeSpaceAlarmTolerance", -69.8e3);
+configSource.Write(transactionId,"System.SetUp.DiskFreeSpaceAlarmTolerance", -69.8e3);
 ```
 
 ```c#
-source.SetValue("System.SetUp.DiskFreeSpaceAlarmTolerance", "-69.8e3");
+configSource.Write(transactionId,"System.SetUp.DiskFreeSpaceAlarmTolerance", "-69.8e3");
 ```
 
 ```c#
-source.SetValue("System.SetUp.DiskFreeSpaceAlarmTolerance", 23);
+configSource.Write(transactionId,"System.SetUp.DiskFreeSpaceAlarmTolerance", 23);
 ```
 
 ```c#
-source.SetValue("System.SetUp.DiskFreeSpaceAlarmTolerance", "0XA01");
+configSource.Write(transactionId,"System.SetUp.DiskFreeSpaceAlarmTolerance", "0XA01");
 ```
 
 ```c#
-source.SetValue("System.SetUp.DiskFreeSpaceAlarmTolerance", 0xA2);
+configSource.Write(transactionId,"System.SetUp.DiskFreeSpaceAlarmTolerance", 0xA2);
 ```
 
 ```c#
-source.SetValue("System.SetUp.DiskFreeSpaceAlarmTolerance", "0xA2");
+configSource.Write(transactionId,"System.SetUp.DiskFreeSpaceAlarmTolerance", "0xA2");
 ```
 
 #### value="String"
@@ -474,45 +473,45 @@ source.SetValue("System.SetUp.DiskFreeSpaceAlarmTolerance", "0xA2");
 可以是任意字符串，包括空字符串，也可以是任意数据类型，比如下面的23，会自动调用其ToString()。只要不是null都可以。
 
 ```c#
-source.SetValue("System.SetUp.RemoteIpAddress", "");
+configSource.Write(transactionId,"System.SetUp.RemoteIpAddress", "");
 ```
 
 ```c#
-source.SetValue("System.SetUp.RemoteIpAddress", "hello");
+configSource.Write(transactionId,"System.SetUp.RemoteIpAddress", "hello");
 ```
 
 ```c#
-source.SetValue("System.SetUp.RemoteIpAddress", 23);
+configSource.Write(transactionId,"System.SetUp.RemoteIpAddress", 23);
 ```
 
 #### value="DateTime"
 
 ```c#
-source.SetValue("System.ResetDate", DateTime.Now);
-source.SetValue("System.ResetDate", "2025-8-4");
+configSource.Write(transactionId,"System.ResetDate", DateTime.Now);
+configSource.Write(transactionId,"System.ResetDate", "2025-8-4");
 ```
 
 #### value="Color"
 
 ```c#
-source.SetValue("System.AlarmLight", "#000000CC");
-source.SetValue("System.AlarmLight", "#0000CC");
-source.SetValue("System.AlarmLight", System.Drawing.Color.MediumBlue);
+configSource.Write(transactionId,"System.AlarmLight", "#000000CC");
+configSource.Write(transactionId,"System.AlarmLight", "#0000CC");
+configSource.Write(transactionId,"System.AlarmLight", System.Drawing.Color.MediumBlue);
 ```
 
 #### value="Folder"
 
 ```c#
-source.SetValue("System.LogsFolder", "D:\\");
+configSource.Write(transactionId,"System.LogsFolder", "D:\\");
 ```
 
 #### value="File"
 
 ```c#
-source.SetValue("System.DataReport", "D:\\data.xlsx");
+configSource.Write(transactionId,"System.DataReport", "D:\\data.xlsx");
 ```
 
-> 每次调用SetValue都会写XML文件到磁盘一次。如果有多个修改，单次批量提交性能更高开销更小，`SetValue(params (string configItem, object value)[] configValuePairs)`可以传入多个修改项，且可以保证只要有一项校验失败，则全部的设置项都不会被修改，即原子操作。
+> 每次调用CommitTransaction都会写一次数据库。如果有多个修改，单次批量提交性能更高开销更小，且可以保证只要有一项校验失败，则全部的设置项都不会被修改，即原子操作。
 
 ## ValueSet
 
