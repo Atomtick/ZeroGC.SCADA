@@ -10,14 +10,17 @@ using System.Threading.Tasks;
 namespace SCADA.Common
 {
     /// <summary>
-    /// 生产级 SeqLock 实现
-    /// 使用 StructLayout 确保结构体对齐到 64 字节，防止 CPU Cache Line 伪共享
+    /// 生产级 SeqLock 实现 (极致性能优化版)
+    /// 使用 128 字节结构体和 64 字节偏移量，实现前后双向物理隔离。
+    /// 彻底免疫任何相邻变量修改引发的 CPU 缓存伪共享 (False Sharing) 问题。
     /// </summary>
-    [StructLayout(LayoutKind.Explicit, Size = 64)]
-    public struct SequenceLock
+    [StructLayout(LayoutKind.Explicit, Size = 128)]
+    public struct SeqLock
     {
-        // 序列号/版本号，放置在结构体的起始位置
-        [FieldOffset(0)]
+        // 核心序列号。
+        // 放置在偏移量 64 的位置，意味着它前面有 64 字节空白，后面有 60 字节空白。
+        // 无论这个结构体被分配在内存的哪个边界，_sequence 绝对会独占一个 Cache Line。
+        [FieldOffset(64)]
         private int _sequence;
 
         /// <summary>
@@ -59,7 +62,7 @@ namespace SCADA.Common
         }
 
         /// <summary>
-        /// 写操作：获取排他锁
+        /// 写操作：获取排他锁 (支持多写者安全竞争)
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteLock()
@@ -69,8 +72,7 @@ namespace SCADA.Common
             {
                 int seq = Volatile.Read(ref _sequence);
 
-                // 如果当前是偶数，尝试用 CAS（比较并交换）将版本号加 1（变为奇数）
-                // 成功则代表获取到了写锁，支持多写者并发竞争
+                // 必须是偶数，且当前线程成功通过 CAS 将其变为奇数，才算拿到锁
                 if ((seq & 1) == 0 && Interlocked.CompareExchange(ref _sequence, seq + 1, seq) == seq)
                 {
                     // 写内存屏障：确保后续更新实际数据的操作，绝对不会跑到获取锁之前执行

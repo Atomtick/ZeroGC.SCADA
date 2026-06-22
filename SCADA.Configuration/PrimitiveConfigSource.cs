@@ -20,14 +20,14 @@ namespace SCADA.Configuration
         private readonly string _dbConnectionString;
         private readonly Task _saveTask;
 
-        private volatile IDictionary<string, ConfigItem> _configItems = new Dictionary<string, ConfigItem>();
+        private IDictionary<string, ConfigItem> _configItems = new Dictionary<string, ConfigItem>();
 
         private bool _disposed;
 
         private bool _hasTable_config_current_value = false;
 
         // 实例化一个顺序锁
-        private SequenceLock _seqLock = new SequenceLock();
+        private SeqLock _seqLock = new SeqLock();
 
         public PrimitiveConfigSource(string sqliteDB, ConfigSourceSettings settings = null)
         {

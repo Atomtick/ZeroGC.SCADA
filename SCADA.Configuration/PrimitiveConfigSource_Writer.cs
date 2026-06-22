@@ -88,8 +88,6 @@ namespace SCADA.Configuration
         {
             if (modificationConfigs != null && modificationConfigs.Any())
             {
-                _seqLock.WriteLock();
-
                 // 剔除值没变化的配置项
                 _equalsKeys.Clear();
                 foreach (var pair in modificationConfigs.Where(pair => (pair.Value as string) == _configItems[pair.Key].StringValue))
@@ -104,14 +102,25 @@ namespace SCADA.Configuration
 
                 if (modificationConfigs.Any())
                 {
+                    // 把数据提前准备好,以保证锁内只有最小的代码量(只有极其简单的赋值操作),提高并发性能.因为锁内的代码越少,并发性能越高.
+                    string[] stringValues = new string[modificationConfigs.Count];
+                    object[] objectValues = new object[modificationConfigs.Count];
+                    ConfigItem[] configItems = new ConfigItem[modificationConfigs.Count];
+                    int index = 0;
                     foreach (var pair in modificationConfigs)
                     {
-                        _configItems[pair.Key].StringValue = pair.Value as string;
-                        _configItems[pair.Key].ObjectValue = Convert2Object(_configItems[pair.Key].Type, pair.Value as string);
+                        configItems[index] = _configItems[pair.Key];
+                        stringValues[index] = pair.Value as string;
+                        objectValues[index] = Convert2Object(_configItems[pair.Key].Type, pair.Value as string);
                     }
+                    _seqLock.WriteLock();
+                    for (int i = 0; i < modificationConfigs.Count; i++)
+                    {
+                        configItems[i].StringValue = stringValues[i];
+                        configItems[i].ObjectValue = objectValues[i];
+                    }
+                    _seqLock.WriteUnlock();
                 }
-
-                _seqLock.WriteUnlock();
 
                 if (modificationConfigs.Any())
                 {
