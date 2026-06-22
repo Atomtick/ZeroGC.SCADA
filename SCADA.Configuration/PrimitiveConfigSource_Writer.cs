@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using SCADA.Common.Interfaces;
@@ -50,8 +51,7 @@ namespace SCADA.Configuration
                 throw new ArgumentNullException(nameof(value), "Config value cannot be null.");
             }
 
-            var configItems = _configItems;
-            if (!configItems.ContainsKey(config))
+            if (!_configItems.ContainsKey(config))
             {
                 throw new KeyNotFoundException($"{config} not found in the config collection.");
             }
@@ -112,6 +112,7 @@ namespace SCADA.Configuration
                         configItems[index] = _configItems[pair.Key];
                         stringValues[index] = pair.Value as string;
                         objectValues[index] = Convert2Object(_configItems[pair.Key].Type, pair.Value as string);
+                        ++index;
                     }
                     _seqLock.WriteLock();
                     for (int i = 0; i < modificationConfigs.Count; i++)
@@ -120,17 +121,11 @@ namespace SCADA.Configuration
                         configItems[i].ObjectValue = objectValues[i];
                     }
                     _seqLock.WriteUnlock();
-                }
-
-                if (modificationConfigs.Any())
-                {
                     // 异步刷盘
                     if (_channel.Writer.TryWrite(modificationConfigs) == false)
                     {
                         throw new Exception("Failed to add to the asynchronous persistence to disk queue.");
                     }
-
-                    // 触发事件,一般用于日志记录
                     ValueChanged?.Invoke(modificationConfigs);
                 }
             }

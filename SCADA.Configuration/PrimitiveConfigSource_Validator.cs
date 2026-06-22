@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -219,6 +220,34 @@ namespace SCADA.Configuration
             if (value == null)
             {
                 throw new ArgumentNullException(nameof(value));
+            }
+
+            if (
+                value is bool
+                || value is string
+                || value is long
+                || value is ulong
+                || value is int
+                || value is uint
+                || value is ushort
+                || value is short
+                || value is byte
+                || value is sbyte
+                || value is float
+                || value is double
+                || value is decimal
+                || value is char
+                || value is DateTime
+                || value is FileInfo
+                || value is DirectoryInfo
+                || value is System.Drawing.Color
+            )
+            {
+                // 这些类型是支持的,继续往下走正常流程.
+            }
+            else
+            {
+                throw new ArgumentException($"Unsupported config value type: {value.GetType().FullName}.", nameof(value));
             }
 
             ValidateValue(config, Convert2String(value).Trim());

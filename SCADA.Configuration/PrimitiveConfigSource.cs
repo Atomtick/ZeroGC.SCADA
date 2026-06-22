@@ -20,7 +20,7 @@ namespace SCADA.Configuration
         private readonly string _dbConnectionString;
         private readonly Task _saveTask;
 
-        private IDictionary<string, ConfigItem> _configItems = new Dictionary<string, ConfigItem>();
+        private readonly IDictionary<string, ConfigItem> _configItems = new Dictionary<string, ConfigItem>();
 
         private bool _disposed;
 
