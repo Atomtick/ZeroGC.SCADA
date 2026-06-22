@@ -36,7 +36,8 @@ namespace SCADA.Configuration
             if (_transactionCache.TryRemove(transactionId, out var configs))
                 Save(configs);
 #endif
-            throw new InvalidOperationException($"This transaction '{transactionId}' has not been created or committed");
+            else
+                throw new InvalidOperationException($"This transaction '{transactionId}' has not been created or committed");
         }
 
         public IConfigWriter Write(long transactionId, string config, object value)
