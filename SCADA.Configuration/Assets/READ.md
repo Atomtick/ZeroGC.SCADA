@@ -1,4 +1,43 @@
-﻿# Design Idea
+﻿# 解决了什么问题
+
+- **既支持读取配置, 也支持修改**
+
+​		.NET Framework 和 .NET Core 内置的配置系统, 仅对读取操作友好, 但是对修改配置操作支持欠缺, 不适合在工业软件中, 用户需要频繁修改配置以装机调试, 工艺调试, 流程管控等场景.
+
+- **支持原子批量读写配置**
+
+  保证单次批量读取的所有配置来自同一个快照, 批量写入的配置要么同时成功要么全部失败, 严格满足一致性, 无数据撕裂. 
+
+  在工业软件中, 配置的批量操作原子性如同PLC在一个扫描周期内IO来自同一快照, 一起写入物理地址那样重要, 否则就会导致诡异和难以复现的偶发宕机.
+
+  举例: 
+
+  1. MFC的流量在Tolerance徘徊Time则报警,如果调试时, Tolerance的修改先生效,程序内部可能出现在一个监控周期使用Tolerance新值Time旧值的情况,导致设备报警!
+  2. 矛盾的多个配置关系
+
+- **零GC & 高性能**
+
+  1. 采用SeqLock机制实现读无锁, 软件不会因为高频读取配置导致性能抖动或下降.
+
+  2. 自研Object转数字类型时, 在检查溢出和精度的同时, 不发生任何装箱, 速度接近C#类型强转.
+  3. 提前查好Value,在热路径避免哈希查找, 极其高频调用连哈希计算的时间都省去了.
+
+  3. 使用结构体和栈内存, 避免堆内存压力导致GC Stop-World.
+  4. 纳秒级抖动和耗时
+
+- **引入值校验机制, 防御性编程**
+
+  regex, options, type
+
+- **结构文档, 便于组织配置, Sqlite, 写无损.**
+
+- 字符串性配置,无需编译, 灵活配置, 完全符合半导体行业设备和软件逐步迭代的需求.
+
+- 支持导出GEM模型中的ECID集合.
+
+​		
+
+# Design Idea
 
 ## ConfigValue
 
@@ -370,7 +409,11 @@ configSource
 configSource.CommitTransaction(transactionId);
 ```
 
-#### value="Boolean"
+- 多个配置项要么都被成功修改, 要么都维持不变, 满足原子操作
+- 只有新值与旧值不相等才会触发修改动作, 所以如果多次Write相同值几乎没有开销
+- 新值和旧值判断相等的规则是比较字符串形式的值, 如 旧值是 "16", 新值是 "0x10" , 虽然都表示十进制的数字16, 但仍旧被判定为新值与旧值不等.
+
+#### type="Bool"
 
 ```c#
 configSource.Write(transactionId,"System.IsSimulatorMode", true);
@@ -388,7 +431,7 @@ configSource.Write(transactionId,"System.IsSimulatorMode", "fAlsE");
 configSource.Write(transactionId,"System.IsSimulatorMode", "TRUE");
 ```
 
-#### value="Integer"
+#### type="Integer"
 
 ```c#
 configSource.Write(transactionId,"System.CycleCount", 13);
@@ -430,7 +473,7 @@ configSource.Write(transactionId,"System.CycleCount", 12,34,56);
 configSource.Write(transactionId,"System.CycleCount", "123,456");
 ```
 
-#### value="Decimal"
+#### type="Decimal"
 
 ```c#
 configSource.Write(transactionId,"System.SetUp.DiskFreeSpaceAlarmTolerance", -23.01);
@@ -468,7 +511,7 @@ configSource.Write(transactionId,"System.SetUp.DiskFreeSpaceAlarmTolerance", 0xA
 configSource.Write(transactionId,"System.SetUp.DiskFreeSpaceAlarmTolerance", "0xA2");
 ```
 
-#### value="String"
+#### type="String"
 
 可以是任意字符串，包括空字符串，也可以是任意数据类型，比如下面的23，会自动调用其ToString()。只要不是null都可以。
 
@@ -484,14 +527,14 @@ configSource.Write(transactionId,"System.SetUp.RemoteIpAddress", "hello");
 configSource.Write(transactionId,"System.SetUp.RemoteIpAddress", 23);
 ```
 
-#### value="DateTime"
+#### type="DateTime"
 
 ```c#
 configSource.Write(transactionId,"System.ResetDate", DateTime.Now);
 configSource.Write(transactionId,"System.ResetDate", "2025-8-4");
 ```
 
-#### value="Color"
+#### type="Color"
 
 ```c#
 configSource.Write(transactionId,"System.AlarmLight", "#000000CC");
@@ -499,13 +542,13 @@ configSource.Write(transactionId,"System.AlarmLight", "#0000CC");
 configSource.Write(transactionId,"System.AlarmLight", System.Drawing.Color.MediumBlue);
 ```
 
-#### value="Folder"
+#### type="Folder"
 
 ```c#
 configSource.Write(transactionId,"System.LogsFolder", "D:\\");
 ```
 
-#### value="File"
+#### type="File"
 
 ```c#
 configSource.Write(transactionId,"System.DataReport", "D:\\data.xlsx");

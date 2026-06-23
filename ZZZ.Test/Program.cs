@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Text;
 using System.Threading;
 using SCADA.Common.Triggers;
 using SCADA.Configuration;

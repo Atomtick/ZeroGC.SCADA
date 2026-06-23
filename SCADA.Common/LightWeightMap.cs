@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace SCADA.Configuration
+namespace SCADA.Common
 {
     public class LightWeightMap : IEnumerable<KeyValuePair<string, object>>
     {
@@ -26,8 +29,7 @@ namespace SCADA.Configuration
             {
                 for (int i = 0; i < _count; i++)
                 {
-                    if (ReferenceEquals(_entries[i].Key, key) ||
-                        string.Equals(_entries[i].Key, key, StringComparison.Ordinal))
+                    if (ReferenceEquals(_entries[i].Key, key) || string.Equals(_entries[i].Key, key, StringComparison.Ordinal))
                     {
                         return _entries[i].Value;
                     }
@@ -41,8 +43,7 @@ namespace SCADA.Configuration
             // 如果Key已经存在则覆盖
             for (int i = 0; i < _count; i++)
             {
-                if (ReferenceEquals(_entries[i].Key, key) ||
-                    string.Equals(_entries[i].Key, key, StringComparison.Ordinal))
+                if (ReferenceEquals(_entries[i].Key, key) || string.Equals(_entries[i].Key, key, StringComparison.Ordinal))
                 {
                     _entries[i].Value = value;
                     return;
@@ -63,8 +64,7 @@ namespace SCADA.Configuration
         {
             for (int i = 0; i < _count; i++)
             {
-                if (ReferenceEquals(_entries[i].Key, key) ||
-                    string.Equals(_entries[i].Key, key, StringComparison.Ordinal))
+                if (ReferenceEquals(_entries[i].Key, key) || string.Equals(_entries[i].Key, key, StringComparison.Ordinal))
                 {
                     // 将最后一个元素移动到当前位置覆盖被删除的元素
                     _entries[i] = _entries[_count - 1];
