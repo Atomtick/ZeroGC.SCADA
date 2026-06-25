@@ -1,20 +1,34 @@
-﻿using SCADA.TimerFSM.Enums;
-using SCADA.TimerFSM.Interfaces;
-using System;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using SCADA.TimerFSM.Enums;
+using SCADA.TimerFSM.Interfaces;
 
 namespace SCADA.TimerFSM;
 
-public class StateMachine : IStateMachine
+public class Msg<TMsg>
+    where TMsg : Enum
+{
+    public TMsg Command { get; set; }
+    public object[] Args { get; set; }
+}
+
+public class StateMachine<TState, TMsg> : IStateMachine
+    where TState : Enum
+    where TMsg : Enum
 {
     private readonly int _defaultInterval;
     private readonly ExceptionThrownEventArgs _exceptionThrownEventArgs;
     private readonly Lock _lockObj;
-    private readonly Channel<(Enum msgCmmd, object[] args)> _msgQueue;
+    private readonly ConcurrentQueue<Msg<TMsg>> _msgQueue;
+
+    //private readonly Channel<(Enum msgCmmd, object[] args)> _msgQueue;
     private readonly Lock _postMsgLock;
     private readonly StateTransitedEventArgs _stateTransitedEventArgs;
     private readonly StateTransitingEventArgs _stateTransitingEventArgs;
@@ -27,9 +41,8 @@ public class StateMachine : IStateMachine
 
     #region Constructors
 
-    public StateMachine(string name) : this(name, FsmState.None, 75)
-    {
-    }
+    public StateMachine(string name)
+        : this(name, FsmState.None, 75) { }
 
     private StateMachine(string name, Enum initialState, int interval)
     {
@@ -126,7 +139,8 @@ public class StateMachine : IStateMachine
 
     public void ClearMsgQueue()
     {
-        while (_msgQueue.Reader.TryRead(out _)) ;
+        while (_msgQueue.Reader.TryRead(out _))
+            ;
     }
 
     #region Pause & Resume
@@ -159,7 +173,8 @@ public class StateMachine : IStateMachine
 
     #endregion Pause & Resume
 
-    public (bool isSuccess, Enum currentState) PostMsg(Enum msgCmd, params object[] args)
+
+    public (bool isSuccess, TState currentState) PostMsg(TMsg msgCmd, params object[] args)
     {
         var currentState = Volatile.Read(ref _currState);
         lock (_postMsgLock)
@@ -174,8 +189,9 @@ public class StateMachine : IStateMachine
     }
 
     #region Register
+    public ref struct RefArgsReader { }
 
-    public void Register(Enum currState, Enum nextState, Enum msgCmd, Func<object[], bool> action)
+    public void Register(TState currState, TMsg msgCmd, TState nextState, Func<object[], bool> action)
     {
         ArgumentNullException.ThrowIfNull(action);
         var stateHashCode = currState.GetHashStringCode();
@@ -193,12 +209,12 @@ public class StateMachine : IStateMachine
     }
 
     // 不需要执行Action，接收到消息直接转换状态
-    public void Register(Enum currState, Enum nextState, Enum msgCmd)
+    public void Register(TState currState, TMsg msgCmd, TState nextState)
     {
         Register(currState, nextState, msgCmd, static (args) => true);
     }
 
-    public void Register(Enum currState, RoutineBase routine, Enum msgCmd, Enum relayState, Enum nextState, Enum abortState)
+    public void Register(TState currState, TMsg msgCmd, RoutineBase routine, TState relayState, TState nextState, TState abortState)
     {
         Register(currState, relayState, msgCmd, routine.Start);
         Register(relayState, FsmState.None, FsmMsgCmd.Timer, routine.Steps);
@@ -209,104 +225,130 @@ public class StateMachine : IStateMachine
 
     public void SetMonitor(Enum state, Action monitor)
     {
-        Register(state, FsmState.None, FsmMsgCmd.Timer, (args) =>
-        {
-            try { monitor.Invoke(); } catch { }
-            return false;
-        });
+        Register(
+            state,
+            FsmState.None,
+            FsmMsgCmd.Timer,
+            (args) =>
+            {
+                try
+                {
+                    monitor.Invoke();
+                }
+                catch { }
+                return false;
+            }
+        );
     }
 
     #endregion Register
 
-    private async void Loop()
+    private void Monitor()
     {
-        while (true)
+        /*******************暂停机制************************/
+        var pauseSource = Volatile.Read(ref _pauseSource);
+        if (pauseSource != null)
         {
-            /*******************暂停机制************************/
-            var pauseSource = Volatile.Read(ref _pauseSource);
-            if (pauseSource != null)
-            {
-                await pauseSource.Task.ConfigureAwait(false);
-            }
-            /***************************************************/
+            await pauseSource.Task.ConfigureAwait(false);
+        }
+        /***************************************************/
 
-            /*******************读取消息.若期望时间内无新消息,则不再等待,直接返回一条虚拟消息FsmMsgCmd.Timer***********************/
-            (Enum cmd, object[] args) msg;
-            _readTask ??= _msgQueue.Reader.ReadAsync().AsTask();
-            var delayTask = Task.Delay(Interval); //Interval是0时，返回一个CompletedTask，不会让出CPU和线程，是直通绿道。它与Task.Yield()不同。
-            var completedTask = await Task.WhenAny(delayTask, _readTask).ConfigureAwait(false);
-            if (completedTask == _readTask)
-            {
-                msg = await _readTask.ConfigureAwait(false);
-                _readTask = null;
-            }
-            else
-            {
-                msg = (FsmMsgCmd.Timer, null);
-            }
-            /***********************************************************************************************************/
+        /*******************读取消息.若期望时间内无新消息,则不再等待,直接返回一条虚拟消息FsmMsgCmd.Timer***********************/
+        (Enum cmd, object[] args) msg;
+        _readTask ??= _msgQueue.Reader.ReadAsync().AsTask();
+        var delayTask = Task.Delay(Interval); //Interval是0时，返回一个CompletedTask，不会让出CPU和线程，是直通绿道。它与Task.Yield()不同。
+        var completedTask = await Task.WhenAny(delayTask, _readTask).ConfigureAwait(false);
+        if (completedTask == _readTask)
+        {
+            msg = await _readTask.ConfigureAwait(false);
+            _readTask = null;
+        }
+        else
+        {
+            msg = (FsmMsgCmd.Timer, null);
+        }
+        /***********************************************************************************************************/
 
-            /*******************暂停机制************************/
-            pauseSource = Volatile.Read(ref _pauseSource);
-            if (pauseSource != null)
-            {
-                await pauseSource.Task.ConfigureAwait(false);// 暂停机制
-            }
-            /***************************************************/
+        /*******************暂停机制************************/
+        pauseSource = Volatile.Read(ref _pauseSource);
+        if (pauseSource != null)
+        {
+            await pauseSource.Task.ConfigureAwait(false); // 暂停机制
+        }
+        /***************************************************/
 
-            var match = ((IStateMachine)this).CanMatch(msg.cmd, _currState, out Func<object[], bool> action, out Enum nextState);
+        var match = ((IStateMachine)this).CanMatch(msg.cmd, _currState, out Func<object[], bool> action, out Enum nextState);
 
-            // 当前状态不接受此消息
-            if (match == false)
-            {
-                // 比如Error入队了，它的Action一下就立刻完成了，如果Action不小心返回false，可能还会错误的执行Step，如果返回true，成功切入到Error状态，
-                // 这时候一直Timer消息，但是Timer并没有注册，这不算错误。
-                if (msg.cmd.IsSame(FsmMsgCmd.Timer) == false)
-                {
-                    _stateTransitingEventArgs.CurrState = _currState;
-                    _stateTransitingEventArgs.NextState = nextState;
-                    _stateTransitingEventArgs.MsgCmd = msg.cmd;
-                    _stateTransitingEventArgs.MsgArgs = msg.args;
-
-                    try { MsgNotMatchAnyState?.Invoke(this, _stateTransitingEventArgs); } catch { }
-                }
-                continue;
-            }
-
-            // 如果action异常,就继续保持原状态
-            bool actionResult = false;
-            try
-            {
-                actionResult = action.Invoke(msg.args);
-            }
-            catch (Exception ex)
-            {
-                _exceptionThrownEventArgs.Exception = ex;
-                _exceptionThrownEventArgs.CurrState = _currState;
-                _exceptionThrownEventArgs.NextState = nextState;
-                _exceptionThrownEventArgs.MsgCmd = msg.cmd;
-                _exceptionThrownEventArgs.MsgArgs = msg.args;
-                ActionThrownException?.Invoke(this, _exceptionThrownEventArgs);
-            }
-
-            // action返回true,切换到下一状态;返回false,保持原状态.
-            if (actionResult)
+        // 当前状态不接受此消息
+        if (match == false)
+        {
+            // 比如Error入队了，它的Action一下就立刻完成了，如果Action不小心返回false，可能还会错误的执行Step，如果返回true，成功切入到Error状态，
+            // 这时候一直Timer消息，但是Timer并没有注册，这不算错误。
+            if (msg.cmd.IsSame(FsmMsgCmd.Timer) == false)
             {
                 _stateTransitingEventArgs.CurrState = _currState;
                 _stateTransitingEventArgs.NextState = nextState;
                 _stateTransitingEventArgs.MsgCmd = msg.cmd;
                 _stateTransitingEventArgs.MsgArgs = msg.args;
-                try { StateExited?.Invoke(this, _stateTransitingEventArgs); } catch { }
 
-                _prevState = _currState;
-                _currState = nextState;
-
-                _stateTransitedEventArgs.CurrState = _currState;
-                _stateTransitedEventArgs.PreviousState = _prevState;
-                _stateTransitedEventArgs.MsgCmd = msg.cmd;
-                _stateTransitedEventArgs.MsgArgs = msg.args;
-                try { StateEntered?.Invoke(this, _stateTransitedEventArgs); } catch { }
+                try
+                {
+                    MsgNotMatchAnyState?.Invoke(this, _stateTransitingEventArgs);
+                }
+                catch { }
             }
+            continue;
+        }
+
+        // 如果action异常,就继续保持原状态
+        bool actionResult = false;
+        try
+        {
+            actionResult = action.Invoke(msg.args);
+        }
+        catch (Exception ex)
+        {
+            _exceptionThrownEventArgs.Exception = ex;
+            _exceptionThrownEventArgs.CurrState = _currState;
+            _exceptionThrownEventArgs.NextState = nextState;
+            _exceptionThrownEventArgs.MsgCmd = msg.cmd;
+            _exceptionThrownEventArgs.MsgArgs = msg.args;
+            ActionThrownException?.Invoke(this, _exceptionThrownEventArgs);
+        }
+
+        // action返回true,切换到下一状态;返回false,保持原状态.
+        if (actionResult)
+        {
+            _stateTransitingEventArgs.CurrState = _currState;
+            _stateTransitingEventArgs.NextState = nextState;
+            _stateTransitingEventArgs.MsgCmd = msg.cmd;
+            _stateTransitingEventArgs.MsgArgs = msg.args;
+            try
+            {
+                StateExited?.Invoke(this, _stateTransitingEventArgs);
+            }
+            catch { }
+
+            _prevState = _currState;
+            _currState = nextState;
+
+            _stateTransitedEventArgs.CurrState = _currState;
+            _stateTransitedEventArgs.PreviousState = _prevState;
+            _stateTransitedEventArgs.MsgCmd = msg.cmd;
+            _stateTransitedEventArgs.MsgArgs = msg.args;
+            try
+            {
+                StateEntered?.Invoke(this, _stateTransitedEventArgs);
+            }
+            catch { }
+        }
+    }
+
+    private async void Loop()
+    {
+        while (true)
+        {
+            Monitor();
         }
     }
 }
