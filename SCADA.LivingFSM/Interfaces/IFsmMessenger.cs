@@ -2,9 +2,11 @@
 
 namespace SCADA.TimerFSM.Interfaces
 {
-    public interface IFsmMessenger
+    public interface IFsmMessenger<TState, TMsg>
+        where TState : Enum
+        where TMsg : Enum
     {
-        (bool isSuccess, Enum currentState) PostMsg(Enum msgCmd, params object[] args);
+        (bool isSuccess, TState currentState) PostMsg(TMsg msgCmd, params object[] args);
         void ClearMsgQueue();
     }
 }

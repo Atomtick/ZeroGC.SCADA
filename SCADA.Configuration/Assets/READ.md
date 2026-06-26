@@ -543,7 +543,7 @@ configSource.Write(transactionId,"System.ResetDate", "2025-8-4");
 ```c#
 configSource.Write(transactionId,"System.AlarmLight", "#000000CC");
 configSource.Write(transactionId,"System.AlarmLight", "#0000CC");
-configSource.Write(transactionId,"System.AlarmLight", System.Drawing.Color.MediumBlue);
+configSource.Write(transactionId,"System.AlarmLight", System.Drawing.Color.Red);
 ```
 
 #### type="Folder"

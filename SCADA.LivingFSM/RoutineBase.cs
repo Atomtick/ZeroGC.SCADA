@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using System.Threading;
 using SCADA.Common.Triggers;
 using SCADA.TimerFSM.Enums;
@@ -7,11 +8,14 @@ using SCADA.TimerFSM.Interfaces;
 
 namespace SCADA.TimerFSM
 {
-    public abstract class RoutineBase : ITaktOptimizer
+    public abstract class RoutineBase<TStep, TState, TMsg> : ITaktOptimizer
+        where TStep : Enum
+        where TState : Enum
+        where TMsg : Enum
     {
-        private readonly List<Enum> _historySteps;
+        private readonly List<TStep> _historySteps;
         private readonly CountdownTimer _routineCountdownTimer;
-        private readonly IFsmMessenger _stateMachine;
+        private readonly IFsmMessenger<TState, TMsg> _stateMachine;
         private readonly CountdownTimer _stepCountdownTimer;
         private Enum _currStepId;
         private bool _executionExecuted;
@@ -25,9 +29,9 @@ namespace SCADA.TimerFSM
         private int _loopTotalCountSetting = 0;
         private StepResult _token;
 
-        public RoutineBase(IFsmController stateMachine)
+        public RoutineBase(IFsmMessenger<TState, TMsg> stateMachine)
         {
-            _historySteps = new List<Enum>();
+            _historySteps = new List<TStep>();
             _stateMachine = stateMachine;
             _stepCountdownTimer = new CountdownTimer(Timeout.InfiniteTimeSpan);
             _routineCountdownTimer = new CountdownTimer(Timeout.InfiniteTimeSpan);
@@ -39,7 +43,7 @@ namespace SCADA.TimerFSM
         public StepResult RoutineStatus => _token;
         public StepContext StepContext { get; }
 
-        public void Delay(Enum id, TimeSpan timeout)
+        public void Delay(TStep id, TimeSpan timeout)
         {
             if (PreprocessStep(id))
             {
@@ -56,7 +60,7 @@ namespace SCADA.TimerFSM
             }
         }
 
-        public void EndLoop(Enum id)
+        public void EndLoop(TStep id)
         {
             if (_historySteps.Contains(id) == false)
             {
@@ -269,7 +273,7 @@ namespace SCADA.TimerFSM
             return (ITaktOptimizer)this;
         }
 
-        public void Loop(Enum id, int loopCount)
+        public void Loop(TStep id, int loopCount)
         {
             if (_historySteps.Contains(id) == false)
             {
@@ -280,7 +284,7 @@ namespace SCADA.TimerFSM
             }
         }
 
-        public void Rollback2Step(Enum id)
+        public void Rollback2Step(TStep id)
         {
             int index = _historySteps.FindIndex(item => item.IsSame(id));
             if (_historySteps.Count > index + 1)
@@ -330,7 +334,7 @@ namespace SCADA.TimerFSM
             // 改成立刻执行下一步
         }
 
-        private bool PreprocessStep(Enum id)
+        private bool PreprocessStep(TStep id)
         {
             // 已经执行过该Step
             if (_historySteps.Contains(id) == false)
