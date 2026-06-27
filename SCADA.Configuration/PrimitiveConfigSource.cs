@@ -107,6 +107,7 @@ namespace SCADA.Configuration
                     // 开启事务
                     using (var transaction = connection.BeginTransaction())
                     {
+                        var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                         var command = connection.CreateCommand();
                         command.CommandText =
                             "INSERT INTO config_current_value (name, value, time) \nVALUES ($name, $value,$time )\nON CONFLICT(name) DO UPDATE SET \n    value = excluded.value,\n\ttime = excluded.time;";
@@ -118,16 +119,36 @@ namespace SCADA.Configuration
                         {
                             paramName.Value = changedItem.Key;
                             paramValue.Value = changedItem.Value as string;
-                            paramTime.Value = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                            paramTime.Value = timestamp;
                             command.ExecuteNonQuery();
                         }
                         // 提交事务（这个时候才真正执行一次集中的磁盘 I/O）
                         transaction.Commit();
                     }
+                    if (Settings.TrackConfigValueModification)
+                    {
+                        using (var transaction = connection.BeginTransaction())
+                        {
+                            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                            var command = connection.CreateCommand();
+                            command.CommandText = "INSERT INTO config_history_value (name,new_value,\"time\") VALUES($name,$new_value,$time);";
+                            var paramName = command.Parameters.AddWithValue("$name", "");
+                            var paramValue = command.Parameters.AddWithValue("$new_value", "");
+                            var paramTime = command.Parameters.AddWithValue("$time", "");
+
+                            foreach (var changedItem in changedItems)
+                            {
+                                paramName.Value = changedItem.Key;
+                                paramValue.Value = changedItem.Value as string;
+                                paramTime.Value = timestamp;
+                                command.ExecuteNonQuery();
+                            }
+                            // 提交事务（这个时候才真正执行一次集中的磁盘 I/O）
+                            transaction.Commit();
+                        }
+                    }
                 }
             }
-
-            if (Settings.TrackConfigValueModification) { }
         }
     }
 }

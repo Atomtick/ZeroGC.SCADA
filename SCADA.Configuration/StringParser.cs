@@ -14,6 +14,12 @@ namespace SCADA.Configuration
         public static readonly long _longMax = long.Parse("9007199254740992");
         public static readonly long _longMin = long.Parse("-9007199254740992");
 
+        // 提前缓存，避免堆分配
+        private static readonly char[] InvalidPathChars = Path.GetInvalidPathChars();
+
+        // 静态只读字段缓存 OS 判断，运行时开销为 0
+        private static readonly bool IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+
         /// <summary>
         ///
         /// </summary>
@@ -74,115 +80,64 @@ namespace SCADA.Configuration
 
         internal static bool TryParse2Directory(string @string, out DirectoryInfo directoryInfo)
         {
-            if (@string.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
-            {
-                directoryInfo = null;
+            directoryInfo = null;
+            // 1. 基础非空校验
+            if (string.IsNullOrWhiteSpace(@string))
                 return false;
+
+            // 2. 检查系统内置的基础非法路径字符（主要包含 ASCII 0-31 控制字符）
+            if (@string.IndexOfAny(InvalidPathChars) >= 0)
+                return false;
+
+            // 3. 跨平台明确性约束：无论什么 OS，既然要求是“明确的路径”，就必须无条件拒绝通配符
+            if (@string.Contains('*') || @string.Contains('?'))
+                return false;
+
+            // 4. 操作系统差异化前置字符拦截
+            if (IsWindows)
+            {
+                // Windows 专属高危字符拦截
+                if (@string.Contains('<') || @string.Contains('>') || @string.Contains('"'))
+                    return false;
             }
-            Environment.CurrentDirectory = AppContext.BaseDirectory;
+            // 注：Linux/macOS 物理底层对 < > " 是包容的，所以此处无需拦截。
+
             try
             {
-                directoryInfo = new DirectoryInfo(Path.GetFullPath(@string));
+                // 5. 利用 BCL 核心 API 进行系统级路径正常化
+                // 这一步会自动将相对路径转为绝对路径，并验证长路径、非法拓扑等系统级规则
+
+                string fullPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @string));
+
+                // ==========================================
+                // 注意：这里【没有】包含检查结尾分隔符的逻辑，
+                // 也【没有】包含 GetFileName() 的非空检查，
+                // 因为 "C:\" 或 "/etc/" 作为文件夹路径是绝对合法的。
+                // ==========================================
+
+                // 6. 操作系统差异化深度校验：冒号与盘符逻辑
+                if (IsWindows)
+                {
+                    // Windows：严格校验盘符冒号
+                    int firstColon = fullPath.IndexOf(':');
+                    if (firstColon >= 0)
+                    {
+                        // 冒号必须在索引 1（如 C:），且绝不能有第二个冒号（防止 ADS 数据流注入或畸形路径）
+                        if (firstColon != 1 || fullPath.IndexOf(':', 2) >= 0)
+                        {
+                            return false;
+                        }
+                    }
+                }
+                // 注：Linux/macOS 全局无盘符概念，全路径如 /opt/data:backup/ 是完全合法的文件夹名
+                directoryInfo = new DirectoryInfo(fullPath);
                 return true;
             }
-            catch
+            catch (Exception)
             {
-                directoryInfo = null;
+                // 顺畅捕获底层 IO 抛出的 ArgumentException, PathTooLongException 等格式异常
                 return false;
             }
-
-            bool IsValidWindowsFolderPath(string directoryFullPath, out DirectoryInfo directory)
-            {
-                directory = null;
-                string[] validDrives = { "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
-                if (string.IsNullOrWhiteSpace(directoryFullPath))
-                {
-                    return false;
-                }
-                // 必须是绝对路径
-                if (!Path.IsPathRooted(directoryFullPath))
-                {
-                    return false;
-                }
-                // 如果是绝对路径,至少有3个字符,且前三个字符是确定的
-                if (directoryFullPath.Length < 3 || !directoryFullPath[1].Equals(':') || directoryFullPath[2] != '\\')
-                {
-                    return false;
-                }
-                // 必须是正确的盘符
-                string drive = directoryFullPath[0].ToString().ToUpper();
-                if (!validDrives.Any(x => x == drive))
-                {
-                    return false;
-                }
-                // 如果刚好是3个字符,则一定是正确的路径,如D:\
-                if (directoryFullPath.Length == 3)
-                {
-                    directory = new DirectoryInfo(directoryFullPath);
-                    return true;
-                }
-                // 去掉盘符以便后续分割
-                directoryFullPath = new string(directoryFullPath.Skip(3).ToArray());
-                // 不能有连续的 \ (主要是检测末尾是不是有连续的\)
-                if (directoryFullPath.Contains("\\\\"))
-                {
-                    return false;
-                }
-                // 去除末尾的\后下面就可以分割子串了
-                directoryFullPath = directoryFullPath.TrimEnd('\\');
-                var subPaths = directoryFullPath.Split('\\');
-
-                foreach (var subPath in subPaths)
-                {
-                    if (string.IsNullOrWhiteSpace(subPath))
-                    {
-                        return false;
-                    }
-                    if (Path.GetInvalidFileNameChars().Any(c => subPath.Contains(c)))
-                    {
-                        return false;
-                    }
-                }
-                directory = new DirectoryInfo(directoryFullPath);
-                return true;
-            }
-            directoryInfo = null;
-#if NET462_OR_GREATER
-            return IsValidWindowsFolderPath(@string, out directoryInfo);
-#elif NET8_0_OR_GREATER
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                return IsValidWindowsFolderPath(@string, out directoryInfo);
-            }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            {
-                // Linux / macOS 规则 (POSIX)
-                if (!Path.IsPathRooted(@string))
-                {
-                    return false;
-                }
-                // 1. 必须是绝对路径（以 / 开头）
-                if (@string[0] != '/')
-                    return false;
-
-                // 2. 单遍扫描
-                for (int i = 0; i < @string.Length; i++)
-                {
-                    char c = @string[i];
-
-                    // 规则 A: POSIX 唯一硬性规定的非法字符是 \0
-                    if (c == '\0')
-                        return false;
-
-                    // 规则 B: 拒绝连续斜杠 (拦截 //usr//bin)
-                    if (c == '/' && i > 0 && @string[i - 1] == '/')
-                        return false;
-                }
-                directoryInfo = new DirectoryInfo(@string);
-                return true;
-            }
-            throw new InvalidOperationException("Not supported OS.");
-#endif
         }
 
         internal static bool TryParse2Double(string @string, out double @double)
@@ -224,117 +179,73 @@ namespace SCADA.Configuration
 
         internal static bool TryParse2File(string @string, out FileInfo fileInfo)
         {
-            if (@string.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
+            fileInfo = null;
+            if (string.IsNullOrWhiteSpace(@string))
             {
-                fileInfo = null;
                 return false;
             }
-            Environment.CurrentDirectory = AppContext.BaseDirectory;
+
+            // 1. 系统内置基础过滤（Linux 下通常只有 \0，Windows 下有控制字符和 |）
+            if (@string.IndexOfAny(InvalidPathChars) >= 0)
+                return false;
+
+            // 2. 跨平台明确性约束：无论什么 OS，既然要求是“明确路径”，就必须拒绝通配符
+            // 尽管 Linux 物理上允许文件名带 * 和 ?，但在业务逻辑中它们通常会引发 Shell 解析灾难，必须拦截
+            if (@string.Contains('*') || @string.Contains('?'))
+                return false;
+
+            // 3. 操作系统差异化前置字符拦截
+            if (IsWindows)
+            {
+                // Windows 专属高危字符拦截
+                if (@string.Contains('<') || @string.Contains('>') || @string.Contains('"'))
+                    return false;
+            }
+            else
+            {
+                // Linux/macOS 物理上允许 < > "，此处放行。
+                // 但如果您的业务依然想在所有平台统一屏蔽这些特殊符号，可以取消 if (IsWindows) 的判断
+            }
+
             try
             {
-                fileInfo = new FileInfo(Path.GetFullPath(@string));
+                // 4. BCL 核心 API 系统级路径正常化
+                string fullPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, @string));
+
+                // 5. 确保不是以目录分隔符结尾（明确的“文件”路径尾部不该有分隔符）
+                if (@string.EndsWith(Path.DirectorySeparatorChar.ToString()) || @string.EndsWith(Path.AltDirectorySeparatorChar.ToString()))
+                {
+                    return false;
+                }
+
+                // 6. 提取文件名合规校验
+                var fileName = Path.GetFileName(fullPath);
+                if (string.IsNullOrWhiteSpace(fileName))
+                    return false;
+
+                // 7. 操作系统差异化深度校验：冒号与盘符逻辑
+                if (IsWindows)
+                {
+                    // Windows：严格校验盘符冒号
+                    int firstColon = fullPath.IndexOf(':');
+                    if (firstColon >= 0)
+                    {
+                        // 冒号必须在索引1（如C:），且绝不能有第二个冒号（防止 ADS 数据流注入）
+                        if (firstColon != 1 || fullPath.IndexOf(':', 2) >= 0)
+                        {
+                            return false;
+                        }
+                    }
+                }
+                // 注意：Linux/macOS 直接跳过冒号校验，因为全路径 /home/usr/test:1.txt 是完全合法的
+                fileInfo = new FileInfo(fullPath);
                 return true;
             }
-            catch
+            catch (Exception)
             {
-                fileInfo = null;
+                // 捕获跨平台底层 IO 的格式异常
                 return false;
             }
-
-            bool IsValidWindowsFilePath(string fileFullPath, out FileInfo file)
-            {
-                file = null;
-                if (string.IsNullOrWhiteSpace(fileFullPath))
-                {
-                    return false;
-                }
-
-                string[] validDrives = { "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
-                // 必须是绝对路径
-                if (!Path.IsPathRooted(fileFullPath))
-                {
-                    return false;
-                }
-                // 开头必须是[C-Z]:\
-                if (fileFullPath.Length < 3 || !fileFullPath[1].Equals(':') || fileFullPath[2] != '\\')
-                {
-                    return false;
-                }
-                string drive = fileFullPath[0].ToString().ToUpper();
-                if (!validDrives.Any(x => x == drive))
-                {
-                    return false;
-                }
-                // 既然是文件名称,那路径字符串最后一个字符一定不能是'\'
-                if (fileFullPath.EndsWith("\\"))
-                {
-                    return false;
-                }
-                // 去掉盘符以便后续分割出子片段
-                fileFullPath = new string(fileFullPath.Skip(3).ToArray());
-                // 只有3个字符的话则一定不是文件名称
-                if (string.IsNullOrWhiteSpace(fileFullPath))
-                {
-                    return false;
-                }
-                // 子片段路径不能含有Windows不支持的字符以及空白字符
-                var subPaths = fileFullPath.Split('\\');
-                foreach (var subPath in subPaths)
-                {
-                    if (string.IsNullOrWhiteSpace(subPath))
-                    {
-                        return false;
-                    }
-                    if (Path.GetInvalidFileNameChars().Any(c => subPath.Contains(c)))
-                    {
-                        return false;
-                    }
-                }
-                file = new FileInfo(fileFullPath);
-                return true;
-            }
-
-#if NET462_OR_GREATER
-            return IsValidWindowsFilePath(@string, out fileInfo);
-#elif NET8_0_OR_GREATER
-            fileInfo = null;
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                return IsValidWindowsFilePath(@string, out fileInfo);
-            }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            {
-                // Linux / macOS 规则 (POSIX)
-                if (!Path.IsPathRooted(@string))
-                {
-                    return false;
-                }
-                // 1. 必须是绝对路径（以 / 开头）
-                if (@string[0] != '/')
-                    return false;
-
-                // 2. 单遍扫描
-                for (int i = 0; i < @string.Length; i++)
-                {
-                    char c = @string[i];
-
-                    // 规则 A: POSIX 唯一硬性规定的非法字符是 \0
-                    if (c == '\0')
-                        return false;
-
-                    // 规则 B: 拒绝连续斜杠 (拦截 //usr//bin)
-                    if (c == '/' && i > 0 && @string[i - 1] == '/')
-                        return false;
-                }
-
-                // 结尾不能带斜杠,因为是文件!
-                if (@string.Length > 1 && @string[@string.Length - 1] == '/')
-                    return false;
-                fileInfo = new FileInfo(@string);
-                return true;
-            }
-            throw new InvalidOperationException("Not supported OS.");
-#endif
         }
 
         internal static bool TryParse2Int64(string @string, out long @long)

@@ -8,7 +8,9 @@ using SCADA.TimerFSM.Interfaces;
 
 namespace SCADA.TimerFSM
 {
-    public abstract class RoutineBase<TStep, TState, TMsg> : ITaktOptimizer
+    public interface IRoutine { }
+
+    public abstract class RoutineBase<TStep, TState, TMsg> : ITaktOptimizer, IRoutine
         where TStep : Enum
         where TState : Enum
         where TMsg : Enum

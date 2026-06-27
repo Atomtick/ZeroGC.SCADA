@@ -11,7 +11,7 @@ using SCADA.TimerFSM.Interfaces;
 
 namespace SCADA.TimerFSM
 {
-    public struct Msg<TCommand>
+    internal struct Msg<TCommand>
         where TCommand : Enum
     {
         public TCommand Command { get; set; }
@@ -31,7 +31,8 @@ namespace SCADA.TimerFSM
         private readonly Lock _postMsgLock;
         private readonly StateTransitedEventArgs _stateTransitedEventArgs;
         private readonly StateTransitingEventArgs _stateTransitingEventArgs;
-        private readonly Dictionary<string, List<(Enum msgCmd, Func<object[], bool> action, Enum nextState)>> _transitionTable;
+        private readonly Dictionary<string, List<(TCommand msgCmd, Func<object[], bool> action, TState nextState)>> _transitionTable;
+        private readonly List<(TCommand msgCmd, Func<object[], bool> action, TState nextState)>[] _transitionTable2 = new List<(TCommand msgCmd, Func<object[], bool> action, TState nextState)>[256];
         private Enum _currState;
         private TaskCompletionSource<bool> _pauseSource;
         private Enum _prevState;
@@ -45,8 +46,8 @@ namespace SCADA.TimerFSM
 
         private StateMachine(string name, Enum initialState, int interval)
         {
-            _transitionTable = new Dictionary<string, List<(Enum msg, Func<object[], bool> action, Enum nextState)>>();
-            _msgQueue = Channel.CreateUnbounded<(Enum msgCmd, object[] msgArgs)>();
+            _transitionTable = new Dictionary<string, List<(TCommand msg, Func<object[], bool> action, TState nextState)>>();
+            _msgQueue = new ConcurrentQueue<Msg<TCommand>>();
             _pauseSource = null;
             Name = name;
             _prevState = FsmState.None;
@@ -104,7 +105,7 @@ namespace SCADA.TimerFSM
 
         #region CanMatch
 
-        bool IFsmTransitionTable.CanMatch(Enum msgCmd, Enum state)
+        bool IFsmTransitionTable.CanMatch(TCommand msgCmd, TState state)
         {
             var anyHashCode = FsmState.Any.GetHashStringCode();
             if (_transitionTable.ContainsKey(anyHashCode) && _transitionTable[anyHashCode].Any(item => item.msgCmd.IsSame(msgCmd)))
@@ -115,13 +116,13 @@ namespace SCADA.TimerFSM
             return false;
         }
 
-        bool IFsmTransitionTable.CanMatch(Enum msgCmd, Enum state, out Func<object[], bool> action, out Enum nextState)
+        bool IFsmTransitionTable.CanMatch(TCommand msgCmd, TState state, out Func<object[], bool> action, out TState nextState)
         {
             action = default;
             nextState = default;
 
             var stateHashCode = state.GetHashStringCode();
-            if (_transitionTable.TryGetValue(stateHashCode, out List<(Enum msgCmd, Func<object[], bool> action, Enum nextState)> value))
+            if (_transitionTable.TryGetValue(stateHashCode, out List<(Enum msgCmd, Func<object[], bool> action, TState nextState)> value))
             {
                 var index = value.FindIndex(item => item.msgCmd.IsSame(msgCmd));
                 if (index > -1)
@@ -138,7 +139,7 @@ namespace SCADA.TimerFSM
 
         public void ClearMsgQueue()
         {
-            while (_msgQueue.Reader.TryRead(out _))
+            while (_msgQueue.TryDequeue(out var _))
                 ;
         }
 
@@ -192,7 +193,6 @@ namespace SCADA.TimerFSM
 
         public void Register(TState currState, TCommand msgCmd, TState nextState, Func<object[], bool> action)
         {
-            ArgumentNullException.ThrowIfNull(action);
             var stateHashCode = currState.GetHashStringCode();
             if (!_transitionTable.TryGetValue(stateHashCode, out List<(Enum msgCmd, Func<object[], bool> action, Enum nextState)> value))
             {

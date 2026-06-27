@@ -1,6 +1,6 @@
 ﻿# 解决了什么问题
 
-- 跨平台 &  .NET Framework & .NET Core
+- **跨平台**
   - 支持 Windows, Linux, MacOS
   - 支持 .NET Framework 4.6.2 及以上, .NET 12 及以上.
 
@@ -10,7 +10,7 @@
 
 - **支持原子批量读写**
 
-  保证单次批量读取的所有配置来自同一个快照, 批量写入的配置要么同时成功要么全部失败, 严格满足一致性, 无数据撕裂. 
+  保证单次批量读取的所有配置来自同一个快照, 批量写入的配置要么同时成功要么全部失败, `严格满足一致性, 无数据撕裂`. 
 
   在工业软件中, 配置的批量操作原子性如同PLC在一个扫描周期内IO来自同一快照, 一起写入物理地址那样重要, 否则就会导致诡异和难以复现的偶发宕机.
 
@@ -38,6 +38,12 @@
 - 字符串性配置,无需编译, 灵活配置, 完全符合半导体行业设备和软件逐步迭代的需求.
 
 - 支持导出GEM模型中的ECID集合.
+
+- **存储修改历史**
+
+  此功能可选择是否开启.
+
+  若开启, 每一次修改都会被严格记录, 可用于追溯和审计, 帮助定位客户现场事故原因.
 
 ​		
 
@@ -548,14 +554,25 @@ configSource.Write(transactionId,"System.AlarmLight", System.Drawing.Color.Red);
 
 #### type="Folder"
 
+*支持绝对路径和相对路径*
+
+*相对路径时, 当前目录是程序根目录*
+
 ```c#
 configSource.Write(transactionId,"System.LogsFolder", "D:\\");
+configSource.Write(transactionId,"System.LogsFolder", "D:\\Logs");
+configSource.Write(transactionId,"System.LogsFolder", "../Logs");
 ```
 
 #### type="File"
 
+*支持绝对路径和相对路径*
+
+*相对路径时, 当前目录强制设置成程序根目录*
+
 ```c#
 configSource.Write(transactionId,"System.DataReport", "D:\\data.xlsx");
+configSource.Write(transactionId,"System.DataReport", "../../data.xlsx");
 ```
 
 > 每次调用CommitTransaction都会写一次数据库。如果有多个修改，单次批量提交性能更高开销更小，且可以保证只要有一项校验失败，则全部的设置项都不会被修改，即原子操作。
