@@ -25,6 +25,12 @@ namespace SCADA.Configuration
         private bool _disposed;
 
         private bool _hasTable_config_current_value = false;
+        private bool _hasTable_config_history_value = false;
+        private bool _hasTable_config_schema_document = false;
+
+        private const string CONFIG_CURRENT_VALUE = "config_current_value";
+        private const string CONFIG_HISTORY_VALUE = "config_history_value";
+        private const string CONFIG_SCHEMA_DOCUMENT = "config_schema_document";
 
         // 实例化一个顺序锁
         private SeqLock _seqLock = new SeqLock();
@@ -82,23 +88,43 @@ namespace SCADA.Configuration
             catch { }
         }
 
+        private void CreateConfigCurrentValueTable()
+        {
+            using (var connection = new SqliteConnection(_dbConnectionString))
+            {
+                connection.Open();
+                string createTableSql = $"CREATE TABLE \"{CONFIG_CURRENT_VALUE}\" (\n\t\"name\"\tTEXT,\n\t\"value\"\tTEXT NOT NULL,\n\t\"time\"\tINTEGER NOT NULL,\n\tPRIMARY KEY(\"name\")\n)";
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = createTableSql;
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        private void CreateConfigHistoryValueTable()
+        {
+            using (var connection = new SqliteConnection(_dbConnectionString))
+            {
+                connection.Open();
+                string createTableSql =
+                    $"CREATE TABLE \"{CONFIG_HISTORY_VALUE}\" ( \"id\"\tINTEGER, \"name\"\tTEXT NOT NULL, \"new_value\"\tTEXT NOT NULL, \"time\"\tINTEGER NOT NULL, PRIMARY KEY(\"id\"))";
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = createTableSql;
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
         private void SaveToSqlite(LightWeightMap changedItems)
         {
             if (!Settings.RestoreOnAppStartup)
             {
                 if (!_hasTable_config_current_value)
                 {
-                    using (var connection = new SqliteConnection(_dbConnectionString))
-                    {
-                        connection.Open();
-                        string createTableSql = "CREATE TABLE \"config_current_value\" (\n\t\"name\"\tTEXT,\n\t\"value\"\tTEXT NOT NULL,\n\t\"time\"\tINTEGER NOT NULL,\n\tPRIMARY KEY(\"name\")\n)";
-                        using (var command = connection.CreateCommand())
-                        {
-                            command.CommandText = createTableSql;
-                            command.ExecuteNonQuery();
-                            _hasTable_config_current_value = true;
-                        }
-                    }
+                    CreateConfigCurrentValueTable();
+                    _hasTable_config_current_value = true;
                 }
 
                 using (var connection = new SqliteConnection(_dbConnectionString))
@@ -110,7 +136,7 @@ namespace SCADA.Configuration
                         var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                         var command = connection.CreateCommand();
                         command.CommandText =
-                            "INSERT INTO config_current_value (name, value, time) \nVALUES ($name, $value,$time )\nON CONFLICT(name) DO UPDATE SET \n    value = excluded.value,\n\ttime = excluded.time;";
+                            $"INSERT INTO {CONFIG_CURRENT_VALUE} (name, value, time) \nVALUES ($name, $value,$time )\nON CONFLICT(name) DO UPDATE SET \n    value = excluded.value,\n\ttime = excluded.time;";
                         var paramName = command.Parameters.AddWithValue("$name", "");
                         var paramValue = command.Parameters.AddWithValue("$value", "");
                         var paramTime = command.Parameters.AddWithValue("$time", "");
@@ -127,11 +153,16 @@ namespace SCADA.Configuration
                     }
                     if (Settings.TrackConfigValueModification)
                     {
+                        if (_hasTable_config_history_value == false)
+                        {
+                            CreateConfigHistoryValueTable();
+                            _hasTable_config_history_value = true;
+                        }
                         using (var transaction = connection.BeginTransaction())
                         {
                             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                             var command = connection.CreateCommand();
-                            command.CommandText = "INSERT INTO config_history_value (name,new_value,\"time\") VALUES($name,$new_value,$time);";
+                            command.CommandText = $"INSERT INTO {CONFIG_HISTORY_VALUE} (name,new_value,\"time\") VALUES($name,$new_value,$time);";
                             var paramName = command.Parameters.AddWithValue("$name", "");
                             var paramValue = command.Parameters.AddWithValue("$new_value", "");
                             var paramTime = command.Parameters.AddWithValue("$time", "");

@@ -11,6 +11,9 @@ using SCADA.TimerFSM.Interfaces;
 
 namespace SCADA.TimerFSM
 {
+    //  用ENUM之间的关系表示子状态机和父状态机
+    // 0X01 - 0XFF
+    // 0X0101
     internal struct Msg<TCommand>
         where TCommand : Enum
     {

@@ -14,40 +14,68 @@ namespace SCADA.Configuration
 
         private void Initialize()
         {
+            CheckTableExists(out _hasTable_config_schema_document, out _hasTable_config_current_value, out _hasTable_config_history_value);
             RootNodes = Build();
             UpdateOptions();
             ValidateInitialValue();
             ValidateOptions();
-            _hasTable_config_current_value = HasDataTableConfigCurrentValue();
+
             if (Settings.RestoreOnAppStartup == false && _hasTable_config_current_value)
             {
                 ReadConfigCurrentValue();
             }
         }
 
-        private bool HasDataTableConfigCurrentValue()
+        private void CheckTableExists(out bool config_schema_document, out bool config_current_value, out bool config_history_value)
         {
-            string hasTableSql = "SELECT count(*) as has_table\nFROM sqlite_master \nWHERE type = 'table' AND name = 'config_current_value';";
+            config_schema_document = false;
+            config_current_value = false;
+            config_history_value = false;
+            string sql = "SELECT name \nFROM sqlite_master \nWHERE type = 'table';";
             using (var connection = new SqliteConnection(_dbConnectionString))
             {
                 connection.Open();
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = hasTableSql;
-                    var hasTable = System.Convert.ToInt32(command.ExecuteScalar());
-                    return hasTable == 1;
+                    command.CommandText = sql;
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.HasRows)
+                        {
+                            while (reader.Read())
+                            {
+                                var tableName = reader.GetString(0);
+                                if (tableName == CONFIG_SCHEMA_DOCUMENT)
+                                {
+                                    config_schema_document = true;
+                                }
+                                else if (tableName == CONFIG_CURRENT_VALUE)
+                                {
+                                    config_current_value = true;
+                                }
+                                else if (tableName == CONFIG_HISTORY_VALUE)
+                                {
+                                    config_history_value = true;
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
 
         private ConfigNode[] Build()
         {
+            if (_hasTable_config_schema_document == false)
+            {
+                throw new ApplicationException($"The data table '{CONFIG_SCHEMA_DOCUMENT}' does not exist.");
+            }
             using (var connection = new SqliteConnection(_dbConnectionString))
             {
                 connection.Open();
                 using (var command = connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT xml FROM config_schema_document;";
+                    command.CommandText = $"SELECT xml FROM {CONFIG_SCHEMA_DOCUMENT};";
                     var xml = command.ExecuteScalar();
                     if (xml != null && xml is string xml2)
                     {
@@ -66,7 +94,7 @@ namespace SCADA.Configuration
                     }
                     else
                     {
-                        throw new ApplicationException("The value of 'xml' field is error in data table 'config_schema_document'.");
+                        throw new ApplicationException($"The value of 'xml' field is error in data table '{CONFIG_SCHEMA_DOCUMENT}'.");
                     }
                 }
             }
@@ -79,7 +107,7 @@ namespace SCADA.Configuration
                 connection.Open();
                 using (SqliteCommand command = connection.CreateCommand())
                 {
-                    command.CommandText = "SELECT name, value FROM config_current_value;";
+                    command.CommandText = $"SELECT name, value FROM {CONFIG_CURRENT_VALUE};";
                     var reader = command.ExecuteReader();
                     while (reader.Read())
                     {
