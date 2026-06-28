@@ -5,7 +5,7 @@ using SCADA.Common.Interfaces;
 
 namespace SCADA.Configuration.UnitTests
 {
-    public class Setter_UnitTest
+    public class Write_UnitTest
     {
         //private PrimitiveConfigSource primitiveConfigSource =
         //    new PrimitiveConfigSource("C:\\Users\\Admin\\Desktop\\1.xml",false,1000);

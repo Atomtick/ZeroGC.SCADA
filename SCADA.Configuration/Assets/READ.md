@@ -212,26 +212,15 @@ PrimitiveConfigSource构造函数传入XML文件路径和文件编码。
 
 > 需要保证一个XML文件同时只能有一个PrimitiveConfigSource对象持有，因为单个对象能保证改配置项值时写操作是线程安全的，但多个对象同时写时不是线程安全的。
 
-### Read config item's value using GetValue
+### 批量读取单个或多个配置项(原子操作)
 
 ####  value="boolean"
 
-`<config name="IsSimulatorMode" value="false" type="boolean" />`
+`<config name="IsSimulatorMode" value="false" type="Bool" />`
 
 ```c#
 bool isSimulatorMode = source.GetValue<bool>("System.IsSimulatorMode");
 ```
-
-Boolean支持的字符串样例
-
-- True
-- False
-- true
-- false
-- TRuE
-- faLsE
-
-true和false的任意大小写形式都能被正常解析。
 
 #### value="integer"
 

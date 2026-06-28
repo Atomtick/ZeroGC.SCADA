@@ -30,7 +30,7 @@ namespace SCADA.Configuration
 
         public bool IsAbsent()
         {
-            return type == ConfigType.Unknown || @object == null || @string == null;
+            return type == ConfigType.Unknown && @object == null && @string == null;
         }
 
         #region ToException
