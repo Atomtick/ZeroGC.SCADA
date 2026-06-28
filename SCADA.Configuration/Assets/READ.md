@@ -214,6 +214,72 @@ PrimitiveConfigSource构造函数传入XML文件路径和文件编码。
 
 ### 批量读取单个或多个配置项(原子操作)
 
+**读取单个配置**
+
+```C#
+// 第一步: 使用配置名称字符串索引到配置项
+var iIsSimulatorMode = _configSource.SelectConfigItem("System.IsSimulatorMode");
+// 第二步: 拿到配置的值快照
+var vSimulatorMode = _configSource.Read(iIsSimulatorMode);
+// 第三步: 解析快照拿到基元值
+var simulatorMode = vSimulatorMode.ToBool(true);
+```
+
+**批量读取多个配置**
+
+`System.IsSimulatorMode 和 System.CycleCount 来自同一快照, 满足一致性和原子性`
+
+```C#
+// 第一步: 使用配置名称字符串索引到配置项
+var iIsSimulatorMode = _configSource.SelectConfigItem("System.IsSimulatorMode");
+var iCycleCount = _configSource.SelectConfigItem("System.CycleCount");
+// 第二步: 拿到配置的值快照
+(var vSimulatorMode, var vCycleCount) = _configSource.Read(iIsSimulatorMode, iCycleCount);
+// 第三步: 解析快照拿到基元值
+var simulatorMode = vSimulatorMode.ToBool(true);
+var cycleCount = vCycleCount.ToInt32();
+```
+
+**读取配置的最佳实践**
+
+```C#
+public class TransferModule
+{
+    private readonly IConfigReader _configSource;
+    private readonly ConfigItem _iHomeTimeout;
+    private readonly ConfigItem _iMoveDistanceAfterHome;
+    private readonly string _robotIP;
+    private readonly int _bladeSlots;
+
+    public TransferModule(IConfigReader configReader)
+    {
+        _configSource = configReader;
+        _iHomeTimeout = configReader.SelectConfigItem("TM.HomeTimeout");
+
+        var iBladeSlotes = configReader.SelectConfigItem("TM.BladeSlots");
+        var iRobotIp = configReader.SelectConfigItem("TM.RobotIP");
+        (var _bladeSlotsValue, var _robotIpValue) = configReader.Read(iBladeSlotes, iRobotIp);
+        _bladeSlots = _bladeSlotsValue.ToInt32();
+        _robotIP = _robotIpValue.ToString();
+
+        var iIsSimulatorMode = _configSource.SelectConfigItem("System.IsSimulatorMode");
+        var iCycleCount = _configSource.SelectConfigItem("System.CycleCount");
+
+        (var vSimulatorMode, var vCycleCount) = _configSource.Read(iIsSimulatorMode, iCycleCount);
+
+        var simulatorMode = vSimulatorMode.ToBool(true);
+        var cycleCount = vCycleCount.ToInt32();
+    }
+
+    public void Home()
+    {
+        var configValues = _configSource.Read(_iHomeTimeout, _iMoveDistanceAfterHome);
+        int homeTimeout = configValues.Item1.ToInt32(30);
+        int moveDistanceAfterHome = configValues.Item2.ToInt32(15);
+    }
+}
+```
+
 ####  value="boolean"
 
 `<config name="IsSimulatorMode" value="false" type="Bool" />`

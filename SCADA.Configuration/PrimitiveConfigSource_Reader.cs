@@ -8,15 +8,12 @@ namespace SCADA.Configuration
     {
         public ConfigItem SelectConfigItem(string config)
         {
-            if (string.IsNullOrWhiteSpace(config))
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
+            CheckConfigFormattingValid(config);
             if (!_configItems.TryGetValue(config, out ConfigItem result))
             {
                 result = new ConfigItem()
                 {
-                    Name = string.Empty,
+                    Name = config.Substring(config.LastIndexOf('.') + 1),
                     Path = config,
                     ObjectValue = null,
                     StringValue = null,

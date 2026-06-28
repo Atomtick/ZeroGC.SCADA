@@ -17,7 +17,7 @@ namespace SCADA.Configuration
             config = config.Trim();
             if (string.IsNullOrWhiteSpace(config))
             {
-                throw new ArgumentException("ConfigItem cannot be white space.", nameof(config));
+                throw new ArgumentException("config can not be white space.", nameof(config));
             }
 
             var names = config.Split('.');
@@ -27,6 +27,25 @@ namespace SCADA.Configuration
             }
 
             return names;
+        }
+
+        private void CheckConfigFormattingValid(string config)
+        {
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            config = config.Trim();
+            if (string.IsNullOrWhiteSpace(config))
+            {
+                throw new ArgumentException("config can not be white space.", nameof(config));
+            }
+
+            if (config.StartsWith(".") || config.EndsWith(".") || config.Contains('.') == false || config.Contains(".."))
+            {
+                throw new ArgumentException($"Config '{config}' formatting is invalid.", nameof(config));
+            }
         }
 
         private object Convert2Object(ConfigType type, string value)
