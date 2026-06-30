@@ -14,11 +14,28 @@ namespace SCADA.Configuration.UnitTests
         public void Test()
         {
             var configSource = new PrimitiveConfigSource("configs.db");
+
+            // 这里只需要执行一次就可以了
             var iFAEnable = configSource.SelectConfigItem("FA.Enable");
             var iFAMode = configSource.SelectConfigItem("FA.ConnectionMode");
             var iT3Timeout = configSource.SelectConfigItem("FA.T3Timeout");
             var iNotchDegree = configSource.SelectConfigItem("Aligner.NotchDegree");
             var iRecipePath = configSource.SelectConfigItem("System.RecipePath");
+
+            // 第一次原子性的批量获取多个配置项的值
+            (var vFAEnable, var vFAMode, var vT3Timeout, var vNotchDegree, var vRecipePath) = configSource.Read(iFAEnable, iFAMode, iT3Timeout, iNotchDegree, iRecipePath);
+            var FAEnable = vFAEnable.ToBool();
+            var FAMode = vFAMode.ToString();
+            var T3Timeout = vT3Timeout.ToInt32();
+            var NotchDegree = vNotchDegree.ToDouble();
+            var RecipePath = vRecipePath.ToDirectory();
+            // 第二次原子性的批量获取多个配置项的值(如果配置值有变化,第二次读取的最新值显然会和第一次不一样)
+            (vFAEnable, vFAMode, vT3Timeout, vNotchDegree, vRecipePath) = configSource.Read(iFAEnable, iFAMode, iT3Timeout, iNotchDegree, iRecipePath);
+            FAEnable = vFAEnable.ToBool();
+            FAMode = vFAMode.ToString();
+            T3Timeout = vT3Timeout.ToInt32();
+            NotchDegree = vNotchDegree.ToDouble();
+            RecipePath = vRecipePath.ToDirectory();
         }
 
         //[Fact]
