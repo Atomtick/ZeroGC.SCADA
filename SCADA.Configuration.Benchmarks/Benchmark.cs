@@ -63,7 +63,7 @@ namespace SCADA.Configuration.Benchmarks
         {
             //for (int i = 0; i < 250000; i++)
             //{
-
+            _configSource.SelectConfigItem("PM1.BaratronLineHeater.IsInstalled");
             object d = double.Parse("3.14159");
             _consumer.Consume(d);
             //_configSource.SelectConfigItem("FA.Enable");
