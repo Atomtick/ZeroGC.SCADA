@@ -76,7 +76,7 @@ namespace SCADA.Common
                 if ((seq & 1) == 0 && Interlocked.CompareExchange(ref _sequence, seq + 1, seq) == seq)
                 {
                     // 写内存屏障：确保后续更新实际数据的操作，绝对不会跑到获取锁之前执行
-                    Thread.MemoryBarrier();
+                    // Thread.MemoryBarrier();
                     break;
                 }
                 spin.SpinOnce();
@@ -90,7 +90,7 @@ namespace SCADA.Common
         public void WriteUnlock()
         {
             // 写内存屏障：确保前面更新受保护数据的指令已经彻底落盘生效
-            Thread.MemoryBarrier();
+            // Thread.MemoryBarrier();
 
             // 奇数加 1 变回偶数，表示写入完成，其他读/写线程可以继续
             Interlocked.Increment(ref _sequence);
