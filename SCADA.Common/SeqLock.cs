@@ -39,7 +39,7 @@ namespace SCADA.Common
                 if ((seq & 1) == 0)
                 {
                     // 读内存屏障：防止 CPU 将下方读取受保护数据的指令，重排序到读取版本号之前
-                    Thread.MemoryBarrier();
+                    // Thread.MemoryBarrier();
                     return seq;
                 }
 
