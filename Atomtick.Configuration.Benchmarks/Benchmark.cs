@@ -78,6 +78,11 @@ namespace SCADA.Configuration.Benchmarks
         {
             //for (int i = 0; i < 250000; i++)
             //{
+            //Parallel.For(
+            //    0,
+            //    10,
+            //    i =>
+            //    {
             (
                 var vFAEnable,
                 var vFAMode,
@@ -146,6 +151,8 @@ namespace SCADA.Configuration.Benchmarks
             _consumer.Consume(WindowHeater);
             _consumer.Consume(PumpingLine);
             _consumer.Consume(Baratron);
+            //}
+            //);
         }
 
         [WarmupCount(5)]
