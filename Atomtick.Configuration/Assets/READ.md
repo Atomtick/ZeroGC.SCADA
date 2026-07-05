@@ -1,8 +1,38 @@
 ﻿# 解决了什么问题
 
+Atomtick.Configuration的核心价值是
+
+1. 支持原子批量读写 
+2. 读操作零GC 
+3. 纳秒级性能
+
+下面是BenchmarkDotNet的测试报告, 该报告说明: 原子性批量读取16个配置项, 仅耗时`47.966 ns`, 相当于执行两次将一个字符串转换成数字的时间, 速度极快, 同时`满足零GC`!
+
+```
+
+BenchmarkDotNet v0.15.8, Windows 10 (10.0.19045.6466/22H2/2022Update)
+12th Gen Intel Core i7-1260P 2.10GHz, 1 CPU, 16 logical and 12 physical cores
+.NET SDK 10.0.301
+  [Host]     : .NET 10.0.9 (10.0.9, 10.0.926.27113), X64 RyuJIT x86-64-v3
+  Job-YGNLVQ : .NET 10.0.9 (10.0.9, 10.0.926.27113), X64 RyuJIT x86-64-v3
+
+Server=False  WarmupCount=5  
+
+```
+| Method              |        Mean |     Error |    StdDev | Ratio | RatioSD | Allocated | Alloc Ratio |
+| ------------------- | ----------: | --------: | --------: | ----: | ------: | --------: | ----------: |
+| ParseStringToDouble | `27.128 ns` | 0.3929 ns | 0.3675 ns |  1.00 |    0.02 |       `-` |          NA |
+| HashSearch          | `23.654 ns` | 0.4555 ns | 0.4260 ns |  0.87 |    0.02 |       `-` |          NA |
+| Read16Items         | `47.966 ns` | 0.1554 ns | 0.1378 ns |  1.77 |    0.02 |       `-` |          NA |
+| ReadOneItem         |  `4.467 ns` | 0.0167 ns | 0.0148 ns |  0.16 |    0.00 |       `-` |          NA |
+
+
+
+
+
 - **跨平台**
   - 支持 Windows, Linux, MacOS
-  - 支持 .NET Framework 4.6.2 及以上, .NET 12 及以上.
+  - 支持 .NET Framework 4.6.2 & .NET 12.
 
 - **支持修改**
   - .NET Framework 和 .NET Core 内置的配置系统, 仅对读取操作友好, 但是对程序运行中修改配置操作支持差劲, 不适合在工业软件中, 用户需要频繁修改配置以完成装机调试, 工艺验证, 流程管控等场景.
@@ -225,7 +255,7 @@ var vSimulatorMode = _configSource.Read(iIsSimulatorMode);
 var simulatorMode = vSimulatorMode.ToBool(true);
 ```
 
-**批量读取多个配置**
+**读取多个配置**
 
 `System.IsSimulatorMode 和 System.CycleCount 来自同一快照, 满足一致性和原子性`
 
@@ -241,6 +271,12 @@ var cycleCount = vCycleCount.ToInt32();
 ```
 
 **读取配置的最佳实践**
+
+SelectConfigItem
+
+
+
+
 
 ```C#
 public class TransferModule

@@ -5,12 +5,15 @@ using System.Security.Cryptography;
 using System.Text;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Engines;
 using SCADA.Common;
 
 namespace SCADA.Configuration.Benchmarks
 {
-    [MemoryDiagnoser]
+    [MemoryDiagnoser(displayGenColumns: true)]
+    [EventPipeProfiler(EventPipeProfile.GcVerbose)] // 会生成一个 .nettrace 文件，你可以用 Visual Studio 或 PerfView 打开，精确看到是哪一行代码触发了分配
+    [GcServer(false)] // 强制使用 Workstation GC，降低内存阈值，更容易触发回收
     public class Benchmark
     {
         private readonly PrimitiveConfigSource _configSource;
@@ -56,33 +59,23 @@ namespace SCADA.Configuration.Benchmarks
         }
 
         [WarmupCount(5)]
-        [Benchmark(
-            Baseline = true /*, OperationsPerInvoke = 250000*/
-        )] // 标记为基准测试，设为基准对比项
-        public void ConvertStringToDouble()
+        [Benchmark(Baseline = true)] // 标记为基准测试，设为基准对比项
+        public void ParseStringToDouble()
         {
-            //for (int i = 0; i < 250000; i++)
-            //{
-            _configSource.SelectConfigItem("PM1.BaratronLineHeater.IsInstalled");
-            object d = double.Parse("3.14159");
-            _consumer.Consume(d);
-            //_configSource.SelectConfigItem("FA.Enable");
-            //}
+            double.Parse("3.14159");
         }
 
         [WarmupCount(5)]
-        [Benchmark( /*OperationsPerInvoke = 250000*/
-
-        )]
-        public void Read16()
+        [Benchmark()]
+        public void HashSearch()
         {
-            //for (int i = 0; i < 250000; i++)
-            //{
-            //Parallel.For(
-            //    0,
-            //    10,
-            //    i =>
-            //    {
+            _configSource.SelectConfigItem("PM1.BaratronLineHeater.IsInstalled");
+        }
+
+        [WarmupCount(5)]
+        [Benchmark()]
+        public void Read16Items()
+        {
             (
                 var vFAEnable,
                 var vFAMode,
@@ -135,39 +128,32 @@ namespace SCADA.Configuration.Benchmarks
             var PumpingLine = vPumpingLine.ToBool();
             var Baratron = vBaratron.ToBool();
             // 将值喂给 Consumer，防止 val 的读取被 JIT 删掉
-            _consumer.Consume(FAEnable);
-            _consumer.Consume(FAMode);
-            _consumer.Consume(T3Timeout);
-            _consumer.Consume(NotchDegree);
-            _consumer.Consume(TStableCriteria);
-            _consumer.Consume(stableTime);
-            _consumer.Consume(alarmRange);
-            _consumer.Consume(alarmtime);
-            _consumer.Consume(warningTime);
-            _consumer.Consume(warningrange);
-            _consumer.Consume(EnableLogMessage);
-            _consumer.Consume(BaudRate);
-            _consumer.Consume(DataBits);
-            _consumer.Consume(WindowHeater);
-            _consumer.Consume(PumpingLine);
-            _consumer.Consume(Baratron);
-            //}
-            //);
+            //_consumer.Consume(FAEnable);
+            //_consumer.Consume(FAMode);
+            //_consumer.Consume(T3Timeout);
+            //_consumer.Consume(NotchDegree);
+            //_consumer.Consume(TStableCriteria);
+            //_consumer.Consume(stableTime);
+            //_consumer.Consume(alarmRange);
+            //_consumer.Consume(alarmtime);
+            //_consumer.Consume(warningTime);
+            //_consumer.Consume(warningrange);
+            //_consumer.Consume(EnableLogMessage);
+            //_consumer.Consume(BaudRate);
+            //_consumer.Consume(DataBits);
+            //_consumer.Consume(WindowHeater);
+            //_consumer.Consume(PumpingLine);
+            //_consumer.Consume(Baratron);
         }
 
         [WarmupCount(5)]
-        [Benchmark( /*OperationsPerInvoke = 250000*/
-
-        )]
-        public void Read1()
+        [Benchmark()]
+        public void ReadOneItem()
         {
-            //for (int i = 0; i < 250000; i++)
-            //{
             var vFAEnable = _configSource.Read(iFAEnable);
             var FAEnable = vFAEnable.ToBool();
             // 将值喂给 Consumer，防止 val 的读取被 JIT 删掉
             _consumer.Consume(FAEnable);
-            //}
         }
     }
 }

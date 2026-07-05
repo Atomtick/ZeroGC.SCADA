@@ -40,9 +40,6 @@
         <PackageReference Include="System.ValueTuple" Version="4.6.2" />
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\SCADA.Common\SCADA.Common.csproj" />
-    </ItemGroup>
-    <ItemGroup>
         <Compile Update="Assets\ExceptionMessages.Designer.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
@@ -58,5 +55,8 @@
     <!--指定程序集的internal成员可在另一个程序集中被调用-->
     <ItemGroup>
         <InternalsVisibleTo Include="SCADA.Configuration.UnitTests" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Atomtick.Common\Atomtick.Common.csproj" />
     </ItemGroup>
 </Project>

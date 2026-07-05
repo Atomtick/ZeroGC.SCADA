@@ -10,6 +10,6 @@
         File,
         Folder,
         DateTime,
-        Color
+        Color,
     }
 }
