@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SCADA.Configuration\SCADA.Configuration.csproj" />
+    <ProjectReference Include="..\Atomtick.Common\Atomtick.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>
