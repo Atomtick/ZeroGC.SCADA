@@ -4,19 +4,18 @@
   1. name 必须以DI_ DO_ AI_ AO_开 头命名，分别表示数字量输入、数字量输出、模拟量输入、模拟量输出
   2. addr 1,2,3,4,...,1.0,1.1,1.2,...1.7
   3. type bool int float double string1,string2,...stringN
-  4. 要支持直接写PLC，如配方，它不需要实时读取，只有在打开某个界面时才读取PLC数据，可以配置为不读PLC，在点击发送配方时，写一次。
-  5. 所以在此文件中只是配置的是需要实时刷新的PLC地址
+  4. 要支持直接写PLC，如配方，它不需要实时读取，polling="false" 只有在打开某个界面时才读取PLC数据，可以配置为不读PLC，在点击发送配方时，写一次。
 -->
 <PlcInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="!PlcInfo.Template.xsd" module="PM1" name="PLC" buffcount="20" address="192.168.2.10:12345" class="SCADA.PlcAdatpters.BeckoffPlcAdapter" assembly="SCADA.PlcAdatpters.dll">
 	<BlockList>
-		<PollingBlock id="1" type="di" startaddr="I3" len="50" />
-		<PollingBlock id="2" type="do" startaddr="M1" len="50" />
-		<PollingBlock id="3" type="ai" startaddr="D23" len="300" />
-		<PollingBlock id="4" type="ao" startaddr="D54" len="300" />
+		<ByteBlock id="1" type="in" startaddr="I3" len="50" polling="true"/>
+		<ByteBlock id="2" type="out" startaddr="M1" len="50" polling="true"/>
+		<ByteBlock id="3" type="in" startaddr="D23" len="300" polling="true"/>
+		<ByteBlock id="4" type="out" startaddr="D54" len="300" polling="true"/>
 		<!--Read或Write时必须传入Block包含的所有Item，适用大字节块的Recipe-->
-		<StaticBlock id="5" type="ai" startaddr="" len="" />
+		<ByteBlock id="5" type="in" startaddr="" len="" polling="false"/>
 		<!--Read或Write时时必须传入Block包含的所有Item，适用大字节块的Recipe-->
-		<StaticBlock id="6" type="ao" startaddr="" len="" />
+		<ByteBlock id="6" type="out" startaddr="" len="" polling="false"/>
 	</BlockList>
 	<IOList>
 		<DIList>
