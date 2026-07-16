@@ -1,4 +1,7 @@
 ﻿using System;
+#if NET8_0_OR_GREATER
+using System.Collections.Frozen;
+#endif
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -42,6 +45,9 @@ namespace SCADA.Configuration
             Settings = settings ?? new ConfigSourceSettings();
             _dbConnectionString = $"Data Source={sqliteDB}";
             Initialize();
+#if NET8_0_OR_GREATER
+            _configItems = _configItems.ToFrozenDictionary();
+#endif
             _saveTask = Function();
         }
 
