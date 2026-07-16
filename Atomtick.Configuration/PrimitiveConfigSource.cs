@@ -1,7 +1,4 @@
 ﻿using System;
-#if NET8_0_OR_GREATER
-using System.Collections.Frozen;
-#endif
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,6 +6,9 @@ using System.Threading.Channels;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using SCADA.Common;
+#if NET8_0_OR_GREATER
+using System.Collections.Frozen;
+#endif
 
 namespace SCADA.Configuration
 {
@@ -36,7 +36,7 @@ namespace SCADA.Configuration
         private const string CONFIG_SCHEMA_DOCUMENT = "config_schema_document";
 
         // 实例化一个顺序锁
-        private SeqLock _seqLock = new SeqLock();
+        private readonly SeqLock _seqLock = new SeqLock();
 
         public PrimitiveConfigSource(string sqliteDB, ConfigSourceSettings settings = null)
         {
