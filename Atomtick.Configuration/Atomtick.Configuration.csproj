@@ -5,7 +5,7 @@
         <Nullable>disable</Nullable>
         <PackageReadmeFile></PackageReadmeFile>
         <Title>$(AssemblyName)</Title>
-        <PackageTags>SCADA;Config;XML</PackageTags>
+        <PackageTags>config;xml</PackageTags>
         <IncludeSymbols>True</IncludeSymbols>
         <PackageIcon>setting.png</PackageIcon>
         <SignAssembly>True</SignAssembly>
@@ -57,6 +57,6 @@
         <InternalsVisibleTo Include="SCADA.Configuration.UnitTests" />
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\Atomtick.Common\Atomtick.Common.csproj" />
+        <ProjectReference Include="..\Atomtick.Common\Atomtick.Common.csproj" />
     </ItemGroup>
 </Project>

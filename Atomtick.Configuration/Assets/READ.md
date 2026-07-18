@@ -668,6 +668,23 @@ configSource.Write(transactionId,"System.DataReport", "../../data.xlsx");
 
 > 每次调用CommitTransaction都会写一次数据库。如果有多个修改，单次批量提交性能更高开销更小，且可以保证只要有一项校验失败，则全部的设置项都不会被修改，即原子操作。
 
+## 校验值
+
+
+
+```c#
+// 方式一: 校验失败会抛出异常
+configSource.ValidateValue("FA.LocalPortNumber", "1000");
+// 方式二: ok是true表示校验通过,false表示校验失败,errorMessage是失败原因.
+var ok = configSource.ValidateValue("FA.LocalPortNumber", "1000", out string errorMessage);
+```
+
+
+
+高频校验场景请使用方式二, 因为方式一频繁抛出异常会严重影响性能.
+
+
+
 ## ValueSet
 
 调用SetValue( )会触发ValueSet事件，事件参数是被修改的配置项，旧值，新值。
