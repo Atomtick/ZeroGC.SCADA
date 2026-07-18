@@ -38,11 +38,11 @@ namespace SCADA.Configuration
         // 实例化一个顺序锁
         private readonly SeqLock _seqLock = new SeqLock();
 
-        public PrimitiveConfigSource(string sqliteDB, ConfigSourceSettings settings = null)
+        public PrimitiveConfigSource(string sqliteDB, ConfigSettings settings = null)
         {
             if (!File.Exists(sqliteDB))
                 throw new FileNotFoundException("The sqlite DB file does not exist.", sqliteDB);
-            Settings = settings ?? new ConfigSourceSettings();
+            Settings = settings ?? new ConfigSettings();
             _dbConnectionString = $"Data Source={sqliteDB}";
             Initialize();
 #if NET8_0_OR_GREATER
@@ -54,7 +54,7 @@ namespace SCADA.Configuration
         public event Action<LightWeightMap> ValueChanged;
         public event Action<LightWeightMap> ValueChanging;
 
-        public ConfigSourceSettings Settings { get; }
+        public ConfigSettings Settings { get; }
 
         public void Dispose()
         {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SCADA.Configuration
 {
-    public class ConfigSourceSettings
+    public class ConfigSettings
     {
         public bool SupportAtomicOperations { get; set; } = true;
         public bool TrackConfigValueModification { get; set; } = true;

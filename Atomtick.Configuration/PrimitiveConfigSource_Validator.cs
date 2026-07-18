@@ -41,7 +41,7 @@ namespace SCADA.Configuration
             }
             else if (configType == ConfigType.Integer)
             {
-                if (!StringParser.TryParse2Int64(strValue, out longNumber))
+                if (!TryParse2Int64(strValue, out longNumber))
                 {
                     errorMessage = ExceptionHelper.GetFormattedString("InvalidCastException_CannotConvert2Integer", strValue, config);
                     return false;
@@ -57,7 +57,7 @@ namespace SCADA.Configuration
             }
             else if (configType == ConfigType.Decimal)
             {
-                if (!StringParser.TryParse2Double(strValue, out doubleNumber))
+                if (!TryParse2Double(strValue, out doubleNumber))
                 {
                     errorMessage = ExceptionHelper.GetFormattedString("InvalidCastException_CannotConvert2Double", strValue, config);
                     return false;
@@ -65,7 +65,7 @@ namespace SCADA.Configuration
             }
             else if (configType == ConfigType.File)
             {
-                if (StringParser.TryParse2File(strValue, out var _) == false)
+                if (TryParse2File(strValue, out var _) == false)
                 {
                     errorMessage = ExceptionHelper.GetFormattedString("InvalidCastException_CannotConvert2Path", strValue, config);
                     return false;
@@ -73,7 +73,7 @@ namespace SCADA.Configuration
             }
             else if (configType == ConfigType.Folder)
             {
-                if (StringParser.TryParse2Directory(strValue, out var _) == false)
+                if (TryParse2Directory(strValue, out var _) == false)
                 {
                     errorMessage = ExceptionHelper.GetFormattedString("InvalidCastException_CannotConvert2Path", strValue, config);
                     return false;
@@ -81,7 +81,7 @@ namespace SCADA.Configuration
             }
             else if (configType == ConfigType.DateTime)
             {
-                if (!StringParser.TryParse2DateTime(strValue, out _))
+                if (!TryParse2DateTime(strValue, out _))
                 {
                     errorMessage = ExceptionHelper.GetFormattedString("InvalidCastException_CannotConvert2DateTime", strValue, config);
                     return false;
@@ -89,7 +89,7 @@ namespace SCADA.Configuration
             }
             else if (configType == ConfigType.Color)
             {
-                if (!StringParser.TryParse2Color(strValue, out _))
+                if (!TryParse2Color(strValue, out _))
                 {
                     errorMessage = ExceptionHelper.GetFormattedString("InvalidCastException_CannotConvert2Color", strValue, config);
                     return false;
@@ -116,7 +116,7 @@ namespace SCADA.Configuration
                     var longOptions = new List<long>();
                     foreach (var option in options)
                     {
-                        if (StringParser.TryParse2Int64(option, out long longValue))
+                        if (TryParse2Int64(option, out long longValue))
                         {
                             longOptions.Add(longValue);
                         }
@@ -126,7 +126,7 @@ namespace SCADA.Configuration
                             return false;
                         }
                     }
-                    StringParser.TryParse2Int64(strValue, out long @long); // 肯定返回true，因为前面已经调用此函数校验过字符串了
+                    TryParse2Int64(strValue, out long @long); // 肯定返回true，因为前面已经调用此函数校验过字符串了
                     if (!longOptions.Contains(@long))
                     {
                         errorMessage = $"The value '{strValue}' is not in the options for config item '{config}'.";
@@ -138,7 +138,7 @@ namespace SCADA.Configuration
                     var doubleOptions = new List<double>();
                     foreach (var option in options)
                     {
-                        if (StringParser.TryParse2Double(option, out double doubleValue))
+                        if (TryParse2Double(option, out double doubleValue))
                         {
                             doubleOptions.Add(doubleValue);
                         }
@@ -148,7 +148,7 @@ namespace SCADA.Configuration
                             return false;
                         }
                     }
-                    StringParser.TryParse2Double(strValue, out double @double); // 肯定返回true，因为前面已经调用此函数校验过字符串了。
+                    TryParse2Double(strValue, out double @double); // 肯定返回true，因为前面已经调用此函数校验过字符串了。
                     if (!doubleOptions.Contains(@double))
                     {
                         errorMessage = $"The value '{strValue}' is not in the options for config item '{config}'.";
@@ -163,8 +163,8 @@ namespace SCADA.Configuration
 
             if (configType == ConfigType.Integer)
             {
-                StringParser.TryParse2Int64(configItem.MaxValue, out var max);
-                StringParser.TryParse2Int64(configItem.MinValue, out var min);
+                TryParse2Int64(configItem.MaxValue, out var max);
+                TryParse2Int64(configItem.MinValue, out var min);
                 if (longNumber > max || longNumber < min)
                 {
                     errorMessage = ExceptionHelper.GetFormattedString("ArgumentOutOfRangeException_MaxMin", strValue, config, configItem.MinValue, configItem.MaxValue);
@@ -174,8 +174,8 @@ namespace SCADA.Configuration
 
             if (configType == ConfigType.Decimal)
             {
-                StringParser.TryParse2Double(configItem.MaxValue, out var max);
-                StringParser.TryParse2Double(configItem.MinValue, out var min);
+                TryParse2Double(configItem.MaxValue, out var max);
+                TryParse2Double(configItem.MinValue, out var min);
                 if (doubleNumber > max || doubleNumber < min)
                 {
                     errorMessage = ExceptionHelper.GetFormattedString("ArgumentOutOfRangeException_MaxMin", strValue, config, configItem.MinValue, configItem.MaxValue);
@@ -198,7 +198,7 @@ namespace SCADA.Configuration
                 }
                 else if (vtype == ConfigType.Decimal)
                 {
-                    if (StringParser.TryParse2Double(strValue, out doubleNumber))
+                    if (TryParse2Double(strValue, out doubleNumber))
                     {
                         if (!Regex.IsMatch(doubleNumber.ToString(CultureInfo.InvariantCulture), regex))
                         {
@@ -209,7 +209,7 @@ namespace SCADA.Configuration
                 }
                 else if (vtype == ConfigType.Integer)
                 {
-                    if (StringParser.TryParse2Int64(strValue, out longNumber))
+                    if (TryParse2Int64(strValue, out longNumber))
                     {
                         if (!Regex.IsMatch(longNumber.ToString(CultureInfo.InvariantCulture), regex))
                         {

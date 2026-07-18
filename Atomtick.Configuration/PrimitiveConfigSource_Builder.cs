@@ -295,7 +295,7 @@ namespace SCADA.Configuration
                         else
                         {
                             min = min.Trim();
-                            if ((configType == ConfigType.Decimal && !StringParser.TryParse2Double(min, out _)) || (configType == ConfigType.Integer && !StringParser.TryParse2Int64(min, out _)))
+                            if ((configType == ConfigType.Decimal && !TryParse2Double(min, out _)) || (configType == ConfigType.Integer && !TryParse2Int64(min, out _)))
                             {
                                 throw new ArgumentException($"Invalid value for 'min' attribute: '{min}'. Hint:'{GetHint()}'");
                             }
@@ -326,7 +326,7 @@ namespace SCADA.Configuration
                         else
                         {
                             max = max.Trim();
-                            if ((configType == ConfigType.Decimal && !StringParser.TryParse2Double(max, out _)) || (configType == ConfigType.Integer && !StringParser.TryParse2Int64(max, out _)))
+                            if ((configType == ConfigType.Decimal && !TryParse2Double(max, out _)) || (configType == ConfigType.Integer && !TryParse2Int64(max, out _)))
                             {
                                 throw new ArgumentException($"Invalid value for 'max' attribute: '{max}'. Hint:'{GetHint()}'");
                             }
@@ -424,42 +424,42 @@ namespace SCADA.Configuration
                         }
                         else if (configType == ConfigType.Integer)
                         {
-                            if (!StringParser.TryParse2Int64(initialValue, out _))
+                            if (!TryParse2Int64(initialValue, out _))
                             {
                                 throw new ArgumentException($"The 'value' attribute must be a integer value. Hint:'{GetHint()}'");
                             }
                         }
                         else if (configType == ConfigType.Decimal)
                         {
-                            if (!StringParser.TryParse2Double(initialValue, out _))
+                            if (!TryParse2Double(initialValue, out _))
                             {
                                 throw new ArgumentException($"The 'value' attribute must be a numeric value. Hint:'{GetHint()}'");
                             }
                         }
                         else if (configType == ConfigType.File)
                         {
-                            if (!StringParser.TryParse2File(initialValue, out _))
+                            if (!TryParse2File(initialValue, out _))
                             {
                                 throw new ArgumentException($"The 'value' attribute must be a file value. Hint:'{GetHint()}'");
                             }
                         }
                         else if (configType == ConfigType.Folder)
                         {
-                            if (!StringParser.TryParse2Directory(initialValue, out _))
+                            if (!TryParse2Directory(initialValue, out _))
                             {
                                 throw new ArgumentException($"The 'value' attribute must be a folder value. Hint:'{GetHint()}'");
                             }
                         }
                         else if (configType == ConfigType.Color)
                         {
-                            if (!StringParser.TryParse2Color(initialValue, out _))
+                            if (!TryParse2Color(initialValue, out _))
                             {
                                 throw new ArgumentException($"The 'value' attribute must be a color value. Hint:'{GetHint()}'");
                             }
                         }
                         else if (configType == ConfigType.DateTime)
                         {
-                            if (!StringParser.TryParse2DateTime(initialValue, out _))
+                            if (!TryParse2DateTime(initialValue, out _))
                             {
                                 throw new ArgumentException($"The 'value' attribute must be a DateTime value. Hint:'{GetHint()}'");
                             }

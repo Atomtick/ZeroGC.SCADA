@@ -12,8 +12,7 @@ namespace SCADA.Configuration
 {
     public partial class ConfigItem : ICloneable
     {
-        private static readonly ConcurrentDictionary<string, ConfigItem> _absentConfigCache =
-            new ConcurrentDictionary<string, ConfigItem>();
+        private static readonly ConcurrentDictionary<string, ConfigItem> _absentConfigCache = new ConcurrentDictionary<string, ConfigItem>();
 
         public string Description { get; set; }
 
@@ -53,12 +52,6 @@ namespace SCADA.Configuration
         public Action<string> ValidationRule { get; set; }
 
         public bool Visible { get; set; }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void ThrowConfigNotFoundException(string config)
-        {
-            throw new KeyNotFoundException($"Config item '{config}' doesn't exist.");
-        }
 
         object ICloneable.Clone()
         {
