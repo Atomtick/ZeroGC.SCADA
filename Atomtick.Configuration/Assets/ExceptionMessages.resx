@@ -144,4 +144,7 @@
   <data name="InvalidCastException_CannotConvert2Path" xml:space="preserve">
     <value>'{0}' is not a valid path string for ‘{1}’.</value>
   </data>
+  <data name="Value_Empty_Null" xml:space="preserve">
+    <value>'{0}' value can not be empty.</value>
+  </data>
 </root>

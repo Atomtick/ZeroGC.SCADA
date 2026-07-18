@@ -144,4 +144,7 @@
   <data name="InvalidCastException_CannotConvert2Path" xml:space="preserve">
     <value>'{0}'不是一个合法的路径字符串。配置项：'{1}'。</value>
   </data>
+  <data name="Value_Empty_Null" xml:space="preserve">
+    <value>'{0}'的值不能是空字符串。</value>
+  </data>
 </root>

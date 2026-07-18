@@ -6,8 +6,7 @@
 
     internal static class ExceptionHelper
     {
-        private static readonly ResourceManager rm =
-            new ResourceManager("SCADA.Configuration.Assets.ExceptionMessages", Assembly.GetExecutingAssembly());
+        private static readonly ResourceManager rm = new ResourceManager("Atomtick.Configuration.Assets.ExceptionMessages", Assembly.GetExecutingAssembly());
 
         // 新增：获取并格式化字符串的方法
         // 使用 params 关键字允许传入任意数量的参数

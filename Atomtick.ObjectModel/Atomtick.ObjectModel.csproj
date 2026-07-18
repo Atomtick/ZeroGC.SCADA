@@ -6,8 +6,4 @@
     <Nullable>disable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\SCADA.Common\SCADA.Common.csproj" />
-  </ItemGroup>
-
 </Project>

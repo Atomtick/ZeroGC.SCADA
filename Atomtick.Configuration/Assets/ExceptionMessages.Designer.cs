@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SCADA.Configuration.Assets {
+namespace Atomtick.Configuration.Assets {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace SCADA.Configuration.Assets {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SCADA.Configuration.Assets.ExceptionMessages", typeof(ExceptionMessages).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Atomtick.Configuration.Assets.ExceptionMessages", typeof(ExceptionMessages).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -138,6 +138,15 @@ namespace SCADA.Configuration.Assets {
         internal static string InvalidCastException_CannotConvert2Path {
             get {
                 return ResourceManager.GetString("InvalidCastException_CannotConvert2Path", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; value can not be empty..
+        /// </summary>
+        internal static string Value_Empty_Null {
+            get {
+                return ResourceManager.GetString("Value_Empty_Null", resourceCulture);
             }
         }
     }
