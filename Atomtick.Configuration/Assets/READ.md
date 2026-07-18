@@ -673,8 +673,11 @@ configSource.Write(transactionId,"System.DataReport", "../../data.xlsx");
 
 
 ```c#
+IConfigValidator configSource = new PrimitiveConfigSource("configs.db");
+
 // 方式一: 校验失败会抛出异常
 configSource.ValidateValue("FA.LocalPortNumber", "1000");
+
 // 方式二: ok是true表示校验通过,false表示校验失败,errorMessage是失败原因.
 var ok = configSource.ValidateValue("FA.LocalPortNumber", "1000", out string errorMessage);
 ```
