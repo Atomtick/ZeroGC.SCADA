@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SCADA.Common\SCADA.Common.csproj" />
+    <ProjectReference Include="..\Atomtick.Common\Atomtick.Common.csproj" />
   </ItemGroup>
 
 </Project>
