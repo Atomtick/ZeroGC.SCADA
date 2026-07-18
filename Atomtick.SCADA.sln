@@ -37,8 +37,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UI-RT-Shared", "UI-RT-Share
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
 	ProjectSection(SolutionItems) = preProject
-		README.md = README.md
 		Atomtick_Design_Mind.md = Atomtick_Design_Mind.md
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomtick.UIClient", "Atomtick.UIClient\Atomtick.UIClient.csproj", "{85A0DD3E-B6B2-4794-94A2-250FCE4D36FC}"
@@ -87,7 +87,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PLC", "PLC", "{951E2E38-3C6
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{F5119733-7702-4E08-86B9-9D1BB4CF6E8F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gem", "Gem", "{26C54BBA-E11B-45A9-8570-3EED90EE9EB5}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FA", "FA", "{26C54BBA-E11B-45A9-8570-3EED90EE9EB5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
