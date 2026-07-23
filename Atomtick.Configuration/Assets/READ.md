@@ -670,7 +670,7 @@ configSource.Write(transactionId,"System.DataReport", "../../data.xlsx");
 
 ## 校验值
 
-
+### 校验代码
 
 ```c#
 IConfigValidator configSource = new PrimitiveConfigSource("configs.db");
@@ -682,11 +682,31 @@ configSource.ValidateValue("FA.LocalPortNumber", "1000");
 var ok = configSource.ValidateValue("FA.LocalPortNumber", "1000", out string errorMessage);
 ```
 
+> 高频校验场景请使用方式二, 因为方式一频繁抛出异常会严重影响性能.
 
+### 校验流程
 
-高频校验场景请使用方式二, 因为方式一频繁抛出异常会严重影响性能.
+- 集合校验
+  - String, Integer, Decimal, Color才有此项校验
+  - Integer 和 Decimal 比较特殊, 它先统一的把Options里面的元素以及待校验的值全部转换成数字类型(long或double),然后再看转换后的集合是否包含转换后的待校验值. 举例: 假设string[] options=["1", "0x02", "3.14E2"], 待校验值是2, 则校验过程是[1,2,314].Contains(2),结果是包含!
 
+- 最值校验
+  - 如果大于最大值或小于最小值, 则校验失败.
+  - Integer和Decimal才有此项校验, 其他类型无.
+- 正则校验
+  - String, Folder, File, DateTime的字符串形式直接进行正则表达.
+  - Bool和Color无此校验
+  - Integer和Decimal先统一转换成十进制字符串形式再进行正则表达. (举例: 如果是十六进制如'0X0A', 那么进行正则表达校验的实际字符串是'10')
+  - AppendedValidationRule. 
 
+### 校验位置
+
+Atomtick.Configuration Library 内部在3个位置调用校验函数进行校验.
+
+1. 初始化时,对intial_value校验.
+2. 初始化时,对持久化的current_value校验.
+3. 初始化时,对options所有子元素校验.
+4. Write函数修改配置项的值时对新值校验.
 
 ## ValueSet
 

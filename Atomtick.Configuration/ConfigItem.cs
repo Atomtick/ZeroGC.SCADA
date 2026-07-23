@@ -10,7 +10,7 @@ using SCADA.Common.Interfaces;
 
 namespace SCADA.Configuration
 {
-    public partial class ConfigItem : ICloneable
+    public class ConfigItem : ICloneable
     {
         private static readonly ConcurrentDictionary<string, ConfigItem> _absentConfigCache = new ConcurrentDictionary<string, ConfigItem>();
 
