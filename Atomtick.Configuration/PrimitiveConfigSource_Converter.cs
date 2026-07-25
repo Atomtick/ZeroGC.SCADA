@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Text.RegularExpressions;
 using Atomtick.Configuration.Interfaces;
 
@@ -346,6 +347,36 @@ namespace SCADA.Configuration
 
         public string Convert2String(object value)
         {
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+            if (value is string s)
+            {
+                if (string.IsNullOrWhiteSpace(s))
+                {
+                    throw new ArgumentException("value can not be white space.", nameof(value));
+                }
+                return s;
+            }
+            if (
+                value is bool
+                || value is long
+                || value is ulong
+                || value is int
+                || value is uint
+                || value is ushort
+                || value is short
+                || value is byte
+                || value is sbyte
+                || value is float
+                || value is double
+                || value is decimal
+            )
+            {
+                return Convert.ToString(value, CultureInfo.InvariantCulture);
+            }
+
             if (value is DateTime dateTime)
                 return dateTime.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
 
@@ -358,7 +389,7 @@ namespace SCADA.Configuration
             if (value is DirectoryInfo directoryInfo)
                 return directoryInfo.FullName;
 
-            return value.ToString();
+            throw new ArgumentException($"Unsupported value type '{value.GetType().Name}'.", nameof(value));
         }
     }
 }
