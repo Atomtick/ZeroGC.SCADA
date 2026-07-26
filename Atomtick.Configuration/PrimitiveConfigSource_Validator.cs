@@ -14,7 +14,7 @@ namespace SCADA.Configuration
         {
             if (string.IsNullOrWhiteSpace(config))
             {
-                errorMessage = "Config item cannot be null or empty.";
+                errorMessage = "Config item name cannot be null or empty.";
                 return false;
             }
             if (string.IsNullOrWhiteSpace(value))
@@ -28,7 +28,7 @@ namespace SCADA.Configuration
                 return false;
             }
             ConfigType configType = configItem.Type;
-            string strValue = value.Trim();
+            string trimmedValue = value.Trim();
 
             #region CS Data Type Validation
 
@@ -41,57 +41,57 @@ namespace SCADA.Configuration
             }
             else if (configType == ConfigType.Integer)
             {
-                if (!TryParse2Int64(strValue, out longNumber))
+                if (!TryParse2Int64(trimmedValue, out longNumber))
                 {
-                    errorMessage = ExceptionHelper.GetFormattedString("InvalidCastException_CannotConvert2Integer", strValue, config);
+                    errorMessage = ExceptionHelper.GetFormattedString("InvalidCastException_CannotConvert2Integer", trimmedValue, config);
                     return false;
                 }
             }
             else if (configType == ConfigType.Bool)
             {
-                if (!bool.TryParse(strValue, out _))
+                if (!bool.TryParse(trimmedValue, out _))
                 {
-                    errorMessage = ExceptionHelper.GetFormattedString("InvalidCastException_CannotConvert2Boolean", strValue, config);
+                    errorMessage = ExceptionHelper.GetFormattedString("InvalidCastException_CannotConvert2Boolean", trimmedValue, config);
                     return false;
                 }
             }
             else if (configType == ConfigType.Decimal)
             {
-                if (!TryParse2Double(strValue, out doubleNumber))
+                if (!TryParse2Double(trimmedValue, out doubleNumber))
                 {
-                    errorMessage = ExceptionHelper.GetFormattedString("InvalidCastException_CannotConvert2Double", strValue, config);
+                    errorMessage = ExceptionHelper.GetFormattedString("InvalidCastException_CannotConvert2Double", trimmedValue, config);
                     return false;
                 }
             }
             else if (configType == ConfigType.File)
             {
-                if (TryParse2File(strValue, out var _) == false)
+                if (TryParse2File(trimmedValue, out var _) == false)
                 {
-                    errorMessage = ExceptionHelper.GetFormattedString("InvalidCastException_CannotConvert2Path", strValue, config);
+                    errorMessage = ExceptionHelper.GetFormattedString("InvalidCastException_CannotConvert2Path", trimmedValue, config);
                     return false;
                 }
             }
             else if (configType == ConfigType.Folder)
             {
-                if (TryParse2Directory(strValue, out var _) == false)
+                if (TryParse2Directory(trimmedValue, out var _) == false)
                 {
-                    errorMessage = ExceptionHelper.GetFormattedString("InvalidCastException_CannotConvert2Path", strValue, config);
+                    errorMessage = ExceptionHelper.GetFormattedString("InvalidCastException_CannotConvert2Path", trimmedValue, config);
                     return false;
                 }
             }
             else if (configType == ConfigType.DateTime)
             {
-                if (!TryParse2DateTime(strValue, out _))
+                if (!TryParse2DateTime(trimmedValue, out _))
                 {
-                    errorMessage = ExceptionHelper.GetFormattedString("InvalidCastException_CannotConvert2DateTime", strValue, config);
+                    errorMessage = ExceptionHelper.GetFormattedString("InvalidCastException_CannotConvert2DateTime", trimmedValue, config);
                     return false;
                 }
             }
             else if (configType == ConfigType.Color)
             {
-                if (!TryParse2Color(strValue, out _))
+                if (!TryParse2Color(trimmedValue, out _))
                 {
-                    errorMessage = ExceptionHelper.GetFormattedString("InvalidCastException_CannotConvert2Color", strValue, config);
+                    errorMessage = ExceptionHelper.GetFormattedString("InvalidCastException_CannotConvert2Color", trimmedValue, config);
                     return false;
                 }
             }
@@ -103,11 +103,11 @@ namespace SCADA.Configuration
             var options = configItem.Options;
             if (options != null && options.Length > 0)
             {
-                if (configType == ConfigType.String)
+                if (configType == ConfigType.String || configType == ConfigType.Color)
                 {
-                    if (!options.Contains(strValue))
+                    if (!options.Contains(trimmedValue))
                     {
-                        errorMessage = $"The value '{strValue}' is not in the options for config item '{config}'.";
+                        errorMessage = $"The value '{trimmedValue}' is not in the options for config item '{config}'.";
                         return false;
                     }
                 }
@@ -116,20 +116,14 @@ namespace SCADA.Configuration
                     var longOptions = new List<long>();
                     foreach (var option in options)
                     {
-                        if (TryParse2Int64(option, out long longValue))
-                        {
-                            longOptions.Add(longValue);
-                        }
-                        else
-                        {
-                            errorMessage = $"option '{option}' can't convert to a integer for '{config}'.";
-                            return false;
-                        }
+                        TryParse2Int64(option, out long longValue);
+
+                        longOptions.Add(longValue);
                     }
-                    TryParse2Int64(strValue, out long @long); // 肯定返回true，因为前面已经调用此函数校验过字符串了
+                    TryParse2Int64(trimmedValue, out long @long); // 肯定返回true，因为前面已经调用此函数校验过字符串了
                     if (!longOptions.Contains(@long))
                     {
-                        errorMessage = $"The value '{strValue}' is not in the options for config item '{config}'.";
+                        errorMessage = $"The value '{trimmedValue}' is not in the options for config item '{config}'.";
                         return false;
                     }
                 }
@@ -138,20 +132,14 @@ namespace SCADA.Configuration
                     var doubleOptions = new List<double>();
                     foreach (var option in options)
                     {
-                        if (TryParse2Double(option, out double doubleValue))
-                        {
-                            doubleOptions.Add(doubleValue);
-                        }
-                        else
-                        {
-                            errorMessage = $"option '{option}' can't convert to a double for '{config}'.";
-                            return false;
-                        }
+                        TryParse2Double(option, out double doubleValue);
+
+                        doubleOptions.Add(doubleValue);
                     }
-                    TryParse2Double(strValue, out double @double); // 肯定返回true，因为前面已经调用此函数校验过字符串了。
+                    TryParse2Double(trimmedValue, out double @double); // 肯定返回true，因为前面已经调用此函数校验过字符串了。
                     if (!doubleOptions.Contains(@double))
                     {
-                        errorMessage = $"The value '{strValue}' is not in the options for config item '{config}'.";
+                        errorMessage = $"The value '{trimmedValue}' is not in the options for config item '{config}'.";
                         return false;
                     }
                 }
@@ -167,7 +155,7 @@ namespace SCADA.Configuration
                 TryParse2Int64(configItem.MinValue, out var min);
                 if (longNumber > max || longNumber < min)
                 {
-                    errorMessage = ExceptionHelper.GetFormattedString("ArgumentOutOfRangeException_MaxMin", strValue, config, configItem.MinValue, configItem.MaxValue);
+                    errorMessage = ExceptionHelper.GetFormattedString("ArgumentOutOfRangeException_MaxMin", trimmedValue, config, configItem.MinValue, configItem.MaxValue);
                     return false;
                 }
             }
@@ -178,7 +166,7 @@ namespace SCADA.Configuration
                 TryParse2Double(configItem.MinValue, out var min);
                 if (doubleNumber > max || doubleNumber < min)
                 {
-                    errorMessage = ExceptionHelper.GetFormattedString("ArgumentOutOfRangeException_MaxMin", strValue, config, configItem.MinValue, configItem.MaxValue);
+                    errorMessage = ExceptionHelper.GetFormattedString("ArgumentOutOfRangeException_MaxMin", trimmedValue, config, configItem.MinValue, configItem.MaxValue);
                     return false;
                 }
             }
@@ -191,14 +179,14 @@ namespace SCADA.Configuration
             var vtype = configItem.Type;
             if (!string.IsNullOrWhiteSpace(regex))
             {
-                if ((vtype == ConfigType.String || vtype == ConfigType.File || vtype == ConfigType.Folder || vtype == ConfigType.DateTime) && !Regex.IsMatch(strValue, regex))
+                if ((vtype == ConfigType.String || vtype == ConfigType.File || vtype == ConfigType.Folder || vtype == ConfigType.DateTime || vtype == ConfigType.Color) && !Regex.IsMatch(trimmedValue, regex))
                 {
-                    errorMessage = ExceptionHelper.GetFormattedString("ArgumentException_RegexValidation", strValue, configItem.RegexNote, config);
+                    errorMessage = ExceptionHelper.GetFormattedString("ArgumentException_RegexValidation", trimmedValue, configItem.RegexNote, config);
                     return false;
                 }
                 else if (vtype == ConfigType.Decimal)
                 {
-                    if (TryParse2Double(strValue, out doubleNumber))
+                    if (TryParse2Double(trimmedValue, out doubleNumber))
                     {
                         if (!Regex.IsMatch(doubleNumber.ToString(CultureInfo.InvariantCulture), regex))
                         {
@@ -209,7 +197,7 @@ namespace SCADA.Configuration
                 }
                 else if (vtype == ConfigType.Integer)
                 {
-                    if (TryParse2Int64(strValue, out longNumber))
+                    if (TryParse2Int64(trimmedValue, out longNumber))
                     {
                         if (!Regex.IsMatch(longNumber.ToString(CultureInfo.InvariantCulture), regex))
                         {
@@ -223,63 +211,20 @@ namespace SCADA.Configuration
             #endregion Regular Expression Validation
 
             #region Appended Validation Rule
+
             if (Settings.AppendedValidationRule != null && Settings.AppendedValidationRule?.Invoke(config, value, this) == false)
             {
-                errorMessage = ExceptionHelper.GetFormattedString("ArgumentException_CustomizeValidation", strValue, config);
+                errorMessage = ExceptionHelper.GetFormattedString("ArgumentException_CustomizeValidation", trimmedValue, config);
                 return false;
             }
+
             #endregion Appended Validation Rule
+
             errorMessage = null;
             return true;
         }
 
-        public bool ValidateValue(string config, object value, out string errorMessage)
-        {
-            if (value == null)
-            {
-                errorMessage = "Value cannot be null.";
-                return false;
-            }
-            if (
-                value is bool
-                || value is string
-                || value is long
-                || value is ulong
-                || value is int
-                || value is uint
-                || value is ushort
-                || value is short
-                || value is byte
-                || value is sbyte
-                || value is float
-                || value is double
-                || value is decimal
-                || value is char
-                || value is DateTime
-                || value is FileInfo
-                || value is DirectoryInfo
-                || value is System.Drawing.Color
-            )
-            {
-                // 这些类型是支持的,继续往下走正常流程.
-            }
-            else
-            {
-                errorMessage = $"Unsupported config value type: {value.GetType().FullName}.";
-                return false;
-            }
-            return ValidateValue(config, Convert2String(value).Trim(), out errorMessage);
-        }
-
         public void ValidateValue(string config, string value)
-        {
-            if (!ValidateValue(config, value, out string errorMessage))
-            {
-                throw new ArgumentException(errorMessage);
-            }
-        }
-
-        public void ValidateValue(string config, object value)
         {
             if (!ValidateValue(config, value, out string errorMessage))
             {

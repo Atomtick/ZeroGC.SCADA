@@ -668,7 +668,7 @@ configSource.Write(transactionId,"System.DataReport", "../../data.xlsx");
 
 > 每次调用CommitTransaction都会写一次数据库。如果有多个修改，单次批量提交性能更高开销更小，且可以保证只要有一项校验失败，则全部的设置项都不会被修改，即原子操作。
 
-## 校验值
+## 校验
 
 ### 校验代码
 
@@ -686,18 +686,21 @@ var ok = configSource.ValidateValue("FA.LocalPortNumber", "1000", out string err
 
 ### 校验流程
 
+- 类型校验
+  - 值都是字符串类型. 值字符串必须满足可以转换成配置项的type指定的类型. 如"3.14"肯定无法转换成Integer, "#AABBCC"肯定无法转换成DateTime.
+
 - 集合校验
   - String, Integer, Decimal, Color才有此项校验
-  - Integer 和 Decimal 比较特殊, 它先统一的把Options里面的元素以及待校验的值全部转换成数字类型(long或double),然后再看转换后的集合是否包含转换后的待校验值. 举例: 假设string[] options=["1", "0x02", "3.14E2"], 待校验值是2, 则校验过程是[1,2,314].Contains(2),结果是包含!
-
+  - Integer 和 Decimal 比较特殊.首先,options内的所有元素和待校验的值都是字符串,它会先统一的把Options里面的元素以及待校验的值全部转换成数字类型(long或double),然后再检查转换后的集合是否包含转换后的待校验值. 举例: 假设string[] options=["1", "0x02", "3.14E2"], 待校验值是"2", 则校验过程是[1,2,314].Contains(2),结果是包含! 这样做更智能,避免了同一个数字因为不同的字符串表示被判断成不相等的情况.
 - 最值校验
   - 如果大于最大值或小于最小值, 则校验失败.
   - Integer和Decimal才有此项校验, 其他类型无.
 - 正则校验
-  - String, Folder, File, DateTime的字符串形式直接进行正则表达.
-  - Bool和Color无此校验
-  - Integer和Decimal先统一转换成十进制字符串形式再进行正则表达. (举例: 如果是十六进制如'0X0A', 那么进行正则表达校验的实际字符串是'10')
-  - AppendedValidationRule. 
+  - Bool无此校验,其他类型有.
+  - String, Folder, File, DateTime, Color的字符串形式直接进行正则表达.
+  - Integer和Decimal先统一转换成十进制字符串形式再进行正则表达. (举例: 如果是十六进制如'0X0A', 那么进行正则表达校验的实际字符串是'10').
+
+- AppendedValidationRule. 
 
 ### 校验位置
 

@@ -40,13 +40,12 @@ namespace SCADA.Configuration
                 throw new InvalidOperationException($"This transaction '{transactionId}' has not been created or committed");
         }
 
-        public IConfigWriter Write(long transactionId, string config, object value)
+        public IConfigWriter Write(long transactionId, string config, string value)
         {
-            if (value == null)
+            if (string.IsNullOrWhiteSpace(value))
             {
-                throw new ArgumentNullException(nameof(value), "Config value cannot be null.");
+                throw new ArgumentException("Config value cannot be null or empty.", nameof(value));
             }
-
             if (string.IsNullOrWhiteSpace(config))
             {
                 throw new ArgumentException("Config name cannot be null or empty.", nameof(config));
@@ -61,17 +60,6 @@ namespace SCADA.Configuration
 
             if (_transactionCache.TryGetValue(transactionId, out LightWeightMap configs))
             {
-                if (value is string stringValue)
-                {
-                    if (string.IsNullOrWhiteSpace(stringValue))
-                    {
-                        throw new ArgumentException("Config value cannot be null or empty.", nameof(value));
-                    }
-                }
-                else
-                {
-                    value = Convert2String(value);
-                }
                 configs.AddOrUpdate(config, value);
             }
             else
