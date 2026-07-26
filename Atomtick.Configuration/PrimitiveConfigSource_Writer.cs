@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using Atomtick.Configuration.Interfaces;
 using SCADA.Common;
 using SCADA.Common.Interfaces;
-using SCADA.Configuration.Interfaces;
 
-namespace SCADA.Configuration
+namespace Atomtick.Configuration
 {
     public partial class PrimitiveConfigSource : IConfigWriter
     {

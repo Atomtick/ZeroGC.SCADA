@@ -1,4 +1,4 @@
-﻿namespace SCADA.Configuration.Interfaces
+﻿namespace Atomtick.Configuration.Interfaces
 {
     public interface IConfigWriter
     {

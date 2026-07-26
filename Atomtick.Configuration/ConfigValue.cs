@@ -4,7 +4,7 @@ using System.IO;
 using SCADA.Common;
 using SCADA.Common.Interfaces;
 
-namespace SCADA.Configuration
+namespace Atomtick.Configuration
 {
     public readonly struct ConfigValue
     {

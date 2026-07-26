@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace SCADA.Configuration
+namespace Atomtick.Configuration
 {
     public class ConfigNode
     {

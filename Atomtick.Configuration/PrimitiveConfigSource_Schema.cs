@@ -1,4 +1,4 @@
-﻿namespace SCADA.Configuration
+﻿namespace Atomtick.Configuration
 {
     public partial class PrimitiveConfigSource
     {

@@ -1,7 +1,7 @@
-﻿using System;
-using SCADA.Configuration.Interfaces;
+﻿using Atomtick.Configuration.Interfaces;
+using System;
 
-namespace SCADA.Configuration
+namespace Atomtick.Configuration
 {
     // 对用户应用暴露的接口,提供原子性的读取多个配置项的值的能力.但是不暴露修改配置项值的能力
     public partial class PrimitiveConfigSource : IConfigReader

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Atomtick.Configuration.Interfaces;
 
-namespace SCADA.Configuration
+namespace Atomtick.Configuration
 {
     public partial class PrimitiveConfigSource : IConfigValidator
     {

@@ -10,7 +10,7 @@ using SCADA.Common;
 using System.Collections.Frozen;
 #endif
 
-namespace SCADA.Configuration
+namespace Atomtick.Configuration
 {
     public delegate bool AppendValidationRule(string config, string value, PrimitiveConfigSource configSource);
 

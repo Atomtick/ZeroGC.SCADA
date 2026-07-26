@@ -7,9 +7,8 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Engines;
-using SCADA.Common;
 
-namespace SCADA.Configuration.Benchmarks
+namespace Atomtick.Configuration.Benchmarks
 {
     [MemoryDiagnoser(displayGenColumns: true)]
     [EventPipeProfiler(EventPipeProfile.GcVerbose)] // 会生成一个 .nettrace 文件，你可以用 Visual Studio 或 PerfView 打开，精确看到是哪一行代码触发了分配

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Xml;
 using Microsoft.Data.Sqlite;
 
-namespace SCADA.Configuration
+namespace Atomtick.Configuration
 {
     public partial class PrimitiveConfigSource
     {

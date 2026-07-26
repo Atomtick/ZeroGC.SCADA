@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using SCADA.Configuration;
 
-namespace SCADA.Configuration.Interfaces
+namespace Atomtick.Configuration.Interfaces
 {
     public interface IConfigReader
     {

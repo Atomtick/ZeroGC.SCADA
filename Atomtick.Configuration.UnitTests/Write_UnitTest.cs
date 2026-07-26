@@ -26,10 +26,10 @@ namespace SCADA.Configuration.UnitTests
             primitiveConfigSource
                 .BeginTransaction(out long transactionId)
                 .Write(transactionId, "System.IP", "192.168.0.1")
-                .Write(transactionId, "System.Port", 5432)
-                .Write(transactionId, "System.Enabled", true)
-                .Write(transactionId, "System.AlarmColor", System.Drawing.Color.Red)
-                .Write(transactionId, "System.StartTime", new DateTime(2026, 4, 10, 0, 20, 0))
+                .Write(transactionId, "System.Port", 5432.ToString())
+                .Write(transactionId, "System.Enabled", true.ToString())
+                .Write(transactionId, "System.AlarmColor", primitiveConfigSource.Convert2String(System.Drawing.Color.Red))
+                .Write(transactionId, "System.StartTime", "2026-07-26")
                 .Write(transactionId, "System.LogPath", "C:\\Logs")
                 .Write(transactionId, "System.UserInfo", "D:\\UserInfo.json")
                 .CommitTransaction(transactionId);
