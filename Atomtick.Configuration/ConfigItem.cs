@@ -38,11 +38,6 @@ namespace Atomtick.Configuration
 
         public bool Restart { get; set; }
 
-        /// <summary>
-        /// ECID
-        /// </summary>
-        public int SlotIndex { get; set; }
-
         public string StringValue { get; set; }
 
         public ConfigType Type { get; set; }
@@ -92,7 +87,7 @@ namespace Atomtick.Configuration
         // 是否含有此配置
         public bool IsAbsent()
         {
-            return StringValue == null && ObjectValue == null && SlotIndex == -1;
+            return StringValue == null && ObjectValue == null && Type == ConfigType.Unknown;
         }
 
         public override string ToString()
@@ -147,8 +142,10 @@ namespace Atomtick.Configuration
                     _ => new ConfigItem()
                     {
                         Name = name,
+                        Path = name,
                         ObjectValue = null,
                         StringValue = null,
+                        Type = ConfigType.Unknown,
                     }
                 );
         }
