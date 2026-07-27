@@ -14,6 +14,9 @@ namespace Atomtick.Configuration.Interfaces
         string[] CheckConfigItemFormatting(string config);
         object Convert2Object(ConfigType type, string value);
         string Convert2String(object value);
+        string Convert2String(System.Drawing.Color color);
+        string Convert2String(DateTime dateTime);
+
         bool TryParse2Color(string @string, out Color color);
         bool TryParse2DateTime(string @string, out DateTime dateTime);
         bool TryParse2Directory(string @string, out DirectoryInfo directoryInfo);

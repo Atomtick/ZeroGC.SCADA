@@ -6,6 +6,21 @@ namespace Atomtick.Configuration
     // 对用户应用暴露的接口,提供原子性的读取多个配置项的值的能力.但是不暴露修改配置项值的能力
     public partial class PrimitiveConfigSource : IConfigReader
     {
+        public ConfigNode GetConfigNode(string path)
+        {
+            if (!string.IsNullOrWhiteSpace(path) && RootNodes != null && RootNodes.Length > 0)
+            {
+                foreach (var node in RootNodes)
+                {
+                    if (ConfigNode.Find(path, false, node, out _, out ConfigNode configNode))
+                    {
+                        return configNode;
+                    }
+                }
+            }
+            return null;
+        }
+
         public ConfigItem SelectConfigItem(string config)
         {
             CheckConfigFormattingValid(config);

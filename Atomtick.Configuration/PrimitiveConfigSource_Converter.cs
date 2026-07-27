@@ -391,5 +391,15 @@ namespace Atomtick.Configuration
 
             throw new ArgumentException($"Unsupported value type '{value.GetType().Name}'.", nameof(value));
         }
+
+        public string Convert2String(Color color)
+        {
+            return "#" + color.ToArgb().ToString("X8", CultureInfo.InvariantCulture);
+        }
+
+        public string Convert2String(DateTime dateTime)
+        {
+            return dateTime.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+        }
     }
 }

@@ -14,39 +14,39 @@ namespace Atomtick.Configuration
     {
         private static readonly ConcurrentDictionary<string, ConfigItem> _absentConfigCache = new ConcurrentDictionary<string, ConfigItem>();
 
-        public string Description { get; set; }
+        public string Description { get; internal set; }
 
-        public string Display { get; set; }
+        public string Display { get; internal set; }
 
-        public bool Enable { get; set; }
+        public bool Enable { get; internal set; }
 
-        public string MaxValue { get; set; }
+        public string MaxValue { get; internal set; }
 
-        public string MinValue { get; set; }
+        public string MinValue { get; internal set; }
 
-        public string Name { get; set; }
+        public string Name { get; internal set; }
 
-        public string Path { get; set; }
+        public string Path { get; internal set; }
 
-        public object ObjectValue { get; set; }
+        public object ObjectValue { get; internal set; }
 
-        public string[] Options { get; set; }
+        public string[] Options { get; internal set; }
 
-        public string Regex { get; set; }
+        public string Regex { get; internal set; }
 
-        public string RegexNote { get; set; }
+        public string RegexNote { get; internal set; }
 
-        public bool Restart { get; set; }
+        public bool Restart { get; internal set; }
 
-        public string StringValue { get; set; }
+        public string StringValue { get; internal set; }
 
-        public ConfigType Type { get; set; }
+        public ConfigType Type { get; internal set; }
 
-        public string Unit { get; set; }
+        public string Unit { get; internal set; }
 
-        public Action<string> ValidationRule { get; set; }
+        public Action<string> ValidationRule { get; internal set; }
 
-        public bool Visible { get; set; }
+        public bool Visible { get; internal set; }
 
         object ICloneable.Clone()
         {
