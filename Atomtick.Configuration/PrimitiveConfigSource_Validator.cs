@@ -101,7 +101,7 @@ namespace Atomtick.Configuration
             #region Options Validation
 
             var options = configItem.Options;
-            if (options != null && options.Length > 0)
+            if (options != null && options.Count > 0)
             {
                 if (configType == ConfigType.String || configType == ConfigType.Color)
                 {

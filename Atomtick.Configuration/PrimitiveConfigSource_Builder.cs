@@ -216,7 +216,7 @@ namespace Atomtick.Configuration
                             {
                                 throw new ArgumentException($"The 'name' attribute must be unique within the same node's children. Hint:'{GetHint()}'");
                             }
-                            nodeStack.Peek().Children.Add(node);
+                            (nodeStack.Peek().Children as List<ConfigNode>).Add(node);
                             node.Parent = nodeStack.Peek();
                             nodeStack.Push(node);
                         }
@@ -490,7 +490,7 @@ namespace Atomtick.Configuration
                         };
                         var fullPath = node.Path + "." + name;
                         configItem.Path = fullPath;
-                        node.ConfigItems.Add(configItem);
+                        (node.ConfigItems as List<ConfigItem>).Add(configItem);
                         _configItems.Add(fullPath, configItem);
                     }
                     else
@@ -536,7 +536,7 @@ namespace Atomtick.Configuration
             foreach (var configItem in _configItems)
             {
                 var options = configItem.Value.Options;
-                if (options != null && options.Length > 0 && configItem.Value.Type != ConfigType.Bool)
+                if (options != null && options.Count > 0 && configItem.Value.Type != ConfigType.Bool)
                 {
                     foreach (var option in options)
                     {

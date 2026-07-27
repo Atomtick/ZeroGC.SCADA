@@ -7,21 +7,20 @@ namespace Atomtick.Configuration
     {
         public ConfigNode()
         {
-         
             Children = new List<ConfigNode>();
             ConfigItems = new List<ConfigItem>();
         }
 
-        public List<ConfigNode> Children { get; }
-        public List<ConfigItem> ConfigItems { get; }
-        public string Display { get; set; }
-        public bool Enable { get; set; }
+        public IReadOnlyList<ConfigNode> Children { get; }
+        public IReadOnlyList<ConfigItem> ConfigItems { get; }
+        public string Display { get; internal set; }
+        public bool Enable { get; internal set; }
         public bool IsLeaf => Children.Count == 0;
         public bool IsRoot => Parent == null;
-        public string Name { get; set; }
-        public ConfigNode Parent { get; set; }
+        public string Name { get; internal set; }
+        public ConfigNode Parent { get; internal set; }
         public string Path => IsRoot ? Name : Parent.Path + "." + Name;
-        public bool Visible { get; set; }
+        public bool Visible { get; internal set; }
 
         public static bool Find(string path, bool isTrailConfigItem, ConfigNode node, out ConfigItem configItem, out ConfigNode configNode)
         {
@@ -62,7 +61,7 @@ namespace Atomtick.Configuration
                     configItem = null;
                     return false;
                 }
-                configItem = result.ConfigItems.Find(x => x.Name == names[names.Length - 1]);
+                configItem = result.ConfigItems.FirstOrDefault(x => x.Name == names[names.Length - 1]);
                 if (configItem != null)
                 {
                     configNode = result;

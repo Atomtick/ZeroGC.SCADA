@@ -30,7 +30,7 @@ namespace Atomtick.Configuration
 
         public object ObjectValue { get; internal set; }
 
-        public string[] Options { get; internal set; }
+        public IReadOnlyList<string> Options { get; internal set; }
 
         public string Regex { get; internal set; }
 
