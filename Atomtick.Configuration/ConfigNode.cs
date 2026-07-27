@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace Atomtick.Configuration
 {
-    public class ConfigNode
+    public sealed class ConfigNode
     {
         public ConfigNode()
         {
@@ -22,7 +24,45 @@ namespace Atomtick.Configuration
         public string Path => IsRoot ? Name : Parent.Path + "." + Name;
         public bool Visible { get; internal set; }
 
-        public static bool Find(string path, bool isTrailConfigItem, ConfigNode node, out ConfigItem configItem, out ConfigNode configNode)
+        public static bool FindConfigItem(string path, IEnumerable<ConfigNode> nodes, out ConfigItem configItem, out ConfigNode configNode)
+        {
+            foreach (var node in nodes)
+            {
+                if (FindConfigItem(path, node, out configItem, out configNode))
+                {
+                    return true;
+                }
+            }
+            configItem = null;
+            configNode = null;
+            return false;
+        }
+
+        public static bool FindConfigItem(string path, ConfigNode node, out ConfigItem configItem, out ConfigNode configNode)
+        {
+            return Find(path, true, node, out configItem, out configNode);
+        }
+
+        public static bool FindConfigNode(string path, ConfigNode node, out ConfigNode configNode)
+        {
+            return Find(path, false, node, out _, out configNode);
+        }
+
+
+        public static bool FindConfigNode(string path, IEnumerable<ConfigNode> nodes, out ConfigNode configNode)
+        {
+            foreach (var node in nodes)
+            {
+                if (FindConfigNode(path, node, out configNode))
+                {
+                    return true;
+                }
+            }
+            configNode = null;
+            return false;
+        }
+
+        private static bool Find(string path, bool isTrailConfigItem, ConfigNode node, out ConfigItem configItem, out ConfigNode configNode)
         {
             var names = path.Split('.');
             ConfigNode result = null;
@@ -101,7 +141,7 @@ namespace Atomtick.Configuration
             return true;
         }
 
-        public static bool Find(string path, bool isTrailConfigItem, IEnumerable<ConfigNode> nodes, out ConfigItem configItem, out ConfigNode configNode)
+        private static bool Find(string path, bool isTrailConfigItem, IEnumerable<ConfigNode> nodes, out ConfigItem configItem, out ConfigNode configNode)
         {
             foreach (var node in nodes)
             {

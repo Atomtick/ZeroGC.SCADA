@@ -10,7 +10,7 @@ using SCADA.Common.Interfaces;
 
 namespace Atomtick.Configuration
 {
-    public class ConfigItem : ICloneable
+    public sealed class ConfigItem : ICloneable
     {
         private static readonly ConcurrentDictionary<string, ConfigItem> _absentConfigCache = new ConcurrentDictionary<string, ConfigItem>();
 
