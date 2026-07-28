@@ -139,19 +139,5 @@ namespace Atomtick.Configuration
             configNode = result;
             return true;
         }
-
-        private static bool Find(string path, bool isTrailConfigItem, IEnumerable<ConfigNode> nodes, out ConfigItem configItem, out ConfigNode configNode)
-        {
-            foreach (var node in nodes)
-            {
-                if (Find(path, isTrailConfigItem, node, out configItem, out configNode))
-                {
-                    return true;
-                }
-            }
-            configItem = null;
-            configNode = null;
-            return false;
-        }
     }
 }
