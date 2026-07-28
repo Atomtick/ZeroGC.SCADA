@@ -24,11 +24,11 @@ namespace Atomtick.Configuration
         public string Path => IsRoot ? Name : Parent.Path + "." + Name;
         public bool Visible { get; internal set; }
 
-        public static bool FindConfigItem(string path, IEnumerable<ConfigNode> nodes, out ConfigItem configItem, out ConfigNode configNode)
+        public static bool FindByItemPath(string itemPath, IEnumerable<ConfigNode> nodes, out ConfigItem configItem, out ConfigNode configNode)
         {
             foreach (var node in nodes)
             {
-                if (FindConfigItem(path, node, out configItem, out configNode))
+                if (FindByItemPath(itemPath, node, out configItem, out configNode))
                 {
                     return true;
                 }
@@ -38,22 +38,21 @@ namespace Atomtick.Configuration
             return false;
         }
 
-        public static bool FindConfigItem(string path, ConfigNode node, out ConfigItem configItem, out ConfigNode configNode)
+        public static bool FindByItemPath(string itemPath, ConfigNode node, out ConfigItem configItem, out ConfigNode configNode)
         {
-            return Find(path, true, node, out configItem, out configNode);
+            return Find(itemPath, true, node, out configItem, out configNode);
         }
 
-        public static bool FindConfigNode(string path, ConfigNode node, out ConfigNode configNode)
+        public static bool FindByNodePath(string nodePath, ConfigNode node, out ConfigNode configNode)
         {
-            return Find(path, false, node, out _, out configNode);
+            return Find(nodePath, false, node, out _, out configNode);
         }
 
-
-        public static bool FindConfigNode(string path, IEnumerable<ConfigNode> nodes, out ConfigNode configNode)
+        public static bool FindByNodePath(string nodePath, IEnumerable<ConfigNode> nodes, out ConfigNode configNode)
         {
             foreach (var node in nodes)
             {
-                if (FindConfigNode(path, node, out configNode))
+                if (FindByNodePath(nodePath, node, out configNode))
                 {
                     return true;
                 }
