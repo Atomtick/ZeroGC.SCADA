@@ -9,8 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SCADA.Common\SCADA.Common.csproj" />
-    <ProjectReference Include="..\SCADA.HFSM\SCADA.HFSM.csproj" />
+    <ProjectReference Include="..\Atomtick.Common\Atomtick.Common.csproj" />
+    <ProjectReference Include="..\Atomtick.HFSM\Atomtick.HFSM.csproj" />
   </ItemGroup>
 
 </Project>

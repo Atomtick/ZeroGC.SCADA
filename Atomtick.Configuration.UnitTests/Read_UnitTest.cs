@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Atomtick.Configuration;
+using Atomtick.Configuration.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using SCADA.Configuration.Interfaces;
 
 namespace SCADA.Configuration.UnitTests
 {

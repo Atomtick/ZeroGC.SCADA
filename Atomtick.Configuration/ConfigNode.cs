@@ -61,7 +61,7 @@ namespace Atomtick.Configuration
             return false;
         }
 
-        private static bool Find(string path, bool isTrailConfigItem, ConfigNode node, out ConfigItem configItem, out ConfigNode configNode)
+        public static bool Find(string path, bool isTrailConfigItem, ConfigNode node, out ConfigItem configItem, out ConfigNode configNode)
         {
             var names = path.Split('.');
             ConfigNode result = null;
