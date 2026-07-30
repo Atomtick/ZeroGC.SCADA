@@ -15,9 +15,11 @@ namespace Atomtick.Configuration.UnitTests
             string path = Path.GetFullPath("../../../../Atomtick.Configuration.Benchmarks/configs.db");
             PrimitiveConfigSource configSource = new PrimitiveConfigSource(path);
 
-            Assert.True(ConfigNode.Find("PM1.SourceRFPower.Injet.EnableLogMessage", true, configSource.RootNodes.First(x => x.Name == "PM1"), out ConfigItem configItem, out ConfigNode configNode));
-            Assert.True(ConfigNode.Find("PM1.SourceRFPower", false, configSource.RootNodes.First(x => x.Name == "PM1"), out  configItem, out configNode));
-            Assert.True(ConfigNode.Find($"{configNode.Name}.Injet.EnableLogMessage", true, configNode, out var configItem1, out var configNode1));
+            Assert.True(
+                ConfigNode.FindByItemPath("PM1.SourceRFPower.Injet.EnableLogMessage", configSource.RootNodes.First(x => x.Name == "PM1"), out ConfigItem configItem, out ConfigNode configNode)
+            );
+            Assert.True(ConfigNode.FindByNodePath("PM1.SourceRFPower", configSource.RootNodes.First(x => x.Name == "PM1"), out configNode));
+            Assert.True(ConfigNode.FindByItemPath($"{configNode.Name}.Injet.EnableLogMessage", configNode, out var configItem1, out var configNode1));
         }
     }
 }

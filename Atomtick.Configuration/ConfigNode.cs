@@ -24,9 +24,9 @@ namespace Atomtick.Configuration
         public string Path => IsRoot ? Name : Parent.Path + "." + Name;
         public bool Visible { get; internal set; }
 
-        public static bool FindByItemPath(string itemPath, IEnumerable<ConfigNode> nodes, out ConfigItem configItem, out ConfigNode configNode)
+        public static bool FindByItemPath(string itemPath, IEnumerable<ConfigNode> roots, out ConfigItem configItem, out ConfigNode configNode)
         {
-            foreach (var node in nodes)
+            foreach (var node in roots)
             {
                 if (FindByItemPath(itemPath, node, out configItem, out configNode))
                 {
@@ -38,19 +38,19 @@ namespace Atomtick.Configuration
             return false;
         }
 
-        public static bool FindByItemPath(string itemPath, ConfigNode node, out ConfigItem configItem, out ConfigNode configNode)
+        public static bool FindByItemPath(string itemPath, ConfigNode root, out ConfigItem configItem, out ConfigNode configNode)
         {
-            return Find(itemPath, true, node, out configItem, out configNode);
+            return Find(itemPath, true, root, out configItem, out configNode);
         }
 
-        public static bool FindByNodePath(string nodePath, ConfigNode node, out ConfigNode configNode)
+        public static bool FindByNodePath(string nodePath, ConfigNode root, out ConfigNode configNode)
         {
-            return Find(nodePath, false, node, out _, out configNode);
+            return Find(nodePath, false, root, out _, out configNode);
         }
 
-        public static bool FindByNodePath(string nodePath, IEnumerable<ConfigNode> nodes, out ConfigNode configNode)
+        public static bool FindByNodePath(string nodePath, IEnumerable<ConfigNode> roots, out ConfigNode configNode)
         {
-            foreach (var node in nodes)
+            foreach (var node in roots)
             {
                 if (FindByNodePath(nodePath, node, out configNode))
                 {
@@ -61,7 +61,7 @@ namespace Atomtick.Configuration
             return false;
         }
 
-        public static bool Find(string path, bool isTrailConfigItem, ConfigNode node, out ConfigItem configItem, out ConfigNode configNode)
+        private static bool Find(string path, bool isTrailConfigItem, ConfigNode root, out ConfigItem configItem, out ConfigNode configNode)
         {
             var names = path.Split('.');
             ConfigNode result = null;
@@ -74,18 +74,18 @@ namespace Atomtick.Configuration
                         break;
                     }
 
-                    if (node == null)
+                    if (root == null)
                     {
                         configNode = null;
                         configItem = null;
                         return false;
                     }
 
-                    if (node.Name.Equals(names[i]))
+                    if (root.Name.Equals(names[i]))
                     {
-                        result = node;
+                        result = root;
                         if (i < names.Length - 1)
-                            node = node.Children.FirstOrDefault(x => x.Name.Equals(names[i + 1]));
+                            root = root.Children.FirstOrDefault(x => x.Name.Equals(names[i + 1]));
                     }
                     else
                     {
@@ -115,18 +115,18 @@ namespace Atomtick.Configuration
                 configItem = null;
                 for (int i = 0; i < names.Length; i++)
                 {
-                    if (node == null)
+                    if (root == null)
                     {
                         configNode = null;
                         return false;
                     }
 
-                    if (node.Name.Equals(names[i]))
+                    if (root.Name.Equals(names[i]))
                     {
-                        result = node;
+                        result = root;
                         if (i < names.Length - 1)
                         {
-                            node = node.Children.FirstOrDefault(x => x.Name.Equals(names[i + 1]));
+                            root = root.Children.FirstOrDefault(x => x.Name.Equals(names[i + 1]));
                         }
                     }
                     else
