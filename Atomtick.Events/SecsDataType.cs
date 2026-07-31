@@ -16,8 +16,8 @@ namespace Atomtick.Events
         U2,
         U4,
         U8,
-        F1, 
-        F2,
+        F4,
+        F8,
         ASCII,
         Boolean,
     }

@@ -1,24 +1,65 @@
-﻿using SCADA.Common;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using SCADA.Common;
 
 namespace SCADA.Events
 {
     public class EventManager : IEventManager
     {
-        // 要判别事件是否重复，必须要有一个唯一的事件 ID，不能使用 EventDef 的 Id，因为 EventDef 是静态的，可能会被多个事件实例共享。
+        private object _lock = new object();
+
+        private volatile EventInstance[] _alarmEventInstances = new EventInstance[0];
+
+        public void ClearAlarmEvent() { }
+
+        public void ClearAlarmEvent(string source) { }
+
+        public void ClearAlarmEvent(long instanceId) { }
+
+        [MethodImpl(MethodImplOptions.NoOptimization)]
+        public bool HasAlarmEvent(out IList<EventInstance> events)
+        {
+            var alarms = _alarmEventInstances;
+
+            events = alarms;
+
+            return alarms.Length > 0;
+        }
+
+        [MethodImpl(MethodImplOptions.NoOptimization)]
+        public bool HasAlarmEvent(string source, out IList<EventInstance> events)
+        {
+            var alarms = _alarmEventInstances;
+
+            if (alarms.Length == 0)
+            {
+                events = null;
+                return false;
+            }
+
+            var count = alarms.Where(x => x.Source == source).Count();
+            events = count > 0 ? alarms.Where(x => x.Source == source).ToArray() : null;
+            return count > 0;
+        }
+
+        // 要判别事件是否重复，必须要有一个唯一的事件 Dvid，不能使用 EventDef 的 Id，因为 EventDef 是静态的，可能会被多个事件实例共享。
+
+        private readonly ConcurrentDictionary<string, EventDef> _eventDefs = new ConcurrentDictionary<string, EventDef>();
+
+        private Channel<EventInstance> _eventChannel;
+
+        private long _eventIdCounter;
 
         public EventManager()
         {
-
-
             // 推荐使用 Bounded (有界队列) 防止消费者卡死时引发 OOM 内存爆炸
             var channelOptions = new BoundedChannelOptions(capacity: 5000)
             {
@@ -35,7 +76,7 @@ namespace SCADA.Events
                 // 🌟 危险配置警告：在半导体软件中强烈建议设为 false
                 // 如果设为 true，生产者在写入时如果发现消费者在挂起等待，生产者会强行借用自己的线程去执行消费者的代码，
                 // 这会导致你的底层硬件轮询线程被阻塞在消费逻辑上，直接导致机台通讯超时 (Timeout)！
-                AllowSynchronousContinuations = false
+                AllowSynchronousContinuations = false,
             };
 
             _eventChannel = Channel.CreateBounded<EventInstance>(channelOptions);
@@ -47,22 +88,62 @@ namespace SCADA.Events
                     OnEventAsync?.Invoke(this, eventInstance);
                 }
             });
+
             // 内置的三个事件类型，分别是信息、警告和报警，名称分别是 @、% 和 $，用于快速发布事件。
             Register(new EventDef(-1, "@", EventLevel.Information, "description", false));
             Register(new EventDef(-2, "%", EventLevel.Warning, "description", false));
             Register(new EventDef(-3, "$", EventLevel.Alarm, "description", false));
         }
 
-        private long _eventIdCounter;
-
-        public event EventHandler<EventInstance> OnEventSync;
         public event EventHandler<EventInstance> OnEventAsync;
 
-        private Channel<EventInstance> _eventChannel;
+        public event EventHandler<EventInstance> OnEventSync;
 
-        private readonly ConcurrentDictionary<string,EventDef> _eventDefs = new ConcurrentDictionary<string,EventDef>();
+        #region 发布预定义事件
+        public void PostEvent(string name, string source)
+        {
+            PostEvent(name, source, null, null);
+        }
 
+        public void PostEvent(string name, string source, LightWeightMap DvidValues)
+        {
+            PostEvent(name, source, DvidValues, null);
+        }
+        #endregion
 
+        #region 发布即时事件
+        public void PostInfoEvent(string source, string description)
+        {
+            PostEvent("@", source, null, description);
+        }
+
+        public void PostInfoEvent(string source, string description, LightWeightMap DvidValues)
+        {
+            PostEvent("@", source, DvidValues, description);
+        }
+
+        public void PostWarningEvent(string source, string description)
+        {
+            PostEvent("%", source, null, description);
+        }
+
+        public void PostWarningEvent(string source, string description, LightWeightMap DvidValues)
+        {
+            PostEvent("%", source, DvidValues, description);
+        }
+
+        public void PostAlramEvent(string source, string description)
+        {
+            PostEvent("$", source, null, description);
+        }
+
+        public void PostAlramEvent(string source, string description, LightWeightMap DvidValues)
+        {
+            PostEvent("$", source, DvidValues, description);
+        }
+        #endregion
+
+        #region 注册预定义事件
         public void Register(EventDef @event)
         {
             if (!_eventDefs.TryAdd(@event.Name, @event))
@@ -79,16 +160,7 @@ namespace SCADA.Events
                 throw new InvalidOperationException($"Event with name '{eventDef.Name}' is already registered.");
             }
         }
-
-        public void PostEvent(string name, string source)
-        {
-            PostEvent(name, source, null, null);
-        }
-
-        public void PostEvent(string name, string source, LightWeightMap DvidValues)
-        {
-            PostEvent(name, source, DvidValues, null);
-        }
+        #endregion
 
         private void PostEvent(string name, string source, LightWeightMap DvidValues, string description)
         {
@@ -120,39 +192,12 @@ namespace SCADA.Events
                     OccurTime = DateTime.Now,
                 };
             }
-
+            if (eventInstance.EventDef.Level == EventLevel.Alarm)
+            {
+                alarmEventInstances.Add(eventInstance);
+            }
             _eventChannel.Writer.TryWrite(eventInstance);
             OnEventSync?.Invoke(this, eventInstance);
-        }
-
-        public void PostAlramEvent(string source, string description)
-        {
-            PostEvent("$", source, null, description);
-        }
-
-        public void PostAlramEvent(string source, string description, LightWeightMap DvidValues)
-        {
-            PostEvent("$", source, DvidValues, description);
-        }
-
-        public void PostWarningEvent(string source, string description)
-        {
-            PostEvent("%", source, null, description);
-        }
-
-        public void PostWarningEvent(string source, string description, LightWeightMap DvidValues)
-        {
-            PostEvent("%", source, DvidValues, description);
-        }
-
-        public void PostInfoEvent(string source, string description)
-        {
-            PostEvent("@", source, null, description);
-        }
-
-        public void PostInfoEvent(string source, string description, LightWeightMap DvidValues)
-        {
-            PostEvent("@", source, DvidValues, description);
         }
     }
 }
