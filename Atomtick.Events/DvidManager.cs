@@ -1,236 +1,339 @@
-﻿using Atomtick.Common;
-using SCADA.Common;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
+using Atomtick.Common;
+using SCADA.Common;
 
 namespace Atomtick.Events
 {
     public class DvidManager
     {
-
         private readonly DoubleKeyDictionary<string, long, DvidInstance> _dvidInstancesByNameAndId;
 
-        public DvidManager()
+        private DvidManager()
         {
             _dvidInstancesByNameAndId = new DoubleKeyDictionary<string, long, DvidInstance>();
         }
 
+        public static DvidManager Instance { get; } = new DvidManager();
+
         public void Register(params DvidDef[] dvidDefs)
         {
-            _dvidInstancesByNameAndId.Add(
-                dvidDefs.Select(dvidDef =>
-                new DoubleKeyPairs<string, long, DvidInstance>(dvidDef.Name, dvidDef.Dvid, new DvidInstance()
-                {
-                    DvidDef = dvidDef,
-                })).ToArray());
+            _dvidInstancesByNameAndId.Add(dvidDefs.Select(dvidDef => new DoubleKeyPairs<string, long, DvidInstance>(dvidDef.Name, dvidDef.Dvid, new DvidInstance(dvidDef))).ToArray());
         }
 
-        public void Update<T>(long dvid, T value) where T : IConvertible
+        public bool TryUpdate<T>(long dvid, T value, out string errMsg)
+            where T : IConvertible
         {
-            if (!Update(_dvidInstancesByNameAndId.GetByKey2(dvid), value, out string errMsg))
+            if (_dvidInstancesByNameAndId.GetByKey2(dvid, out var dvidInstance))
+                return TryUpdate(dvidInstance, value, out errMsg);
+            errMsg = "DVID with ID '{dvid}' not found.";
+            return false;
+        }
+
+        public void TryUpdate<T>(long dvid, T value)
+            where T : IConvertible
+        {
+            if (TryUpdate(dvid, value, out var errMsg) == false)
             {
                 throw new ArgumentException(errMsg);
             }
         }
 
-        public void Update<T>(string name, T value) where T : IConvertible
+        public bool TryUpdate<T>(string name, T value, out string errMsg)
+            where T : IConvertible
         {
-            if (!Update(_dvidInstancesByNameAndId.GetByKey1(name), value, out string errMsg))
+            if (_dvidInstancesByNameAndId.GetByKey1(name, out var dvidInstance))
+                return TryUpdate(dvidInstance, value, out errMsg);
+            errMsg = "DVID with name '{name}' not found.";
+            return false;
+        }
+
+        public void TryUpdate<T>(string name, T value)
+            where T : IConvertible
+        {
+            if (TryUpdate(name, value, out var errMsg) == false)
             {
                 throw new ArgumentException(errMsg);
             }
         }
 
-        public bool Update<T>(DvidInstance dvidInstance, T value,out string errMsg) where T : IConvertible
+        private bool IsInteger<T>(T value)
         {
-            switch(dvidInstance.DvidDef.DataType)
+            return value is int || value is short || value is long || value is byte || value is ushort || value is uint || value is ulong || value is sbyte;
+        }
+
+        private bool IsDecimal<T>(T value)
+        {
+            return value is double || value is float || value is decimal;
+        }
+
+        private bool TryUpdate<T>(DvidInstance dvidInstance, T value, out string errMsg)
+            where T : IConvertible
+        {
+            switch (dvidInstance.DvidDef.DataType)
             {
                 case SecsDataType.Boolean:
-                    if (value is bool)
+                    if (value is bool @bool)
                     {
-
-                        dvidInstance.BoolCurrentValue = (bool)(object)value;
-
-                        dvidInstance.BoolCurrentValue = Unsafe.As<T,bool>(ref value);
+                        dvidInstance.BoolCurrentValue = @bool;
                         errMsg = null;
                         return true;
                     }
-                    break;
+                    else
+                    {
+                        errMsg = $"Type mismatch: expected {typeof(bool)}, but got {typeof(T)}";
+                        return false;
+                    }
                 case SecsDataType.I1:
-                    if (value is sbyte)
+                    if (IsInteger(value))
                     {
-
-                        NumericToNumeric.Try<T, sbyte>(value, out var sbyteValue, ConversionRule.CheckOverflow);
-                        dvidInstance.LongCurrentValue = 
-                        
-
-                        errMsg = null;
-                        return true;
+                        if (NumericToNumeric.Try<T, sbyte>(value, out var sbyteValue, ConversionRule.CheckOverflow))
+                        {
+                            dvidInstance.LongCurrentValue = sbyteValue;
+                            errMsg = null;
+                            return true;
+                        }
+                        else
+                        {
+                            errMsg = $"Value {value} is out of range for type {typeof(sbyte)}";
+                            return false;
+                        }
                     }
-                    break;
+                    else
+                    {
+                        errMsg = $"Type mismatch: expected an integer type, but got {typeof(T)}";
+                        return false;
+                    }
                 case SecsDataType.I2:
-                    if (value is short)
+                    if (IsInteger(value))
                     {
-                        dvidInstance.LongCurrentValue = (short)(object)value;
-
-                        dvidInstance.LongCurrentValue = Unsafe.As<T, short>(ref value);
-                        errMsg = null;
-                        return true;
+                        if (NumericToNumeric.Try<T, short>(value, out var shortValue, ConversionRule.CheckOverflow))
+                        {
+                            dvidInstance.LongCurrentValue = shortValue;
+                            errMsg = null;
+                            return true;
+                        }
+                        else
+                        {
+                            errMsg = $"Value {value} is out of range for type {typeof(short)}";
+                            return false;
+                        }
                     }
-                    break;
+                    else
+                    {
+                        errMsg = $"Type mismatch: expected an integer type, but got {typeof(T)}";
+                        return false;
+                    }
                 case SecsDataType.I4:
-                    if (value is int)
+                    if (IsInteger(value))
                     {
-                        dvidInstance.LongCurrentValue = (int)(object)value;
-
-
-                        errMsg = null;
-                        return true;
+                        if (NumericToNumeric.Try<T, int>(value, out var intValue, ConversionRule.CheckOverflow))
+                        {
+                            dvidInstance.LongCurrentValue = intValue;
+                            errMsg = null;
+                            return true;
+                        }
+                        else
+                        {
+                            errMsg = $"Value {value} is out of range for type {typeof(int)}";
+                            return false;
+                        }
                     }
-                    break;
+                    else
+                    {
+                        errMsg = $"Type mismatch: expected an integer type, but got {typeof(T)}";
+                        return false;
+                    }
                 case SecsDataType.I8:
-                    if (value is long)
+                    if (IsInteger(value))
                     {
-                        dvidInstance.LongCurrentValue = (long)(object)value;
-                        errMsg = null;
-                        return true;
+                        if (NumericToNumeric.Try<T, long>(value, out var longValue, ConversionRule.CheckOverflow))
+                        {
+                            dvidInstance.LongCurrentValue = longValue;
+                            errMsg = null;
+                            return true;
+                        }
+                        else
+                        {
+                            errMsg = $"Value {value} is out of range for type {typeof(long)}";
+                            return false;
+                        }
                     }
-                    break;
+                    else
+                    {
+                        errMsg = $"Type mismatch: expected an integer type, but got {typeof(T)}";
+                        return false;
+                    }
                 case SecsDataType.U1:
-                    if (value is byte)
+                    if (IsInteger(value))
                     {
-                        dvidInstance.LongCurrentValue = (byte)(object)value;
-                        errMsg = null;
-                        return true;
+                        if (NumericToNumeric.Try<T, byte>(value, out var byteValue, ConversionRule.CheckOverflow))
+                        {
+                            dvidInstance.LongCurrentValue = byteValue;
+                            errMsg = null;
+                            return true;
+                        }
+                        else
+                        {
+                            errMsg = $"Value {value} is out of range for type {typeof(byte)}";
+                            return false;
+                        }
                     }
-                    break;
+                    else
+                    {
+                        errMsg = $"Type mismatch: expected an integer type, but got {typeof(T)}";
+                        return false;
+                    }
                 case SecsDataType.U2:
-                    if (value is ushort)
+                    if (IsInteger(value))
                     {
-                        dvidInstance.LongCurrentValue = (ushort)(object)value;
-                        errMsg = null;
-                        return true;
+                        if (NumericToNumeric.Try<T, ushort>(value, out var ushoryValue, ConversionRule.CheckOverflow))
+                        {
+                            dvidInstance.LongCurrentValue = ushoryValue;
+                            errMsg = null;
+                            return true;
+                        }
+                        else
+                        {
+                            errMsg = $"Value {value} is out of range for type {typeof(ushort)}";
+                            return false;
+                        }
                     }
-                    break;
+                    else
+                    {
+                        errMsg = $"Type mismatch: expected an integer type, but got {typeof(T)}";
+                        return false;
+                    }
                 case SecsDataType.U4:
-                    if (value is uint)
+                    if (IsInteger(value))
                     {
-                        dvidInstance.LongCurrentValue = (uint)(object)value;
-                        errMsg = null;
-                        return true;
+                        if (NumericToNumeric.Try<T, uint>(value, out var uintValue, ConversionRule.CheckOverflow))
+                        {
+                            dvidInstance.LongCurrentValue = uintValue;
+                            errMsg = null;
+                            return true;
+                        }
+                        else
+                        {
+                            errMsg = $"Value {value} is out of range for type {typeof(uint)}";
+                            return false;
+                        }
                     }
-                    break;
+                    else
+                    {
+                        errMsg = $"Type mismatch: expected an integer type, but got {typeof(T)}";
+                        return false;
+                    }
                 case SecsDataType.U8:
-                    if (value is ulong)
+                    if (IsInteger(value))
                     {
-                        dvidInstance.LongCurrentValue = (long)(ulong)(object)value; // 注意：可能会丢失精度
-                        errMsg = null;
-                        return true;
+                        if (NumericToNumeric.Try<T, long>(value, out var longValue, ConversionRule.CheckOverflow))
+                        {
+                            dvidInstance.LongCurrentValue = longValue;
+                            errMsg = null;
+                            return true;
+                        }
+                        else
+                        {
+                            errMsg = $"Value {value} is out of range for type {typeof(long)}";
+                            return false;
+                        }
                     }
-                    break;
+                    else
+                    {
+                        errMsg = $"Type mismatch: expected an integer type, but got {typeof(T)}";
+                        return false;
+                    }
                 case SecsDataType.F4:
-                    if (value is float)
+                    if (IsDecimal(value))
                     {
-                        dvidInstance.DoubleCurrentValue = (float)(object)value;
+                        if (NumericToNumeric.Try<T, float>(value, out var floatValue, ConversionRule.CheckOverflow | ConversionRule.CheckPrecision))
+                        {
+                            dvidInstance.DoubleCurrentValue = floatValue;
+                            errMsg = null;
+                            return true;
+                        }
+                        else
+                        {
+                            errMsg = $"Value {value} is out of range for type {typeof(float)}";
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        errMsg = $"Type mismatch: expected an decimal type, but got {typeof(T)}";
+                        return false;
+                    }
+                case SecsDataType.F8:
+                    if (IsDecimal(value))
+                    {
+                        if (NumericToNumeric.Try<T, float>(value, out var doubleValue, ConversionRule.CheckOverflow | ConversionRule.CheckPrecision))
+                        {
+                            dvidInstance.DoubleCurrentValue = doubleValue;
+                            errMsg = null;
+                            return true;
+                        }
+                        else
+                        {
+                            errMsg = $"Value {value} is out of range for type {typeof(double)}";
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        errMsg = $"Type mismatch: expected an decimal type, but got {typeof(T)}";
+                        return false;
+                    }
+                case SecsDataType.ASCII:
+                    if (value is string strValue)
+                    {
+                        dvidInstance.StringCurrentValue = strValue;
                         errMsg = null;
                         return true;
                     }
-                    break;
-                case SecsDataType.F8:
-                    if (value is double)
-            }
+                    else
+                    {
+                        errMsg = $"Type mismatch: expected {typeof(string)}, but got {typeof(T)}";
+                        return false;
+                    }
 
-
-            if(dvidInstance.DvidDef.DataType == SecsDataType.Boolean && value is bool boolValue)
-            {
-                dvidInstance.BoolCurrentValue = boolValue;
+                default:
+                    throw new InvalidOperationException($"Unsupported data type: {dvidInstance.DvidDef.DataType}");
             }
-            else if (dvidInstance.DvidDef.DataType == SecsDataType.I1 && value is sbyte i1Value)
-            {
-                dvidInstance.LongCurrentValue = i1Value;
-            }
-            else if (dvidInstance.DvidDef.DataType == SecsDataType.I2 && value is short i2Value)
-            {
-                dvidInstance.LongCurrentValue = i2Value;
-            }
-            else if (dvidInstance.DvidDef.DataType == SecsDataType.I4 && value is int i4Value)
-            {
-                dvidInstance.LongCurrentValue = i4Value;
-            }
-            else if (dvidInstance.DvidDef.DataType == SecsDataType.I8 && value is long i8Value)
-            {
-                dvidInstance.LongCurrentValue = i8Value;
-            }
-            else if (dvidInstance.DvidDef.DataType == SecsDataType.U1 && value is byte u1Value)
-            {
-                dvidInstance.LongCurrentValue = u1Value;
-            }
-            else if (dvidInstance.DvidDef.DataType == SecsDataType.U2 && value is ushort u2Value)
-            {
-                dvidInstance.LongCurrentValue = u2Value;
-            }
-            else if (dvidInstance.DvidDef.DataType == SecsDataType.U4 && value is uint u4Value)
-            {
-                dvidInstance.LongCurrentValue = u4Value;
-            }
-            else if (dvidInstance.DvidDef.DataType == SecsDataType.U8 && value is ulong u8Value)
-            {
-                dvidInstance.LongCurrentValue = (long)u8Value; // 注意：可能会丢失精度
-            }
-            else if (dvidInstance.DvidDef.DataType == SecsDataType.F4 && value is float f4Value)
-            {
-                dvidInstance.DoubleCurrentValue = f4Value;
-            }
-            else if (dvidInstance.DvidDef.DataType == SecsDataType.F8 && value is double f8Value)
-            {
-                dvidInstance.DoubleCurrentValue = f8Value;
-            }
-            else if (dvidInstance.DvidDef.DataType == SecsDataType.ASCII && value is string strValue)
-            {
-                dvidInstance.String
         }
 
         public T Read<T>(long dvid)
         {
-            return TryRead<T>(dvid, out var value, out string errMsg) ? value : throw new ArgumentException(errMsg);
+            return Read<T>(dvid, out var value, out string errMsg) ? value : throw new ArgumentException(errMsg);
         }
 
-        public bool TryRead<T>(long dvid, out T value, out string errMsg)
+        public bool Read<T>(long dvid, out T value, out string errMsg)
         {
-            if (_dvidInstancesById.TryGetValue(dvid, out var instance))
-            {
-                return TryRead<T>(instance, out value, out errMsg);
-            }
-            else
-            {
-                value = default;
-                errMsg = null;
-                return false;
-            }
+            if (_dvidInstancesByNameAndId.GetByKey2(dvid, out var dvidInstance))
+                return TryRead<T>(dvidInstance, out value, out errMsg);
+            errMsg = $"DVID with name '{dvid}' not found.";
+            value = default;
+            return false;
         }
 
         public T Read<T>(string name)
         {
-            return TryRead<T>(name, out var value, out string errMsg) ? value : throw new ArgumentException(errMsg);
+            return Read<T>(name, out var value, out string errMsg) ? value : throw new ArgumentException(errMsg);
         }
 
-        public bool TryRead<T>(string name, out T value, out string errMsg)
+        public bool Read<T>(string name, out T value, out string errMsg)
         {
-            if (_dvidInstancesByName.TryGetValue(name, out var instance))
-            {
-                return TryRead<T>(instance, out value, out errMsg);
-            }
-            else
-            {
-                value = default;
-                errMsg = null;
-                return false;
-            }
+            if (_dvidInstancesByNameAndId.GetByKey1(name, out var dvidInstance))
+                return TryRead<T>(dvidInstance, out value, out errMsg);
+            errMsg = $"DVID with name '{name}' not found.";
+            value = default;
+            return false;
         }
 
         private bool TryRead<T>(DvidInstance dvidInstance, out T value, out string errMsg)

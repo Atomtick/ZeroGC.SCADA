@@ -19,10 +19,5 @@ namespace SCADA.Events
         public EventLevel Level { get; }
         public string DescriptionTemplate { get; }
         public bool Enabled { get; internal set; }
-
-        public EventDef Clone()
-        {
-            return new EventDef(Id, Name, Level, DescriptionTemplate, Enabled);
-        }
     }
 }

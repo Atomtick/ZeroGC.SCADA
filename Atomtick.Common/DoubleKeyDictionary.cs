@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+#if NET8_0_OR_GREATER
+using System.Collections.Frozen;
+#endif
 
 namespace Atomtick.Common
 {
@@ -25,13 +28,18 @@ namespace Atomtick.Common
         // 将两个字典封装成一个不可变的快照节点
         private class Snapshot
         {
-            public readonly Dictionary<TKey1, TValue> ByKey1;
-            public readonly Dictionary<TKey2, TValue> ByKey2;
+            public readonly IDictionary<TKey1, TValue> ByKey1;
+            public readonly IDictionary<TKey2, TValue> ByKey2;
 
             public Snapshot(Dictionary<TKey1, TValue> byKey1, Dictionary<TKey2, TValue> byKey2)
             {
+#if NET462_OR_GREATER
                 ByKey1 = byKey1;
                 ByKey2 = byKey2;
+#elif NET8_0_OR_GREATER
+                ByKey1 = byKey1.ToFrozenDictionary();
+                ByKey2 = byKey2.ToFrozenDictionary();
+#endif
             }
         }
 
@@ -46,17 +54,17 @@ namespace Atomtick.Common
         }
 
         // 读操作 1：完全无锁！直接获取快照并读取
-        public TValue GetByKey1(TKey1 key1)
+        public bool GetByKey1(TKey1 key1, out TValue value)
         {
             var snap = _snapshot; // 拿到当前瞬间的快照引用
-            return snap.ByKey1.TryGetValue(key1, out var val) ? val : default;
+            return snap.ByKey1.TryGetValue(key1, out value);
         }
 
         // 读操作 2：完全无锁！
-        public TValue GetByKey2(TKey2 key2)
+        public bool GetByKey2(TKey2 key2, out TValue value)
         {
             var snap = _snapshot;
-            return snap.ByKey2.TryGetValue(key2, out var val) ? val : default;
+            return snap.ByKey2.TryGetValue(key2, out value);
         }
 
         // 添加操作：加锁 -> 深度复制字典 -> 修改 -> 替换快照

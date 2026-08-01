@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -27,7 +28,20 @@ namespace SCADA.Events
             }
         }
 
-        public void ClearAlarmEvent(string source) { }
+        public void ClearAlarmEvent(string source)
+        {
+            lock (_lock)
+            {
+                var alarms = _alarmEventInstances;
+                GC.KeepAlive(alarms);
+                if (alarms.Length == 0)
+                {
+                    return;
+                }
+                var newAlarms = alarms.Where(x => x.Source != source).ToArray();
+                _alarmEventInstances = newAlarms;
+            }
+        }
 
         public void ClearAlarmEvent(long instanceId)
         {
@@ -76,8 +90,13 @@ namespace SCADA.Events
 
         public EventManager()
         {
+            // 内置的三个事件类型，分别是信息、警告和报警，名称分别是 @、% 和 $，用于快速发布事件。
+            Register(new EventDef(-1, "@", EventLevel.Info, "description", false));
+            Register(new EventDef(-2, "%", EventLevel.Warn, "description", false));
+            Register(new EventDef(-3, "$", EventLevel.Alarm, "description", false));
+
             // 推荐使用 Bounded (有界队列) 防止消费者卡死时引发 OOM 内存爆炸
-            var channelOptions = new BoundedChannelOptions(capacity: 5000)
+            var channelOptions = new BoundedChannelOptions(capacity: 1000)
             {
                 // 如果队列满了，直接丢弃最老的数据 (或者选择 DropWrite 丢弃新数据，取决于你的业务语义)
                 FullMode = BoundedChannelFullMode.DropOldest,
@@ -99,16 +118,14 @@ namespace SCADA.Events
 
             Task.Run(async () =>
             {
-                await foreach (var eventInstance in _eventChannel.Reader.ReadAllAsync())
+                while (await _eventChannel.Reader.WaitToReadAsync())
                 {
-                    OnEventAsync?.Invoke(this, eventInstance);
+                    while (_eventChannel.Reader.TryRead(out var eventInstance))
+                    {
+                        OnEventAsync?.Invoke(this, eventInstance);
+                    }
                 }
             });
-
-            // 内置的三个事件类型，分别是信息、警告和报警，名称分别是 @、% 和 $，用于快速发布事件。
-            Register(new EventDef(-1, "@", EventLevel.Info, "description", false));
-            Register(new EventDef(-2, "%", EventLevel.Warn, "description", false));
-            Register(new EventDef(-3, "$", EventLevel.Alarm, "description", false));
         }
 
         public event EventHandler<EventInstance> OnEventAsync;
@@ -184,35 +201,42 @@ namespace SCADA.Events
 
         #endregion 注册预定义事件
 
+        private string FormatDescription(string template, ListDictionary DvidValues)
+        {
+            if (DvidValues == null || DvidValues.Count == 0)
+            {
+                return template;
+            }
+            StringBuilder sb = new StringBuilder(template);
+            foreach (DictionaryEntry entry in DvidValues)
+            {
+                string placeholder = $"{{{entry.Key}}}";
+                string value = entry.Value != null ? $"'{entry.Value}'" : "' '";
+                sb.Replace(placeholder, value);
+            }
+            return sb.ToString();
+        }
+
         private void PostEvent(string name, string source, ListDictionary DvidValues, string description)
         {
             if (!_eventDefs.TryGetValue(name, out var eventDef))
             {
                 throw new InvalidOperationException($"Event with name '{name}' is not registered.");
             }
-            EventInstance eventInstance;
+            EventInstance eventInstance = new EventInstance
+            {
+                Id = Interlocked.Increment(ref _eventIdCounter),
+                EventDef = eventDef,
+                Source = source,
+                DvidValues = DvidValues,
+                OccurTime = DateTime.Now,
+            };
             if (eventDef.Name == "@" || eventDef.Name == "%" || eventDef.Name == "$")
             {
-                eventInstance = new EventInstance
-                {
-                    Id = Interlocked.Increment(ref _eventIdCounter),
-                    EventDef = eventDef.Clone(),
-                    Source = source,
-                    DvidValues = DvidValues,
-                    OccurTime = DateTime.Now,
-                };
                 eventInstance.Description = description;
             }
             else
             {
-                eventInstance = new EventInstance
-                {
-                    Id = Interlocked.Increment(ref _eventIdCounter),
-                    EventDef = eventDef,
-                    Source = source,
-                    DvidValues = DvidValues,
-                    OccurTime = DateTime.Now,
-                };
                 if (DvidValues != null && !string.IsNullOrEmpty(eventDef.DescriptionTemplate))
                 {
                     eventInstance.Description = FormatDescription(eventDef.DescriptionTemplate, DvidValues);
@@ -220,7 +244,15 @@ namespace SCADA.Events
             }
             if (eventInstance.EventDef.Level == EventLevel.Alarm)
             {
-                alarmEventInstances.Add(eventInstance);
+                lock (_lock)
+                {
+                    var alarms = _alarmEventInstances;
+                    GC.KeepAlive(alarms);
+                    var newAlarms = new EventInstance[alarms.Length + 1];
+                    Array.Copy(alarms, newAlarms, alarms.Length);
+                    newAlarms[alarms.Length] = eventInstance;
+                    _alarmEventInstances = newAlarms;
+                }
             }
             _eventChannel.Writer.TryWrite(eventInstance);
             OnEventSync?.Invoke(this, eventInstance);

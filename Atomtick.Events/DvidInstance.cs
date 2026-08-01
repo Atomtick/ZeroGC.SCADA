@@ -9,7 +9,12 @@ namespace Atomtick.Events
         private double _doubleCurrentValue;
         private string _stringCurrentValue;
 
-        public DvidDef DvidDef { get; set; }
+        public DvidInstance(DvidDef dvidDef)
+        {
+            DvidDef = dvidDef;
+        }
+
+        public DvidDef DvidDef { get; }
         public bool BoolCurrentValue
         {
             get { return Volatile.Read(ref _boolCurrentValue); }
