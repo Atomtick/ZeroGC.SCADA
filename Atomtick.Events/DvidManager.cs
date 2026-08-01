@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Atomtick.Common;
+using SCADA.Common;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,30 +12,140 @@ namespace Atomtick.Events
 {
     public class DvidManager
     {
-        private readonly IDictionary<string, DvidInstance> _dvidInstancesByName;
-        private readonly IDictionary<long, DvidInstance> _dvidInstancesById;
+
+        private readonly DoubleKeyDictionary<string, long, DvidInstance> _dvidInstancesByNameAndId;
 
         public DvidManager()
         {
-            _dvidInstancesByName = new ConcurrentDictionary<string, DvidInstance>();
-            _dvidInstancesById = new ConcurrentDictionary<long, DvidInstance>();
+            _dvidInstancesByNameAndId = new DoubleKeyDictionary<string, long, DvidInstance>();
         }
 
-        public void Register(long id, string name, string description, SecsDataType dataType, object initialValue, string unit)
+        public void Register(params DvidDef[] dvidDefs)
         {
-            DvidDef dvidDef = new DvidDef(id, name, description, dataType, initialValue, unit);
-            if(_dvidInstancesById.TryAdd(id,) == false)
-            {
+            _dvidInstancesByNameAndId.Add(
+                dvidDefs.Select(dvidDef =>
+                new DoubleKeyPairs<string, long, DvidInstance>(dvidDef.Name, dvidDef.Dvid, new DvidInstance()
+                {
+                    DvidDef = dvidDef,
+                })).ToArray());
+        }
 
+        public void Update<T>(long dvid, T value) where T : IConvertible
+        {
+            if (!Update(_dvidInstancesByNameAndId.GetByKey2(dvid), value, out string errMsg))
+            {
+                throw new ArgumentException(errMsg);
             }
         }
 
-        public void Update<T>(long dvid, T value) { }
-
-        public void Update<T>(string name, T value) { }
-
-        public void Update<T>(DvidInstance dvidInstance, T value) 
+        public void Update<T>(string name, T value) where T : IConvertible
         {
+            if (!Update(_dvidInstancesByNameAndId.GetByKey1(name), value, out string errMsg))
+            {
+                throw new ArgumentException(errMsg);
+            }
+        }
+
+        public bool Update<T>(DvidInstance dvidInstance, T value,out string errMsg) where T : IConvertible
+        {
+            switch(dvidInstance.DvidDef.DataType)
+            {
+                case SecsDataType.Boolean:
+                    if (value is bool)
+                    {
+
+                        dvidInstance.BoolCurrentValue = (bool)(object)value;
+
+                        dvidInstance.BoolCurrentValue = Unsafe.As<T,bool>(ref value);
+                        errMsg = null;
+                        return true;
+                    }
+                    break;
+                case SecsDataType.I1:
+                    if (value is sbyte)
+                    {
+
+                        NumericToNumeric.Try<T, sbyte>(value, out var sbyteValue, ConversionRule.CheckOverflow);
+                        dvidInstance.LongCurrentValue = 
+                        
+
+                        errMsg = null;
+                        return true;
+                    }
+                    break;
+                case SecsDataType.I2:
+                    if (value is short)
+                    {
+                        dvidInstance.LongCurrentValue = (short)(object)value;
+
+                        dvidInstance.LongCurrentValue = Unsafe.As<T, short>(ref value);
+                        errMsg = null;
+                        return true;
+                    }
+                    break;
+                case SecsDataType.I4:
+                    if (value is int)
+                    {
+                        dvidInstance.LongCurrentValue = (int)(object)value;
+
+
+                        errMsg = null;
+                        return true;
+                    }
+                    break;
+                case SecsDataType.I8:
+                    if (value is long)
+                    {
+                        dvidInstance.LongCurrentValue = (long)(object)value;
+                        errMsg = null;
+                        return true;
+                    }
+                    break;
+                case SecsDataType.U1:
+                    if (value is byte)
+                    {
+                        dvidInstance.LongCurrentValue = (byte)(object)value;
+                        errMsg = null;
+                        return true;
+                    }
+                    break;
+                case SecsDataType.U2:
+                    if (value is ushort)
+                    {
+                        dvidInstance.LongCurrentValue = (ushort)(object)value;
+                        errMsg = null;
+                        return true;
+                    }
+                    break;
+                case SecsDataType.U4:
+                    if (value is uint)
+                    {
+                        dvidInstance.LongCurrentValue = (uint)(object)value;
+                        errMsg = null;
+                        return true;
+                    }
+                    break;
+                case SecsDataType.U8:
+                    if (value is ulong)
+                    {
+                        dvidInstance.LongCurrentValue = (long)(ulong)(object)value; // 注意：可能会丢失精度
+                        errMsg = null;
+                        return true;
+                    }
+                    break;
+                case SecsDataType.F4:
+                    if (value is float)
+                    {
+                        dvidInstance.DoubleCurrentValue = (float)(object)value;
+                        errMsg = null;
+                        return true;
+                    }
+                    break;
+                case SecsDataType.F8:
+                    if (value is double)
+            }
+
+
             if(dvidInstance.DvidDef.DataType == SecsDataType.Boolean && value is bool boolValue)
             {
                 dvidInstance.BoolCurrentValue = boolValue;

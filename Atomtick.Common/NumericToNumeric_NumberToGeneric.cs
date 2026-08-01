@@ -6,14 +6,130 @@ namespace SCADA.Common
     /// <summary>
     /// 具体类型 => 泛型
     /// </summary>
-    public static partial class NumericConverter
+    public partial class NumericToNumeric
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool TryToNumeric<T>(sbyte @sbyte, out T number, ConversionRule rule)
+        public static bool Try<TSource, TTarget>(TSource source, out TTarget target, ConversionRule rule)
+        {
+            if (typeof(TSource) == typeof(TTarget))
+            {
+#if NET8_0_OR_GREATER
+                target = Unsafe.As<TSource, TTarget>(ref source);
+#elif NET462_OR_GREATER
+                target = (TTarget)(object)source;
+#endif
+                return true;
+            }
+
+            if (typeof(TSource) == typeof(sbyte))
+            {
+#if NET8_0_OR_GREATER
+                var @sbyte = Unsafe.As<TSource, sbyte>(ref source);
+#elif NET462_OR_GREATER
+                var @sbyte = (sbyte)(object)source;
+#endif
+                return Try(@sbyte, out target, rule);
+            }
+            if (typeof(TSource) == typeof(byte))
+            {
+#if NET8_0_OR_GREATER
+                var @byte = Unsafe.As<TSource, byte>(ref source);
+#elif NET462_OR_GREATER
+                var @byte = (byte)(object)source;
+#endif
+                return Try(@byte, out target, rule);
+            }
+            if (typeof(TSource) == typeof(short))
+            {
+#if NET8_0_OR_GREATER
+                var @short = Unsafe.As<TSource, short>(ref source);
+#elif NET462_OR_GREATER
+                var @short = (short)(object)source;
+#endif
+                return Try(@short, out target, rule);
+            }
+            if (typeof(TSource) == typeof(ushort))
+            {
+#if NET8_0_OR_GREATER
+                var @ushort = Unsafe.As<TSource, ushort>(ref source);
+#elif NET462_OR_GREATER
+                var @ushort = (ushort)(object)source;
+#endif
+                return Try(@ushort, out target, rule);
+            }
+            if (typeof(TSource) == typeof(int))
+            {
+#if NET8_0_OR_GREATER
+                var @int = Unsafe.As<TSource, int>(ref source);
+#elif NET462_OR_GREATER
+                var @int = (int)(object)source;
+#endif
+                return Try(@int, out target, rule);
+            }
+            if (typeof(TSource) == typeof(uint))
+            {
+#if NET8_0_OR_GREATER
+                var @uint = Unsafe.As<TSource, uint>(ref source);
+#elif NET462_OR_GREATER
+                var @uint = (uint)(object)source;
+#endif
+                return Try(@uint, out target, rule);
+            }
+            if (typeof(TSource) == typeof(long))
+            {
+#if NET8_0_OR_GREATER
+                var @long = Unsafe.As<TSource, long>(ref source);
+#elif NET462_OR_GREATER
+                var @long = (long)(object)source;
+#endif
+                return Try(@long, out target, rule);
+            }
+            if (typeof(TSource) == typeof(ulong))
+            {
+#if NET8_0_OR_GREATER
+                var @ulong = Unsafe.As<TSource, ulong>(ref source);
+#elif NET462_OR_GREATER
+                var @ulong = (ulong)(object)source;
+#endif
+                return Try(@ulong, out target, rule);
+            }
+            if (typeof(TSource) == typeof(float))
+            {
+#if NET8_0_OR_GREATER
+                var @float = Unsafe.As<TSource, float>(ref source);
+#elif NET462_OR_GREATER
+                var @float = (float)(object)source;
+#endif
+                return Try(@float, out target, rule);
+            }
+            if (typeof(TSource) == typeof(double))
+            {
+#if NET8_0_OR_GREATER
+                var @double = Unsafe.As<TSource, double>(ref source);
+#elif NET462_OR_GREATER
+                var @double = (double)(object)source;
+#endif
+                return Try(@double, out target, rule);
+            }
+            if (typeof(TSource) == typeof(decimal))
+            {
+#if NET8_0_OR_GREATER
+                var @decimal = Unsafe.As<TSource, decimal>(ref source);
+#elif NET462_OR_GREATER
+                var @decimal = (decimal)(object)source;
+#endif
+                return Try(@decimal, out target, rule);
+            }
+            target = default;
+            return false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool Try<T>(sbyte @sbyte, out T number, ConversionRule rule)
         {
             if (typeof(T) == typeof(sbyte))
             {
-                if (TryConvert(@sbyte, out sbyte res, rule))
+                if (Try((short)@sbyte, out sbyte res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<sbyte, T>(ref res);
@@ -31,7 +147,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(byte))
             {
-                if (TryConvert(@sbyte, out byte res, rule))
+                if (Try(@sbyte, out byte res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<byte, T>(ref res);// 0 开销强制转换
@@ -49,7 +165,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(short))
             {
-                if (TryConvert(@sbyte, out short res, rule))
+                if (Try(@sbyte, out short res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<short, T>(ref res);// 0 开销强制转换
@@ -67,7 +183,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(ushort))
             {
-                if (TryConvert(@sbyte, out ushort res, rule))
+                if (Try(@sbyte, out ushort res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<ushort, T>(ref res);// 0 开销强制转换
@@ -85,7 +201,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(int))
             {
-                if (TryConvert(@sbyte, out int res, rule))
+                if (Try(@sbyte, out int res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<int, T>(ref res);// 0 开销强制转换
@@ -103,7 +219,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(uint))
             {
-                if (TryConvert(@sbyte, out uint res, rule))
+                if (Try(@sbyte, out uint res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<uint, T>(ref res);// 0 开销强制转换
@@ -121,7 +237,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(sbyte))
             {
-                if (TryConvert(@sbyte, out long res, rule))
+                if (Try(@sbyte, out long res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<long, T>(ref res);// 0 开销强制转换
@@ -139,7 +255,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(ulong))
             {
-                if (TryConvert(@sbyte, out ulong res, rule))
+                if (Try(@sbyte, out ulong res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<ulong, T>(ref res);// 0 开销强制转换
@@ -157,7 +273,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(decimal))
             {
-                if (TryConvert(@sbyte, out decimal res, rule))
+                if (Try(@sbyte, out decimal res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<decimal, T>(ref res);// 0 开销强制转换
@@ -175,7 +291,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(double))
             {
-                if (TryConvert(@sbyte, out double res, rule))
+                if (Try(@sbyte, out double res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<double, T>(ref res);// 0 开销强制转换
@@ -193,7 +309,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(float))
             {
-                if (TryConvert(@sbyte, out float res, rule))
+                if (Try(@sbyte, out float res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<float, T>(ref res);// 0 开销强制转换
@@ -212,11 +328,11 @@ namespace SCADA.Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool TryToNumeric<T>(byte @byte, out T number, ConversionRule rule)
+        public static bool Try<T>(byte @byte, out T number, ConversionRule rule)
         {
             if (typeof(T) == typeof(sbyte))
             {
-                if (TryConvert(@byte, out sbyte res, rule))
+                if (Try(@byte, out sbyte res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<sbyte, T>(ref res);
@@ -230,7 +346,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(byte))
             {
-                if (TryConvert(@byte, out byte res, rule))
+                if (Try((short)@byte, out byte res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<byte, T>(ref res);
@@ -244,7 +360,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(short))
             {
-                if (TryConvert(@byte, out short res, rule))
+                if (Try(@byte, out short res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<short, T>(ref res);
@@ -258,7 +374,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(ushort))
             {
-                if (TryConvert(@byte, out ushort res, rule))
+                if (Try(@byte, out ushort res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<ushort, T>(ref res);
@@ -272,7 +388,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(int))
             {
-                if (TryConvert(@byte, out int res, rule))
+                if (Try(@byte, out int res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<int, T>(ref res);
@@ -286,7 +402,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(uint))
             {
-                if (TryConvert(@byte, out uint res, rule))
+                if (Try(@byte, out uint res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<uint, T>(ref res);
@@ -300,7 +416,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(long))
             {
-                if (TryConvert(@byte, out long res, rule))
+                if (Try(@byte, out long res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<long, T>(ref res);
@@ -314,7 +430,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(ulong))
             {
-                if (TryConvert(@byte, out ulong res, rule))
+                if (Try(@byte, out ulong res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<ulong, T>(ref res);
@@ -328,7 +444,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(decimal))
             {
-                if (TryConvert(@byte, out decimal res, rule))
+                if (Try(@byte, out decimal res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<decimal, T>(ref res);
@@ -342,7 +458,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(double))
             {
-                if (TryConvert(@byte, out double res, rule))
+                if (Try(@byte, out double res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<double, T>(ref res);
@@ -356,7 +472,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(float))
             {
-                if (TryConvert(@byte, out float res, rule))
+                if (Try(@byte, out float res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<float, T>(ref res);
@@ -372,11 +488,11 @@ namespace SCADA.Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool TryToNumeric<T>(short @short, out T number, ConversionRule rule)
+        public static bool Try<T>(short @short, out T number, ConversionRule rule)
         {
             if (typeof(T) == typeof(sbyte))
             {
-                if (TryConvert(@short, out sbyte res, rule))
+                if (Try(@short, out sbyte res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<sbyte, T>(ref res);
@@ -390,7 +506,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(byte))
             {
-                if (TryConvert(@short, out byte res, rule))
+                if (Try(@short, out byte res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<byte, T>(ref res);
@@ -404,7 +520,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(short))
             {
-                if (TryConvert(@short, out short res, rule))
+                if (Try((int)@short, out short res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<short, T>(ref res);
@@ -418,7 +534,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(ushort))
             {
-                if (TryConvert(@short, out ushort res, rule))
+                if (Try(@short, out ushort res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<ushort, T>(ref res);
@@ -432,7 +548,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(int))
             {
-                if (TryConvert(@short, out int res, rule))
+                if (Try(@short, out int res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<int, T>(ref res);
@@ -446,7 +562,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(uint))
             {
-                if (TryConvert(@short, out uint res, rule))
+                if (Try(@short, out uint res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<uint, T>(ref res);
@@ -460,7 +576,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(long))
             {
-                if (TryConvert(@short, out long res, rule))
+                if (Try(@short, out long res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<long, T>(ref res);
@@ -474,7 +590,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(ulong))
             {
-                if (TryConvert(@short, out ulong res, rule))
+                if (Try(@short, out ulong res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<ulong, T>(ref res);
@@ -488,7 +604,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(decimal))
             {
-                if (TryConvert(@short, out decimal res, rule))
+                if (Try(@short, out decimal res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<decimal, T>(ref res);
@@ -502,7 +618,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(double))
             {
-                if (TryConvert(@short, out double res, rule))
+                if (Try(@short, out double res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<double, T>(ref res);
@@ -516,7 +632,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(float))
             {
-                if (TryConvert(@short, out float res, rule))
+                if (Try(@short, out float res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<float, T>(ref res);
@@ -532,11 +648,11 @@ namespace SCADA.Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool TryToNumeric<T>(ushort @ushort, out T number, ConversionRule rule)
+        public static bool Try<T>(ushort @ushort, out T number, ConversionRule rule)
         {
             if (typeof(T) == typeof(sbyte))
             {
-                if (TryConvert(@ushort, out sbyte res, rule))
+                if (Try(@ushort, out sbyte res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<sbyte, T>(ref res);
@@ -550,7 +666,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(byte))
             {
-                if (TryConvert(@ushort, out byte res, rule))
+                if (Try(@ushort, out byte res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<byte, T>(ref res);
@@ -564,7 +680,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(short))
             {
-                if (TryConvert(@ushort, out short res, rule))
+                if (Try(@ushort, out short res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<short, T>(ref res);
@@ -578,7 +694,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(ushort))
             {
-                if (TryConvert(@ushort, out ushort res, rule))
+                if (Try((int)@ushort, out ushort res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<ushort, T>(ref res);
@@ -592,7 +708,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(int))
             {
-                if (TryConvert(@ushort, out int res, rule))
+                if (Try(@ushort, out int res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<int, T>(ref res);
@@ -606,7 +722,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(uint))
             {
-                if (TryConvert(@ushort, out uint res, rule))
+                if (Try(@ushort, out uint res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<uint, T>(ref res);
@@ -620,7 +736,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(long))
             {
-                if (TryConvert(@ushort, out long res, rule))
+                if (Try(@ushort, out long res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<long, T>(ref res);
@@ -634,7 +750,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(ulong))
             {
-                if (TryConvert(@ushort, out ulong res, rule))
+                if (Try(@ushort, out ulong res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<ulong, T>(ref res);
@@ -648,7 +764,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(decimal))
             {
-                if (TryConvert(@ushort, out decimal res, rule))
+                if (Try(@ushort, out decimal res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<decimal, T>(ref res);
@@ -662,7 +778,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(double))
             {
-                if (TryConvert(@ushort, out double res, rule))
+                if (Try(@ushort, out double res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<double, T>(ref res);
@@ -676,7 +792,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(float))
             {
-                if (TryConvert(@ushort, out float res, rule))
+                if (Try(@ushort, out float res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<float, T>(ref res);
@@ -692,11 +808,11 @@ namespace SCADA.Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool TryToNumeric<T>(int @int, out T number, ConversionRule rule)
+        public static bool Try<T>(int @int, out T number, ConversionRule rule)
         {
             if (typeof(T) == typeof(sbyte))
             {
-                if (TryConvert(@int, out sbyte res, rule))
+                if (Try(@int, out sbyte res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<sbyte, T>(ref res);
@@ -710,7 +826,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(byte))
             {
-                if (TryConvert(@int, out byte res, rule))
+                if (Try(@int, out byte res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<byte, T>(ref res);
@@ -724,7 +840,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(short))
             {
-                if (TryConvert(@int, out short res, rule))
+                if (Try(@int, out short res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<short, T>(ref res);
@@ -738,7 +854,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(ushort))
             {
-                if (TryConvert(@int, out ushort res, rule))
+                if (Try(@int, out ushort res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<ushort, T>(ref res);
@@ -752,7 +868,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(int))
             {
-                if (TryConvert(@int, out int res, rule))
+                if (Try((long)@int, out int res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<int, T>(ref res);
@@ -766,7 +882,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(uint))
             {
-                if (TryConvert(@int, out uint res, rule))
+                if (Try(@int, out uint res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<uint, T>(ref res);
@@ -780,7 +896,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(long))
             {
-                if (TryConvert(@int, out long res, rule))
+                if (Try(@int, out long res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<long, T>(ref res);
@@ -794,7 +910,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(ulong))
             {
-                if (TryConvert(@int, out ulong res, rule))
+                if (Try(@int, out ulong res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<ulong, T>(ref res);
@@ -808,7 +924,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(decimal))
             {
-                if (TryConvert(@int, out decimal res, rule))
+                if (Try(@int, out decimal res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<decimal, T>(ref res);
@@ -822,7 +938,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(double))
             {
-                if (TryConvert(@int, out double res, rule))
+                if (Try(@int, out double res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<double, T>(ref res);
@@ -836,7 +952,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(float))
             {
-                if (TryConvert(@int, out float res, rule))
+                if (Try(@int, out float res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<float, T>(ref res);
@@ -852,11 +968,11 @@ namespace SCADA.Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool TryToNumeric<T>(uint @uint, out T number, ConversionRule rule)
+        public static bool Try<T>(uint @uint, out T number, ConversionRule rule)
         {
             if (typeof(T) == typeof(sbyte))
             {
-                if (TryConvert(@uint, out sbyte res, rule))
+                if (Try(@uint, out sbyte res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<sbyte, T>(ref res);
@@ -870,7 +986,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(byte))
             {
-                if (TryConvert(@uint, out byte res, rule))
+                if (Try(@uint, out byte res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<byte, T>(ref res);
@@ -884,7 +1000,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(short))
             {
-                if (TryConvert(@uint, out short res, rule))
+                if (Try(@uint, out short res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<short, T>(ref res);
@@ -898,7 +1014,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(ushort))
             {
-                if (TryConvert(@uint, out ushort res, rule))
+                if (Try(@uint, out ushort res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<ushort, T>(ref res);
@@ -912,7 +1028,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(int))
             {
-                if (TryConvert(@uint, out int res, rule))
+                if (Try(@uint, out int res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<int, T>(ref res);
@@ -926,7 +1042,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(uint))
             {
-                if (TryConvert(@uint, out uint res, rule))
+                if (Try((long)@uint, out uint res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<uint, T>(ref res);
@@ -940,7 +1056,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(long))
             {
-                if (TryConvert(@uint, out long res, rule))
+                if (Try(@uint, out long res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<long, T>(ref res);
@@ -954,7 +1070,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(ulong))
             {
-                if (TryConvert(@uint, out ulong res, rule))
+                if (Try(@uint, out ulong res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<ulong, T>(ref res);
@@ -968,7 +1084,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(decimal))
             {
-                if (TryConvert(@uint, out decimal res, rule))
+                if (Try(@uint, out decimal res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<decimal, T>(ref res);
@@ -982,7 +1098,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(double))
             {
-                if (TryConvert(@uint, out double res, rule))
+                if (Try(@uint, out double res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<double, T>(ref res);
@@ -996,7 +1112,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(float))
             {
-                if (TryConvert(@uint, out float res, rule))
+                if (Try(@uint, out float res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<float, T>(ref res);
@@ -1012,11 +1128,11 @@ namespace SCADA.Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool TryToNumeric<T>(long @long, out T number, ConversionRule rule)
+        public static bool Try<T>(long @long, out T number, ConversionRule rule)
         {
             if (typeof(T) == typeof(sbyte))
             {
-                if (TryConvert(@long, out sbyte res, rule))
+                if (Try(@long, out sbyte res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<sbyte, T>(ref res);
@@ -1030,7 +1146,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(byte))
             {
-                if (TryConvert(@long, out byte res, rule))
+                if (Try(@long, out byte res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<byte, T>(ref res);
@@ -1044,7 +1160,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(short))
             {
-                if (TryConvert(@long, out short res, rule))
+                if (Try(@long, out short res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<short, T>(ref res);
@@ -1058,7 +1174,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(ushort))
             {
-                if (TryConvert(@long, out ushort res, rule))
+                if (Try(@long, out ushort res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<ushort, T>(ref res);
@@ -1072,7 +1188,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(int))
             {
-                if (TryConvert(@long, out int res, rule))
+                if (Try(@long, out int res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<int, T>(ref res);
@@ -1086,7 +1202,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(uint))
             {
-                if (TryConvert(@long, out uint res, rule))
+                if (Try(@long, out uint res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<uint, T>(ref res);
@@ -1110,7 +1226,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(ulong))
             {
-                if (TryConvert(@long, out ulong res, rule))
+                if (Try(@long, out ulong res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<ulong, T>(ref res);
@@ -1124,7 +1240,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(decimal))
             {
-                if (TryConvert(@long, out decimal res, rule))
+                if (Try(@long, out decimal res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<decimal, T>(ref res);
@@ -1138,7 +1254,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(double))
             {
-                if (TryConvert(@long, out double res, rule))
+                if (Try(@long, out double res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<double, T>(ref res);
@@ -1152,7 +1268,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(float))
             {
-                if (TryConvert(@long, out float res, rule))
+                if (Try(@long, out float res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<float, T>(ref res);
@@ -1168,11 +1284,11 @@ namespace SCADA.Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool TryToNumeric<T>(ulong @ulong, out T number, ConversionRule rule)
+        public static bool Try<T>(ulong @ulong, out T number, ConversionRule rule)
         {
             if (typeof(T) == typeof(sbyte))
             {
-                if (TryConvert(@ulong, out sbyte res, rule))
+                if (Try(@ulong, out sbyte res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<sbyte, T>(ref res);
@@ -1186,7 +1302,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(byte))
             {
-                if (TryConvert(@ulong, out byte res, rule))
+                if (Try(@ulong, out byte res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<byte, T>(ref res);
@@ -1200,7 +1316,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(short))
             {
-                if (TryConvert(@ulong, out short res, rule))
+                if (Try(@ulong, out short res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<short, T>(ref res);
@@ -1214,7 +1330,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(ushort))
             {
-                if (TryConvert(@ulong, out ushort res, rule))
+                if (Try(@ulong, out ushort res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<ushort, T>(ref res);
@@ -1228,7 +1344,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(int))
             {
-                if (TryConvert(@ulong, out int res, rule))
+                if (Try(@ulong, out int res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<int, T>(ref res);
@@ -1242,7 +1358,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(uint))
             {
-                if (TryConvert(@ulong, out uint res, rule))
+                if (Try(@ulong, out uint res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<uint, T>(ref res);
@@ -1256,7 +1372,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(long))
             {
-                if (TryConvert(@ulong, out long res, rule))
+                if (Try(@ulong, out long res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<long, T>(ref res);
@@ -1280,7 +1396,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(decimal))
             {
-                if (TryConvert(@ulong, out decimal res, rule))
+                if (Try(@ulong, out decimal res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<decimal, T>(ref res);
@@ -1294,7 +1410,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(double))
             {
-                if (TryConvert(@ulong, out double res, rule))
+                if (Try(@ulong, out double res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<double, T>(ref res);
@@ -1308,7 +1424,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(float))
             {
-                if (TryConvert(@ulong, out float res, rule))
+                if (Try(@ulong, out float res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<float, T>(ref res);
@@ -1324,11 +1440,11 @@ namespace SCADA.Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool TryToNumeric<T>(decimal @decimal, out T number, ConversionRule rule)
+        public static bool Try<T>(decimal @decimal, out T number, ConversionRule rule)
         {
             if (typeof(T) == typeof(sbyte))
             {
-                if (TryConvert(@decimal, out sbyte res, rule))
+                if (Try(@decimal, out sbyte res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<sbyte, T>(ref res);
@@ -1342,7 +1458,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(byte))
             {
-                if (TryConvert(@decimal, out byte res, rule))
+                if (Try(@decimal, out byte res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<byte, T>(ref res);
@@ -1356,7 +1472,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(short))
             {
-                if (TryConvert(@decimal, out short res, rule))
+                if (Try(@decimal, out short res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<short, T>(ref res);
@@ -1370,7 +1486,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(ushort))
             {
-                if (TryConvert(@decimal, out ushort res, rule))
+                if (Try(@decimal, out ushort res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<ushort, T>(ref res);
@@ -1384,7 +1500,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(int))
             {
-                if (TryConvert(@decimal, out int res, rule))
+                if (Try(@decimal, out int res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<int, T>(ref res);
@@ -1398,7 +1514,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(uint))
             {
-                if (TryConvert(@decimal, out uint res, rule))
+                if (Try(@decimal, out uint res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<uint, T>(ref res);
@@ -1412,7 +1528,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(long))
             {
-                if (TryConvert(@decimal, out long res, rule))
+                if (Try(@decimal, out long res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<long, T>(ref res);
@@ -1426,7 +1542,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(ulong))
             {
-                if (TryConvert(@decimal, out ulong res, rule))
+                if (Try(@decimal, out ulong res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<ulong, T>(ref res);
@@ -1450,7 +1566,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(double))
             {
-                if (TryConvert(@decimal, out double res, rule))
+                if (Try(@decimal, out double res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<double, T>(ref res);
@@ -1464,7 +1580,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(float))
             {
-                if (TryConvert(@decimal, out float res, rule))
+                if (Try(@decimal, out float res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<float, T>(ref res);
@@ -1480,11 +1596,11 @@ namespace SCADA.Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool TryToNumeric<T>(double @double, out T number, ConversionRule rule)
+        public static bool Try<T>(double @double, out T number, ConversionRule rule)
         {
             if (typeof(T) == typeof(sbyte))
             {
-                if (TryConvert(@double, out sbyte res, rule))
+                if (Try(@double, out sbyte res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<sbyte, T>(ref res);
@@ -1498,7 +1614,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(byte))
             {
-                if (TryConvert(@double, out byte res, rule))
+                if (Try(@double, out byte res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<byte, T>(ref res);
@@ -1512,7 +1628,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(short))
             {
-                if (TryConvert(@double, out short res, rule))
+                if (Try(@double, out short res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<short, T>(ref res);
@@ -1526,7 +1642,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(ushort))
             {
-                if (TryConvert(@double, out ushort res, rule))
+                if (Try(@double, out ushort res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<ushort, T>(ref res);
@@ -1540,7 +1656,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(int))
             {
-                if (TryConvert(@double, out int res, rule))
+                if (Try(@double, out int res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<int, T>(ref res);
@@ -1554,7 +1670,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(uint))
             {
-                if (TryConvert(@double, out uint res, rule))
+                if (Try(@double, out uint res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<uint, T>(ref res);
@@ -1568,7 +1684,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(long))
             {
-                if (TryConvert(@double, out long res, rule))
+                if (Try(@double, out long res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<long, T>(ref res);
@@ -1582,7 +1698,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(ulong))
             {
-                if (TryConvert(@double, out ulong res, rule))
+                if (Try(@double, out ulong res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<ulong, T>(ref res);
@@ -1596,7 +1712,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(decimal))
             {
-                if (TryConvert(@double, out decimal res, rule))
+                if (Try(@double, out decimal res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<decimal, T>(ref res);
@@ -1620,7 +1736,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(float))
             {
-                if (TryConvert(@double, out float res, rule))
+                if (Try(@double, out float res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<float, T>(ref res);
@@ -1636,11 +1752,11 @@ namespace SCADA.Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool TryToNumeric<T>(float @float, out T number, ConversionRule rule)
+        public static bool Try<T>(float @float, out T number, ConversionRule rule)
         {
             if (typeof(T) == typeof(sbyte))
             {
-                if (TryConvert(@float, out sbyte res, rule))
+                if (Try(@float, out sbyte res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<sbyte, T>(ref res);
@@ -1654,7 +1770,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(byte))
             {
-                if (TryConvert(@float, out byte res, rule))
+                if (Try(@float, out byte res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<byte, T>(ref res);
@@ -1668,7 +1784,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(short))
             {
-                if (TryConvert(@float, out short res, rule))
+                if (Try(@float, out short res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<short, T>(ref res);
@@ -1682,7 +1798,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(ushort))
             {
-                if (TryConvert(@float, out ushort res, rule))
+                if (Try(@float, out ushort res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<ushort, T>(ref res);
@@ -1696,7 +1812,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(int))
             {
-                if (TryConvert(@float, out int res, rule))
+                if (Try(@float, out int res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<int, T>(ref res);
@@ -1710,7 +1826,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(uint))
             {
-                if (TryConvert(@float, out uint res, rule))
+                if (Try(@float, out uint res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<uint, T>(ref res);
@@ -1724,7 +1840,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(long))
             {
-                if (TryConvert(@float, out long res, rule))
+                if (Try(@float, out long res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<long, T>(ref res);
@@ -1738,7 +1854,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(ulong))
             {
-                if (TryConvert(@float, out ulong res, rule))
+                if (Try(@float, out ulong res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<ulong, T>(ref res);
@@ -1752,7 +1868,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(decimal))
             {
-                if (TryConvert(@float, out decimal res, rule))
+                if (Try(@float, out decimal res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<decimal, T>(ref res);
@@ -1766,7 +1882,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(double))
             {
-                if (TryConvert(@float, out double res, rule))
+                if (Try(@float, out double res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<double, T>(ref res);
@@ -1780,7 +1896,7 @@ namespace SCADA.Common
 
             if (typeof(T) == typeof(float))
             {
-                if (TryConvert(@float, out float res, rule))
+                if (Try(@float, out float res, rule))
                 {
 #if NET8_0_OR_GREATER
                     number = Unsafe.As<float, T>(ref res);

@@ -159,7 +159,7 @@ namespace Atomtick.Configuration
             }
             if (@object is long @long)
             {
-                return NumericConverter.TryConvert(@long, out short result, ConversionRule.CheckOverflow)
+                return NumericToNumeric.Try(@long, out short result, ConversionRule.CheckOverflow)
                     ? result
                     : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
             }
@@ -179,7 +179,7 @@ namespace Atomtick.Configuration
             }
             if (@object is long @long)
             {
-                return NumericConverter.TryConvert(@long, out int result, ConversionRule.CheckOverflow) ? result : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
+                return NumericToNumeric.Try(@long, out int result, ConversionRule.CheckOverflow) ? result : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
             }
 
             throw new ApplicationException();
@@ -216,7 +216,7 @@ namespace Atomtick.Configuration
 
             if (@object is long @long)
             {
-                return NumericConverter.TryConvert(@long, out sbyte result, ConversionRule.CheckOverflow)
+                return NumericToNumeric.Try(@long, out sbyte result, ConversionRule.CheckOverflow)
                     ? result
                     : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
             }
@@ -236,7 +236,7 @@ namespace Atomtick.Configuration
             }
             if (@object is double @double)
             {
-                return NumericConverter.TryConvert(@double, out float result, ConversionRule.CheckOverflow | ConversionRule.CheckPrecision)
+                return NumericToNumeric.Try(@double, out float result, ConversionRule.CheckOverflow | ConversionRule.CheckPrecision)
                     ? result
                     : throw new ArgumentException($"Overflow or precision loss occurred for Config item '{path}'.");
             }
@@ -265,7 +265,7 @@ namespace Atomtick.Configuration
             }
             if (@object is long @long)
             {
-                return NumericConverter.TryConvert(@long, out ushort result, ConversionRule.CheckOverflow)
+                return NumericToNumeric.Try(@long, out ushort result, ConversionRule.CheckOverflow)
                     ? result
                     : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
             }
@@ -285,7 +285,7 @@ namespace Atomtick.Configuration
             }
             if (@object is long @long)
             {
-                return NumericConverter.TryConvert(@long, out uint result, ConversionRule.CheckOverflow) ? result : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
+                return NumericToNumeric.Try(@long, out uint result, ConversionRule.CheckOverflow) ? result : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
             }
 
             throw new ApplicationException();
@@ -303,7 +303,7 @@ namespace Atomtick.Configuration
             }
             if (@object is long @long)
             {
-                return NumericConverter.TryConvert(@long, out ulong result, ConversionRule.CheckOverflow)
+                return NumericToNumeric.Try(@long, out ulong result, ConversionRule.CheckOverflow)
                     ? result
                     : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
             }
@@ -324,7 +324,7 @@ namespace Atomtick.Configuration
 
             if (@object is long @long)
             {
-                return NumericConverter.TryConvert(@long, out byte result, ConversionRule.CheckOverflow) ? result : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
+                return NumericToNumeric.Try(@long, out byte result, ConversionRule.CheckOverflow) ? result : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
             }
 
             throw new ApplicationException();
@@ -461,7 +461,7 @@ namespace Atomtick.Configuration
             }
             if (@object is long @long)
             {
-                return NumericConverter.TryConvert(@long, out short result, ConversionRule.CheckOverflow)
+                return NumericToNumeric.Try(@long, out short result, ConversionRule.CheckOverflow)
                     ? result
                     : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
             }
@@ -481,7 +481,7 @@ namespace Atomtick.Configuration
             }
             if (@object is long @long)
             {
-                return NumericConverter.TryConvert(@long, out int result, ConversionRule.CheckOverflow) ? result : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
+                return NumericToNumeric.Try(@long, out int result, ConversionRule.CheckOverflow) ? result : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
             }
 
             throw new ApplicationException();
@@ -517,7 +517,7 @@ namespace Atomtick.Configuration
             }
             if (@object is long @long)
             {
-                return NumericConverter.TryConvert(@long, out sbyte result, ConversionRule.CheckOverflow)
+                return NumericToNumeric.Try(@long, out sbyte result, ConversionRule.CheckOverflow)
                     ? result
                     : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
             }
@@ -537,7 +537,7 @@ namespace Atomtick.Configuration
             }
             if (@object is double @double)
             {
-                return NumericConverter.TryConvert(@double, out float result, ConversionRule.CheckOverflow | ConversionRule.CheckPrecision)
+                return NumericToNumeric.Try(@double, out float result, ConversionRule.CheckOverflow | ConversionRule.CheckPrecision)
                     ? result
                     : throw new ArgumentException($"Overflow or precision loss occurred for Config item '{path}'.");
             }
@@ -562,7 +562,7 @@ namespace Atomtick.Configuration
             }
             if (@object is long @long)
             {
-                return NumericConverter.TryConvert(@long, out ushort result, ConversionRule.CheckOverflow)
+                return NumericToNumeric.Try(@long, out ushort result, ConversionRule.CheckOverflow)
                     ? result
                     : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
             }
@@ -581,7 +581,7 @@ namespace Atomtick.Configuration
             }
             if (@object is long @long)
             {
-                return NumericConverter.TryConvert(@long, out uint result, ConversionRule.CheckOverflow) ? result : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
+                return NumericToNumeric.Try(@long, out uint result, ConversionRule.CheckOverflow) ? result : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
             }
 
             throw new ApplicationException();
@@ -600,7 +600,7 @@ namespace Atomtick.Configuration
             }
             if (@object is long @long)
             {
-                return NumericConverter.TryConvert(@long, out ulong result, ConversionRule.CheckOverflow)
+                return NumericToNumeric.Try(@long, out ulong result, ConversionRule.CheckOverflow)
                     ? result
                     : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
             }
@@ -621,7 +621,7 @@ namespace Atomtick.Configuration
 
             if (@object is long @long)
             {
-                return NumericConverter.TryConvert(@long, out byte result, ConversionRule.CheckOverflow) ? result : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
+                return NumericToNumeric.Try(@long, out byte result, ConversionRule.CheckOverflow) ? result : throw new ArgumentException($"Integer Overflow occurred for Config item '{path}'.");
             }
 
             throw new ApplicationException();
@@ -776,7 +776,7 @@ namespace Atomtick.Configuration
 
             if (@object is long @long)
             {
-                @short = NumericConverter.TryConvert(@long, out short result, ConversionRule.CheckOverflow)
+                @short = NumericToNumeric.Try(@long, out short result, ConversionRule.CheckOverflow)
                     ? result
                     : throw new ArgumentException($"Integer overflow occurred for Config item '{path}'.");
 
@@ -801,7 +801,7 @@ namespace Atomtick.Configuration
 
             if (@object is long @long)
             {
-                @int = NumericConverter.TryConvert(@long, out int result, ConversionRule.CheckOverflow) ? result : throw new ArgumentException($"Integer overflow occurred for Config item '{path}'.");
+                @int = NumericToNumeric.Try(@long, out int result, ConversionRule.CheckOverflow) ? result : throw new ArgumentException($"Integer overflow occurred for Config item '{path}'.");
 
                 return true;
             }
@@ -844,7 +844,7 @@ namespace Atomtick.Configuration
 
             if (@object is long @long)
             {
-                @sbyte = NumericConverter.TryConvert(@long, out sbyte result, ConversionRule.CheckOverflow)
+                @sbyte = NumericToNumeric.Try(@long, out sbyte result, ConversionRule.CheckOverflow)
                     ? result
                     : throw new ArgumentException($"Integer overflow occurred for Config item '{path}'.");
 
@@ -867,7 +867,7 @@ namespace Atomtick.Configuration
 
             if (@object is double @double)
             {
-                @float = NumericConverter.TryConvert(@double, out float result, ConversionRule.CheckOverflow | ConversionRule.CheckPrecision)
+                @float = NumericToNumeric.Try(@double, out float result, ConversionRule.CheckOverflow | ConversionRule.CheckPrecision)
                     ? result
                     : throw new ArgumentException($"Overflow or precision loss occurred for Config item '{path}'.");
                 return true;
@@ -899,7 +899,7 @@ namespace Atomtick.Configuration
             }
             if (@object is long @long)
             {
-                @ushort = NumericConverter.TryConvert(@long, out ushort result, ConversionRule.CheckOverflow)
+                @ushort = NumericToNumeric.Try(@long, out ushort result, ConversionRule.CheckOverflow)
                     ? result
                     : throw new ArgumentException($"Integer overflow occurred for Config item '{path}'.");
                 return true;
@@ -921,7 +921,7 @@ namespace Atomtick.Configuration
 
             if (@object is long @long)
             {
-                @uint = NumericConverter.TryConvert(@long, out uint result, ConversionRule.CheckOverflow)
+                @uint = NumericToNumeric.Try(@long, out uint result, ConversionRule.CheckOverflow)
                     ? result
                     : throw new ArgumentException($"Integer overflow occurred for Config item '{path}'.");
                 return true;
@@ -943,7 +943,7 @@ namespace Atomtick.Configuration
 
             if (@object is long @long)
             {
-                @ulong = NumericConverter.TryConvert(@long, out ulong result, ConversionRule.CheckOverflow)
+                @ulong = NumericToNumeric.Try(@long, out ulong result, ConversionRule.CheckOverflow)
                     ? result
                     : throw new ArgumentException($"Integer overflow occurred for Config item '{path}'.");
                 return true;
@@ -965,7 +965,7 @@ namespace Atomtick.Configuration
 
             if (@object is long @long)
             {
-                @byte = NumericConverter.TryConvert(@long, out byte result, ConversionRule.CheckOverflow)
+                @byte = NumericToNumeric.Try(@long, out byte result, ConversionRule.CheckOverflow)
                     ? result
                     : throw new ArgumentException($"Integer overflow occurred for Config item '{path}'.");
                 ;

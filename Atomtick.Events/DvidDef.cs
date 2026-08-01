@@ -2,21 +2,21 @@
 {
     public class DvidDef
     {
-        public DvidDef(long dvid, string name, string description, SecsDataType dataType, object initialValue, string unit)
+        public DvidDef(long dvid, string name, SecsDataType dataType, object initialValue, string unit, string description)
         {
             Dvid = dvid;
             Name = name;
-            Description = description;
             DataType = dataType;
             InitialValue = initialValue;
             Unit = unit;
+            Description = description;
         }
 
         public long Dvid { get; }
         public string Name { get; }
-        public string Description { get; }
         public SecsDataType DataType { get; }
         public object InitialValue { get; }
         public string Unit { get; }
+        public string Description { get; }
     }
 }
