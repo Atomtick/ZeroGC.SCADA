@@ -10,7 +10,7 @@ namespace SCADA.Events
         public long Id { get; internal set; }
         public DateTime OccurTime { get; internal set; }
         public string Source { get; internal set; }
-
+        public string Description { get; internal set; }
         public ListDictionary DvidValues { get; internal set; }
     }
 }

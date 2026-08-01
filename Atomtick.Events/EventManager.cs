@@ -201,7 +201,7 @@ namespace SCADA.Events
                     DvidValues = DvidValues,
                     OccurTime = DateTime.Now,
                 };
-                eventInstance.EventDef.Description = description;
+                eventInstance.Description = description;
             }
             else
             {
@@ -213,6 +213,10 @@ namespace SCADA.Events
                     DvidValues = DvidValues,
                     OccurTime = DateTime.Now,
                 };
+                if (DvidValues != null && !string.IsNullOrEmpty(eventDef.DescriptionTemplate))
+                {
+                    eventInstance.Description = FormatDescription(eventDef.DescriptionTemplate, DvidValues);
+                }
             }
             if (eventInstance.EventDef.Level == EventLevel.Alarm)
             {
