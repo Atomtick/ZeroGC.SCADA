@@ -32,6 +32,57 @@ namespace Atomtick.Events
 
         public void Update<T>(string name, T value) { }
 
+        public void Update<T>(DvidInstance dvidInstance, T value) 
+        {
+            if(dvidInstance.DvidDef.DataType == SecsDataType.Boolean && value is bool boolValue)
+            {
+                dvidInstance.BoolCurrentValue = boolValue;
+            }
+            else if (dvidInstance.DvidDef.DataType == SecsDataType.I1 && value is sbyte i1Value)
+            {
+                dvidInstance.LongCurrentValue = i1Value;
+            }
+            else if (dvidInstance.DvidDef.DataType == SecsDataType.I2 && value is short i2Value)
+            {
+                dvidInstance.LongCurrentValue = i2Value;
+            }
+            else if (dvidInstance.DvidDef.DataType == SecsDataType.I4 && value is int i4Value)
+            {
+                dvidInstance.LongCurrentValue = i4Value;
+            }
+            else if (dvidInstance.DvidDef.DataType == SecsDataType.I8 && value is long i8Value)
+            {
+                dvidInstance.LongCurrentValue = i8Value;
+            }
+            else if (dvidInstance.DvidDef.DataType == SecsDataType.U1 && value is byte u1Value)
+            {
+                dvidInstance.LongCurrentValue = u1Value;
+            }
+            else if (dvidInstance.DvidDef.DataType == SecsDataType.U2 && value is ushort u2Value)
+            {
+                dvidInstance.LongCurrentValue = u2Value;
+            }
+            else if (dvidInstance.DvidDef.DataType == SecsDataType.U4 && value is uint u4Value)
+            {
+                dvidInstance.LongCurrentValue = u4Value;
+            }
+            else if (dvidInstance.DvidDef.DataType == SecsDataType.U8 && value is ulong u8Value)
+            {
+                dvidInstance.LongCurrentValue = (long)u8Value; // 注意：可能会丢失精度
+            }
+            else if (dvidInstance.DvidDef.DataType == SecsDataType.F4 && value is float f4Value)
+            {
+                dvidInstance.DoubleCurrentValue = f4Value;
+            }
+            else if (dvidInstance.DvidDef.DataType == SecsDataType.F8 && value is double f8Value)
+            {
+                dvidInstance.DoubleCurrentValue = f8Value;
+            }
+            else if (dvidInstance.DvidDef.DataType == SecsDataType.ASCII && value is string strValue)
+            {
+                dvidInstance.String
+        }
+
         public T Read<T>(long dvid)
         {
             return TryRead<T>(dvid, out var value, out string errMsg) ? value : throw new ArgumentException(errMsg);
