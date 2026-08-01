@@ -3,9 +3,9 @@
     public class DvidInstance
     {
         public DvidDef DvidDef { get; set; }
-        public bool BoolCurrentValue { get; set; }
-        public long LongCurrentValue { get; set; }
-        public double DoubleCurrentValue { get; set; }
-        public string StringCurrentValue { get; set; }
+        public volatile bool BoolCurrentValue;
+        public long LongCurrentValue;
+        public double DoubleCurrentValue;
+        public volatile string StringCurrentValue;
     }
 }

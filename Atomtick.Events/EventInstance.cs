@@ -1,15 +1,16 @@
-﻿using SCADA.Common;
-using System;
+﻿using System;
+using System.Collections.Specialized;
+using SCADA.Common;
 
 namespace SCADA.Events
 {
     public class EventInstance
     {
-        public EventDef EventDef { get; set; }
-        public long Id { get; set; }
-        public DateTime OccurTime { get; set; }
-        public string Source { get; set; }
-     
-        public LightWeightMap DvidValues { get; set; }
+        public EventDef EventDef { get; internal set; }
+        public long Id { get; internal set; }
+        public DateTime OccurTime { get; internal set; }
+        public string Source { get; internal set; }
+
+        public ListDictionary DvidValues { get; internal set; }
     }
 }

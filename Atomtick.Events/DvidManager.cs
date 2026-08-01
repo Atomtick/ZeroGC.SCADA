@@ -10,8 +10,8 @@ namespace Atomtick.Events
 {
     public class DvidManager
     {
-        private IDictionary<string, DvidInstance> _dvidInstancesByName;
-        private IDictionary<long, DvidInstance> _dvidInstancesById;
+        private readonly IDictionary<string, DvidInstance> _dvidInstancesByName;
+        private readonly IDictionary<long, DvidInstance> _dvidInstancesById;
 
         public DvidManager()
         {
@@ -19,7 +19,14 @@ namespace Atomtick.Events
             _dvidInstancesById = new ConcurrentDictionary<long, DvidInstance>();
         }
 
-        public void Register(long id, string name, string description, SecsDataType dataType, object initialValue, string unit) { }
+        public void Register(long id, string name, string description, SecsDataType dataType, object initialValue, string unit)
+        {
+            DvidDef dvidDef = new DvidDef(id, name, description, dataType, initialValue, unit);
+            if(_dvidInstancesById.TryAdd(id,) == false)
+            {
+
+            }
+        }
 
         public void Update<T>(long dvid, T value) { }
 

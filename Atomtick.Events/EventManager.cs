@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -12,40 +13,55 @@ using SCADA.Common;
 
 namespace SCADA.Events
 {
-    public class EventManager : IEventManager
+    public class EventManager
     {
         private object _lock = new object();
 
-        private volatile EventInstance[] _alarmEventInstances = new EventInstance[0];
+        private volatile EventInstance[] _alarmEventInstances = Array.Empty<EventInstance>();
 
-        public void ClearAlarmEvent() { }
+        public void ClearAlarmEvent()
+        {
+            lock (_lock)
+            {
+                _alarmEventInstances = Array.Empty<EventInstance>();
+            }
+        }
 
         public void ClearAlarmEvent(string source) { }
 
-        public void ClearAlarmEvent(long instanceId) { }
+        public void ClearAlarmEvent(long instanceId)
+        {
+            lock (_lock)
+            {
+                var alarms = _alarmEventInstances;
+                GC.KeepAlive(alarms);
+                if (alarms.Length == 0)
+                {
+                    return;
+                }
+                var newAlarms = alarms.Where(x => x.Id != instanceId).ToArray();
+                _alarmEventInstances = newAlarms;
+            }
+        }
 
-        [MethodImpl(MethodImplOptions.NoOptimization)]
         public bool HasAlarmEvent(out IList<EventInstance> events)
         {
             var alarms = _alarmEventInstances;
-
+            GC.KeepAlive(alarms);
             events = alarms;
-
             return alarms.Length > 0;
         }
 
-        [MethodImpl(MethodImplOptions.NoOptimization)]
         public bool HasAlarmEvent(string source, out IList<EventInstance> events)
         {
             var alarms = _alarmEventInstances;
-
+            GC.KeepAlive(alarms);
             if (alarms.Length == 0)
             {
                 events = null;
                 return false;
             }
-
-            var count = alarms.Where(x => x.Source == source).Count();
+            var count = alarms.Count(x => x.Source == source);
             events = count > 0 ? alarms.Where(x => x.Source == source).ToArray() : null;
             return count > 0;
         }
@@ -90,8 +106,8 @@ namespace SCADA.Events
             });
 
             // 内置的三个事件类型，分别是信息、警告和报警，名称分别是 @、% 和 $，用于快速发布事件。
-            Register(new EventDef(-1, "@", EventLevel.Information, "description", false));
-            Register(new EventDef(-2, "%", EventLevel.Warning, "description", false));
+            Register(new EventDef(-1, "@", EventLevel.Info, "description", false));
+            Register(new EventDef(-2, "%", EventLevel.Warn, "description", false));
             Register(new EventDef(-3, "$", EventLevel.Alarm, "description", false));
         }
 
@@ -100,24 +116,27 @@ namespace SCADA.Events
         public event EventHandler<EventInstance> OnEventSync;
 
         #region 发布预定义事件
+
         public void PostEvent(string name, string source)
         {
             PostEvent(name, source, null, null);
         }
 
-        public void PostEvent(string name, string source, LightWeightMap DvidValues)
+        public void PostEvent(string name, string source, ListDictionary DvidValues)
         {
             PostEvent(name, source, DvidValues, null);
         }
-        #endregion
+
+        #endregion 发布预定义事件
 
         #region 发布即时事件
+
         public void PostInfoEvent(string source, string description)
         {
             PostEvent("@", source, null, description);
         }
 
-        public void PostInfoEvent(string source, string description, LightWeightMap DvidValues)
+        public void PostInfoEvent(string source, string description, ListDictionary DvidValues)
         {
             PostEvent("@", source, DvidValues, description);
         }
@@ -127,7 +146,7 @@ namespace SCADA.Events
             PostEvent("%", source, null, description);
         }
 
-        public void PostWarningEvent(string source, string description, LightWeightMap DvidValues)
+        public void PostWarningEvent(string source, string description, ListDictionary DvidValues)
         {
             PostEvent("%", source, DvidValues, description);
         }
@@ -137,13 +156,15 @@ namespace SCADA.Events
             PostEvent("$", source, null, description);
         }
 
-        public void PostAlramEvent(string source, string description, LightWeightMap DvidValues)
+        public void PostAlramEvent(string source, string description, ListDictionary DvidValues)
         {
             PostEvent("$", source, DvidValues, description);
         }
-        #endregion
+
+        #endregion 发布即时事件
 
         #region 注册预定义事件
+
         public void Register(EventDef @event)
         {
             if (!_eventDefs.TryAdd(@event.Name, @event))
@@ -160,9 +181,10 @@ namespace SCADA.Events
                 throw new InvalidOperationException($"Event with name '{eventDef.Name}' is already registered.");
             }
         }
-        #endregion
 
-        private void PostEvent(string name, string source, LightWeightMap DvidValues, string description)
+        #endregion 注册预定义事件
+
+        private void PostEvent(string name, string source, ListDictionary DvidValues, string description)
         {
             if (!_eventDefs.TryGetValue(name, out var eventDef))
             {

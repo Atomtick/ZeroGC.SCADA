@@ -9,8 +9,8 @@ namespace SCADA.Events
 {
     public enum EventLevel
     {
-        Information,
-        Warning,
-        Alarm
+        Info,
+        Warn,
+        Alarm,
     }
 }
