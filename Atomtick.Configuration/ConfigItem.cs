@@ -6,7 +6,6 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
 using SCADA.Common;
-using SCADA.Common.Interfaces;
 
 namespace Atomtick.Configuration
 {

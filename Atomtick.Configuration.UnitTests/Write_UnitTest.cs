@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using Atomtick.Configuration;
-using SCADA.Common.Interfaces;
 
 namespace SCADA.Configuration.UnitTests
 {

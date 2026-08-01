@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace SCADA.Common
+namespace Atomtick.Common
 {
     /// <summary>
     /// Object => 泛型
@@ -19,7 +19,7 @@ namespace SCADA.Common
 #if NET462_OR_GREATER
                     number = (T)(object)res;
 #elif NET8_0_OR_GREATER
-                    number = Unsafe.As<sbyte, T>(ref res);// 0 开销强制转换
+                    number = Unsafe.As<sbyte, T>(ref res); // 0 开销强制转换
 #endif
                     return true;
                 }
@@ -37,7 +37,7 @@ namespace SCADA.Common
 #if NET462_OR_GREATER
                     number = (T)(object)res;
 #elif NET8_0_OR_GREATER
-                    number = Unsafe.As<byte, T>(ref res);// 0 开销强制转换
+                    number = Unsafe.As<byte, T>(ref res); // 0 开销强制转换
 #endif
                     return true;
                 }
@@ -55,7 +55,7 @@ namespace SCADA.Common
 #if NET462_OR_GREATER
                     number = (T)(object)res;
 #elif NET8_0_OR_GREATER
-                    number = Unsafe.As<short, T>(ref res);// 0 开销强制转换
+                    number = Unsafe.As<short, T>(ref res); // 0 开销强制转换
 #endif
                     return true;
                 }
@@ -73,7 +73,7 @@ namespace SCADA.Common
 #if NET462_OR_GREATER
                     number = (T)(object)res;
 #elif NET8_0_OR_GREATER
-                    number = Unsafe.As<ushort, T>(ref res);// 0 开销强制转换
+                    number = Unsafe.As<ushort, T>(ref res); // 0 开销强制转换
 #endif
                     return true;
                 }
@@ -91,7 +91,7 @@ namespace SCADA.Common
 #if NET462_OR_GREATER
                     number = (T)(object)res;
 #elif NET8_0_OR_GREATER
-                    number = Unsafe.As<int, T>(ref res);// 0 开销强制转换
+                    number = Unsafe.As<int, T>(ref res); // 0 开销强制转换
 #endif
                     return true;
                 }
@@ -109,7 +109,7 @@ namespace SCADA.Common
 #if NET462_OR_GREATER
                     number = (T)(object)res;
 #elif NET8_0_OR_GREATER
-                    number = Unsafe.As<uint, T>(ref res);// 0 开销强制转换
+                    number = Unsafe.As<uint, T>(ref res); // 0 开销强制转换
 #endif
                     return true;
                 }
@@ -127,7 +127,7 @@ namespace SCADA.Common
 #if NET462_OR_GREATER
                     number = (T)(object)res;
 #elif NET8_0_OR_GREATER
-                    number = Unsafe.As<long, T>(ref res);// 0 开销强制转换
+                    number = Unsafe.As<long, T>(ref res); // 0 开销强制转换
 #endif
                     return true;
                 }
@@ -145,7 +145,7 @@ namespace SCADA.Common
 #if NET462_OR_GREATER
                     number = (T)(object)res;
 #elif NET8_0_OR_GREATER
-                    number = Unsafe.As<ulong, T>(ref res);// 0 开销强制转换
+                    number = Unsafe.As<ulong, T>(ref res); // 0 开销强制转换
 #endif
                     return true;
                 }
@@ -163,7 +163,7 @@ namespace SCADA.Common
 #if NET462_OR_GREATER
                     number = (T)(object)res;
 #elif NET8_0_OR_GREATER
-                    number = Unsafe.As<decimal, T>(ref res);// 0 开销强制转换
+                    number = Unsafe.As<decimal, T>(ref res); // 0 开销强制转换
 #endif
                     return true;
                 }
@@ -181,7 +181,7 @@ namespace SCADA.Common
 #if NET462_OR_GREATER
                     number = (T)(object)res;
 #elif NET8_0_OR_GREATER
-                    number = Unsafe.As<double, T>(ref res);// 0 开销强制转换
+                    number = Unsafe.As<double, T>(ref res); // 0 开销强制转换
 #endif
                     return true;
                 }
@@ -199,7 +199,7 @@ namespace SCADA.Common
 #if NET462_OR_GREATER
                     number = (T)(object)res;
 #elif NET8_0_OR_GREATER
-                    number = Unsafe.As<float, T>(ref res);// 0 开销强制转换
+                    number = Unsafe.As<float, T>(ref res); // 0 开销强制转换
 #endif
                     return true;
                 }
@@ -218,188 +218,332 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool CastToDecimal(object @object, out decimal v, ConversionRule rule)
         {
-            if (@object is decimal @decimal) { v = @decimal; return true; }
-            if (@object is double @double) return Try(@double, out v, rule);
-            if (@object is float @float) return Try(@float, out v, rule);
-            if (@object is long @long) return Try(@long, out v, rule);
-            if (@object is sbyte @sbyte) return Try(@sbyte, out v, rule);
-            if (@object is short @short) return Try(@short, out v, rule);
-            if (@object is int @int) return Try(@int, out v, rule);
-            if (@object is byte @byte) return Try(@byte, out v, rule);
-            if (@object is ushort @ushort) return Try(@ushort, out v, rule);
-            if (@object is uint @uint) return Try(@uint, out v, rule);
-            if (@object is ulong @ulong) return Try(@ulong, out v, rule);
-            v = default; return false;
+            if (@object is decimal @decimal)
+            {
+                v = @decimal;
+                return true;
+            }
+            if (@object is double @double)
+                return Try(@double, out v, rule);
+            if (@object is float @float)
+                return Try(@float, out v, rule);
+            if (@object is long @long)
+                return Try(@long, out v, rule);
+            if (@object is sbyte @sbyte)
+                return Try(@sbyte, out v, rule);
+            if (@object is short @short)
+                return Try(@short, out v, rule);
+            if (@object is int @int)
+                return Try(@int, out v, rule);
+            if (@object is byte @byte)
+                return Try(@byte, out v, rule);
+            if (@object is ushort @ushort)
+                return Try(@ushort, out v, rule);
+            if (@object is uint @uint)
+                return Try(@uint, out v, rule);
+            if (@object is ulong @ulong)
+                return Try(@ulong, out v, rule);
+            v = default;
+            return false;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool CastToDouble(object @object, out double v, ConversionRule rule)
         {
-            if (@object is double @double) { v = @double; return true; }
-            if (@object is float @float) return Try(@float, out v, rule);
-            if (@object is decimal @decimal) return Try(@decimal, out v, rule);
-            if (@object is int @int) return Try(@int, out v, rule);
-            if (@object is sbyte @sbyte) return Try(@sbyte, out v, rule);
-            if (@object is short @short) return Try(@short, out v, rule);
-            if (@object is long @long) return Try(@long, out v, rule);
-            if (@object is byte @byte) return Try(@byte, out v, rule);
-            if (@object is ushort @ushort) return Try(@ushort, out v, rule);
-            if (@object is uint @uint) return Try(@uint, out v, rule);
-            if (@object is ulong @ulong) return Try(@ulong, out v, rule);
-            v = default; return false;
+            if (@object is double @double)
+            {
+                v = @double;
+                return true;
+            }
+            if (@object is float @float)
+                return Try(@float, out v, rule);
+            if (@object is decimal @decimal)
+                return Try(@decimal, out v, rule);
+            if (@object is int @int)
+                return Try(@int, out v, rule);
+            if (@object is sbyte @sbyte)
+                return Try(@sbyte, out v, rule);
+            if (@object is short @short)
+                return Try(@short, out v, rule);
+            if (@object is long @long)
+                return Try(@long, out v, rule);
+            if (@object is byte @byte)
+                return Try(@byte, out v, rule);
+            if (@object is ushort @ushort)
+                return Try(@ushort, out v, rule);
+            if (@object is uint @uint)
+                return Try(@uint, out v, rule);
+            if (@object is ulong @ulong)
+                return Try(@ulong, out v, rule);
+            v = default;
+            return false;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool CastToFloat(object @object, out float v, ConversionRule rule)
         {
-            if (@object is float @float) return Try(@float, out v, rule);
-            if (@object is double @double) return Try(@double, out v, rule);
-            if (@object is decimal @decimal) return Try(@decimal, out v, rule);
-            if (@object is short @short) return Try(@short, out v, rule);
-            if (@object is int @int) return Try(@int, out v, rule);
-            if (@object is long @long) return Try(@long, out v, rule);
-            if (@object is sbyte @sbyte) return Try(@sbyte, out v, rule);
-            if (@object is byte @byte) return Try(@byte, out v, rule);
-            if (@object is ushort @ushort) return Try(@ushort, out v, rule);
-            if (@object is uint @uint) return Try(@uint, out v, rule);
-            if (@object is ulong @ulong) return Try(@ulong, out v, rule);
-            v = default; return false;
+            if (@object is float @float)
+                return Try(@float, out v, rule);
+            if (@object is double @double)
+                return Try(@double, out v, rule);
+            if (@object is decimal @decimal)
+                return Try(@decimal, out v, rule);
+            if (@object is short @short)
+                return Try(@short, out v, rule);
+            if (@object is int @int)
+                return Try(@int, out v, rule);
+            if (@object is long @long)
+                return Try(@long, out v, rule);
+            if (@object is sbyte @sbyte)
+                return Try(@sbyte, out v, rule);
+            if (@object is byte @byte)
+                return Try(@byte, out v, rule);
+            if (@object is ushort @ushort)
+                return Try(@ushort, out v, rule);
+            if (@object is uint @uint)
+                return Try(@uint, out v, rule);
+            if (@object is ulong @ulong)
+                return Try(@ulong, out v, rule);
+            v = default;
+            return false;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool CastToInt16(object @object, out short v, ConversionRule rule)
         {
-            if (@object is short @short) return Try((int)@short, out v, rule);
-            if (@object is int @int) return Try(@int, out v, rule);
-            if (@object is long @long) return Try(@long, out v, rule);
-            if (@object is sbyte @sbyte) return Try(@sbyte, out v, rule);
-            if (@object is byte @byte) return Try(@byte, out v, rule);
-            if (@object is ushort @ushort) return Try(@ushort, out v, rule);
-            if (@object is uint @uint) return Try(@uint, out v, rule);
-            if (@object is ulong @ulong) return Try(@ulong, out v, rule);
-            if (@object is double @double) return Try(@double, out v, rule);
-            if (@object is float @float) return Try(@float, out v, rule);
-            if (@object is decimal @decimal) return Try(@decimal, out v, rule);
-            v = default; return false;
+            if (@object is short @short)
+                return Try((int)@short, out v, rule);
+            if (@object is int @int)
+                return Try(@int, out v, rule);
+            if (@object is long @long)
+                return Try(@long, out v, rule);
+            if (@object is sbyte @sbyte)
+                return Try(@sbyte, out v, rule);
+            if (@object is byte @byte)
+                return Try(@byte, out v, rule);
+            if (@object is ushort @ushort)
+                return Try(@ushort, out v, rule);
+            if (@object is uint @uint)
+                return Try(@uint, out v, rule);
+            if (@object is ulong @ulong)
+                return Try(@ulong, out v, rule);
+            if (@object is double @double)
+                return Try(@double, out v, rule);
+            if (@object is float @float)
+                return Try(@float, out v, rule);
+            if (@object is decimal @decimal)
+                return Try(@decimal, out v, rule);
+            v = default;
+            return false;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool CastToInt32(object @object, out int v, ConversionRule rule)
         {
-            if (@object is int @int) return Try((long)@int, out v, rule);
-            if (@object is uint @uint) return Try(@uint, out v, rule);
-            if (@object is short @short) return Try(@short, out v, rule);
-            if (@object is long @long) return Try(@long, out v, rule);
-            if (@object is sbyte @sbyte) return Try(@sbyte, out v, rule);
-            if (@object is byte @byte) return Try(@byte, out v, rule);
-            if (@object is ushort @ushort) return Try(@ushort, out v, rule);
-            if (@object is ulong @ulong) return Try(@ulong, out v, rule);
-            if (@object is double @double) return Try(@double, out v, rule);
-            if (@object is float @float) return Try(@float, out v, rule);
-            if (@object is decimal @decimal) return Try(@decimal, out v, rule);
-            v = default; return false;
+            if (@object is int @int)
+                return Try((long)@int, out v, rule);
+            if (@object is uint @uint)
+                return Try(@uint, out v, rule);
+            if (@object is short @short)
+                return Try(@short, out v, rule);
+            if (@object is long @long)
+                return Try(@long, out v, rule);
+            if (@object is sbyte @sbyte)
+                return Try(@sbyte, out v, rule);
+            if (@object is byte @byte)
+                return Try(@byte, out v, rule);
+            if (@object is ushort @ushort)
+                return Try(@ushort, out v, rule);
+            if (@object is ulong @ulong)
+                return Try(@ulong, out v, rule);
+            if (@object is double @double)
+                return Try(@double, out v, rule);
+            if (@object is float @float)
+                return Try(@float, out v, rule);
+            if (@object is decimal @decimal)
+                return Try(@decimal, out v, rule);
+            v = default;
+            return false;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool CastToInt64(object @object, out long v, ConversionRule rule)
         {
-            if (@object is long @long) { v = @long; return true; }
-            if (@object is ulong @ulong) return Try(@ulong, out v, rule);
-            if (@object is int @int) return Try(@int, out v, rule);
-            if (@object is sbyte @sbyte) return Try(@sbyte, out v, rule);
-            if (@object is short @short) return Try(@short, out v, rule);
-            if (@object is byte @byte) return Try(@byte, out v, rule);
-            if (@object is ushort @ushort) return Try(@ushort, out v, rule);
-            if (@object is uint @uint) return Try(@uint, out v, rule);
-            if (@object is double @double) return Try(@double, out v, rule);
-            if (@object is float @float) return Try(@float, out v, rule);
-            if (@object is decimal @decimal) return Try(@decimal, out v, rule);
-            v = default; return false;
+            if (@object is long @long)
+            {
+                v = @long;
+                return true;
+            }
+            if (@object is ulong @ulong)
+                return Try(@ulong, out v, rule);
+            if (@object is int @int)
+                return Try(@int, out v, rule);
+            if (@object is sbyte @sbyte)
+                return Try(@sbyte, out v, rule);
+            if (@object is short @short)
+                return Try(@short, out v, rule);
+            if (@object is byte @byte)
+                return Try(@byte, out v, rule);
+            if (@object is ushort @ushort)
+                return Try(@ushort, out v, rule);
+            if (@object is uint @uint)
+                return Try(@uint, out v, rule);
+            if (@object is double @double)
+                return Try(@double, out v, rule);
+            if (@object is float @float)
+                return Try(@float, out v, rule);
+            if (@object is decimal @decimal)
+                return Try(@decimal, out v, rule);
+            v = default;
+            return false;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool CastToInt8(object @object, out sbyte v, ConversionRule rule)
         {
-            if (@object is sbyte @sbyte) return Try((short)@sbyte, out v, rule);
-            if (@object is short @short) return Try(@short, out v, rule);
-            if (@object is int @int) return Try(@int, out v, rule);
-            if (@object is long @long) return Try(@long, out v, rule);
-            if (@object is byte @byte) return Try(@byte, out v, rule);
-            if (@object is ushort @ushort) return Try(@ushort, out v, rule);
-            if (@object is uint @uint) return Try(@uint, out v, rule);
-            if (@object is ulong @ulong) return Try(@ulong, out v, rule);
-            if (@object is double @double) return Try(@double, out v, rule);
-            if (@object is float @float) return Try(@float, out v, rule);
-            if (@object is decimal @decimal) return Try(@decimal, out v, rule);
-            v = default; return false;
+            if (@object is sbyte @sbyte)
+                return Try((short)@sbyte, out v, rule);
+            if (@object is short @short)
+                return Try(@short, out v, rule);
+            if (@object is int @int)
+                return Try(@int, out v, rule);
+            if (@object is long @long)
+                return Try(@long, out v, rule);
+            if (@object is byte @byte)
+                return Try(@byte, out v, rule);
+            if (@object is ushort @ushort)
+                return Try(@ushort, out v, rule);
+            if (@object is uint @uint)
+                return Try(@uint, out v, rule);
+            if (@object is ulong @ulong)
+                return Try(@ulong, out v, rule);
+            if (@object is double @double)
+                return Try(@double, out v, rule);
+            if (@object is float @float)
+                return Try(@float, out v, rule);
+            if (@object is decimal @decimal)
+                return Try(@decimal, out v, rule);
+            v = default;
+            return false;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool CastToUInt16(object @object, out ushort v, ConversionRule rule)
         {
-            if (@object is ushort @ushort) return Try((int)@ushort, out v, rule);
-            if (@object is sbyte @sbyte) return Try(@sbyte, out v, rule);
-            if (@object is short @short) return Try(@short, out v, rule);
-            if (@object is int @int) return Try(@int, out v, rule);
-            if (@object is long @long) return Try(@long, out v, rule);
-            if (@object is byte @byte) return Try(@byte, out v, rule);
-            if (@object is uint @uint) return Try(@uint, out v, rule);
-            if (@object is ulong @ulong) return Try(@ulong, out v, rule);
-            if (@object is double @double) return Try(@double, out v, rule);
-            if (@object is float @float) return Try(@float, out v, rule);
-            if (@object is decimal @decimal) return Try(@decimal, out v, rule);
-            v = default; return false;
+            if (@object is ushort @ushort)
+                return Try((int)@ushort, out v, rule);
+            if (@object is sbyte @sbyte)
+                return Try(@sbyte, out v, rule);
+            if (@object is short @short)
+                return Try(@short, out v, rule);
+            if (@object is int @int)
+                return Try(@int, out v, rule);
+            if (@object is long @long)
+                return Try(@long, out v, rule);
+            if (@object is byte @byte)
+                return Try(@byte, out v, rule);
+            if (@object is uint @uint)
+                return Try(@uint, out v, rule);
+            if (@object is ulong @ulong)
+                return Try(@ulong, out v, rule);
+            if (@object is double @double)
+                return Try(@double, out v, rule);
+            if (@object is float @float)
+                return Try(@float, out v, rule);
+            if (@object is decimal @decimal)
+                return Try(@decimal, out v, rule);
+            v = default;
+            return false;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool CastToUInt32(object @object, out uint v, ConversionRule rule)
         {
-            if (@object is uint @uint) return Try((long)@uint, out v, rule);
-            if (@object is sbyte @sbyte) return Try(@sbyte, out v, rule);
-            if (@object is short @short) return Try(@short, out v, rule);
-            if (@object is int @int) return Try(@int, out v, rule);
-            if (@object is long @long) return Try(@long, out v, rule);
-            if (@object is byte @byte) return Try(@byte, out v, rule);
-            if (@object is ushort @ushort) return Try(@ushort, out v, rule);
-            if (@object is ulong @ulong) return Try(@ulong, out v, rule);
-            if (@object is double @double) return Try(@double, out v, rule);
-            if (@object is float @float) return Try(@float, out v, rule);
-            if (@object is decimal @decimal) return Try(@decimal, out v, rule);
-            v = default; return false;
+            if (@object is uint @uint)
+                return Try((long)@uint, out v, rule);
+            if (@object is sbyte @sbyte)
+                return Try(@sbyte, out v, rule);
+            if (@object is short @short)
+                return Try(@short, out v, rule);
+            if (@object is int @int)
+                return Try(@int, out v, rule);
+            if (@object is long @long)
+                return Try(@long, out v, rule);
+            if (@object is byte @byte)
+                return Try(@byte, out v, rule);
+            if (@object is ushort @ushort)
+                return Try(@ushort, out v, rule);
+            if (@object is ulong @ulong)
+                return Try(@ulong, out v, rule);
+            if (@object is double @double)
+                return Try(@double, out v, rule);
+            if (@object is float @float)
+                return Try(@float, out v, rule);
+            if (@object is decimal @decimal)
+                return Try(@decimal, out v, rule);
+            v = default;
+            return false;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool CastToUInt64(object @object, out ulong v, ConversionRule rule)
         {
-            if (@object is ulong @ulong) { v = @ulong; return true; }
-            if (@object is sbyte @sbyte) return Try(@sbyte, out v, rule);
-            if (@object is short @short) return Try(@short, out v, rule);
-            if (@object is int @int) return Try(@int, out v, rule);
-            if (@object is long @long) return Try(@long, out v, rule);
-            if (@object is byte @byte) return Try(@byte, out v, rule);
-            if (@object is ushort @ushort) return Try(@ushort, out v, rule);
-            if (@object is uint @uint) return Try(@uint, out v, rule);
-            if (@object is double @double) return Try(@double, out v, rule);
-            if (@object is float @float) return Try(@float, out v, rule);
-            if (@object is decimal @decimal) return Try(@decimal, out v, rule);
-            v = default; return false;
+            if (@object is ulong @ulong)
+            {
+                v = @ulong;
+                return true;
+            }
+            if (@object is sbyte @sbyte)
+                return Try(@sbyte, out v, rule);
+            if (@object is short @short)
+                return Try(@short, out v, rule);
+            if (@object is int @int)
+                return Try(@int, out v, rule);
+            if (@object is long @long)
+                return Try(@long, out v, rule);
+            if (@object is byte @byte)
+                return Try(@byte, out v, rule);
+            if (@object is ushort @ushort)
+                return Try(@ushort, out v, rule);
+            if (@object is uint @uint)
+                return Try(@uint, out v, rule);
+            if (@object is double @double)
+                return Try(@double, out v, rule);
+            if (@object is float @float)
+                return Try(@float, out v, rule);
+            if (@object is decimal @decimal)
+                return Try(@decimal, out v, rule);
+            v = default;
+            return false;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool CastToUInt8(object @object, out byte v, ConversionRule rule)
         {
-            if (@object is byte @byte) return Try((short)@byte, out v, rule);
-            if (@object is sbyte @sbyte) return Try(@sbyte, out v, rule);
-            if (@object is short @short) return Try(@short, out v, rule);
-            if (@object is int @int) return Try(@int, out v, rule);
-            if (@object is long @long) return Try(@long, out v, rule);
-            if (@object is ushort @ushort) return Try(@ushort, out v, rule);
-            if (@object is uint @uint) return Try(@uint, out v, rule);
-            if (@object is ulong @ulong) return Try(@ulong, out v, rule);
-            if (@object is double @double) return Try(@double, out v, rule);
-            if (@object is float @float) return Try(@float, out v, rule);
-            if (@object is decimal @decimal) return Try(@decimal, out v, rule);
-            v = default; return false;
+            if (@object is byte @byte)
+                return Try((short)@byte, out v, rule);
+            if (@object is sbyte @sbyte)
+                return Try(@sbyte, out v, rule);
+            if (@object is short @short)
+                return Try(@short, out v, rule);
+            if (@object is int @int)
+                return Try(@int, out v, rule);
+            if (@object is long @long)
+                return Try(@long, out v, rule);
+            if (@object is ushort @ushort)
+                return Try(@ushort, out v, rule);
+            if (@object is uint @uint)
+                return Try(@uint, out v, rule);
+            if (@object is ulong @ulong)
+                return Try(@ulong, out v, rule);
+            if (@object is double @double)
+                return Try(@double, out v, rule);
+            if (@object is float @float)
+                return Try(@float, out v, rule);
+            if (@object is decimal @decimal)
+                return Try(@decimal, out v, rule);
+            v = default;
+            return false;
         }
 
         #endregion 内部转换逻辑 (Fast Paths)

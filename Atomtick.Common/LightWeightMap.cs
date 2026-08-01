@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SCADA.Common
+namespace Atomtick.Common
 {
     public class LightWeightMap : IEnumerable<KeyValuePair<string, object>>
     {

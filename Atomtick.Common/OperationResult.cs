@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SCADA.Common
+namespace Atomtick.Common
 {
     public class OperationResult
     {

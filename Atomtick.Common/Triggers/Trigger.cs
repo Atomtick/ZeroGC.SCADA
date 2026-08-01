@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace SCADA.Common.Triggers
+namespace Atomtick.Common.Triggers
 {
     /// <summary>
     /// 下降沿信号检测类

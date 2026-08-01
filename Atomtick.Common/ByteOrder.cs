@@ -1,9 +1,9 @@
-﻿namespace SCADA.Common
+﻿namespace Atomtick.Common
 {
     public enum ByteOrder2
     {
         AB,
-        BA
+        BA,
     }
 
     public enum ByteOrder4
@@ -11,7 +11,7 @@
         ABCD,
         CDAB,
         BADC,
-        DCBA
+        DCBA,
     }
 
     public enum ByteOrder8
@@ -19,6 +19,6 @@
         ABCDEFGH,
         GHEFCDAB,
         BADCFEHG,
-        HGFEDCBA
+        HGFEDCBA,
     }
 }

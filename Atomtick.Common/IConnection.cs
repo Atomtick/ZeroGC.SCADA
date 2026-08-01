@@ -1,4 +1,4 @@
-﻿namespace SCADA.Common
+﻿namespace Atomtick.Common
 {
     public interface IConnection
     {

@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using Atomtick.Common;
 using Atomtick.Configuration.Interfaces;
 using SCADA.Common;
-using SCADA.Common.Interfaces;
 
 namespace Atomtick.Configuration
 {

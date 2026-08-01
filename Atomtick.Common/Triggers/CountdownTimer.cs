@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SCADA.Common.Triggers
+namespace Atomtick.Common.Triggers
 {
     public class CountdownTimer
     {

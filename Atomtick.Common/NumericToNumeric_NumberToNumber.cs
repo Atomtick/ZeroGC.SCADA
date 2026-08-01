@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-namespace SCADA.Common
+namespace Atomtick.Common
 {
     /* 这是一份支持数值类型之间相互转换的代码文件,支持溢出检查和精度损失检查.
      * 1. 全程无try catch. 2. 不会抛出异常
@@ -27,16 +27,26 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input < byte.MinValue) { result = default; return false; }
+                if (input < byte.MinValue)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (byte)input; }
+            unchecked
+            {
+                result = (byte)input;
+            }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(sbyte input, out short result, ConversionRule rule)
         {
-            unchecked { result = input; }
+            unchecked
+            {
+                result = input;
+            }
             return true;
         }
 
@@ -45,16 +55,26 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input < ushort.MinValue) { result = default; return false; }
+                if (input < ushort.MinValue)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (ushort)input; }
+            unchecked
+            {
+                result = (ushort)input;
+            }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(sbyte input, out int result, ConversionRule rule)
         {
-            unchecked { result = input; }
+            unchecked
+            {
+                result = input;
+            }
             return true;
         }
 
@@ -63,16 +83,26 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input < uint.MinValue) { result = default; return false; }
+                if (input < uint.MinValue)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (uint)input; }
+            unchecked
+            {
+                result = (uint)input;
+            }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(sbyte input, out long result, ConversionRule rule)
         {
-            unchecked { result = input; }
+            unchecked
+            {
+                result = input;
+            }
             return true;
         }
 
@@ -81,17 +111,31 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input < 0) { result = default; return false; }
+                if (input < 0)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (ulong)input; }
+            unchecked
+            {
+                result = (ulong)input;
+            }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(sbyte input, out float result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowIntToFloat) == 0) { result = default; return false; }
-            unchecked { result = input; }
+            if ((rule & ConversionRule.AllowIntToFloat) == 0)
+            {
+                result = default;
+                return false;
+            }
+            unchecked
+            {
+                result = input;
+            }
 
             return true;
         }
@@ -99,8 +143,15 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(sbyte input, out double result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowIntToFloat) == 0) { result = default; return false; }
-            unchecked { result = input; }
+            if ((rule & ConversionRule.AllowIntToFloat) == 0)
+            {
+                result = default;
+                return false;
+            }
+            unchecked
+            {
+                result = input;
+            }
 
             return true;
         }
@@ -108,8 +159,15 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(sbyte input, out decimal result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowIntToFloat) == 0) { result = default; return false; }
-            unchecked { result = input; }
+            if ((rule & ConversionRule.AllowIntToFloat) == 0)
+            {
+                result = default;
+                return false;
+            }
+            unchecked
+            {
+                result = input;
+            }
 
             return true;
         }
@@ -117,57 +175,85 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(byte input, out sbyte result, ConversionRule rule)
         {
-            unchecked { result = (sbyte)input; }
+            unchecked
+            {
+                result = (sbyte)input;
+            }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(byte input, out short result, ConversionRule rule)
         {
-            unchecked { result = input; }
+            unchecked
+            {
+                result = input;
+            }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(byte input, out ushort result, ConversionRule rule)
         {
-            unchecked { result = input; }
+            unchecked
+            {
+                result = input;
+            }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(byte input, out int result, ConversionRule rule)
         {
-            unchecked { result = input; }
+            unchecked
+            {
+                result = input;
+            }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(byte input, out uint result, ConversionRule rule)
         {
-            unchecked { result = input; }
+            unchecked
+            {
+                result = input;
+            }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(byte input, out long result, ConversionRule rule)
         {
-            unchecked { result = input; }
+            unchecked
+            {
+                result = input;
+            }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(byte input, out ulong result, ConversionRule rule)
         {
-            unchecked { result = input; }
+            unchecked
+            {
+                result = input;
+            }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(byte input, out float result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowIntToFloat) == 0) { result = default; return false; }
-            unchecked { result = input; }
+            if ((rule & ConversionRule.AllowIntToFloat) == 0)
+            {
+                result = default;
+                return false;
+            }
+            unchecked
+            {
+                result = input;
+            }
 
             return true;
         }
@@ -175,8 +261,15 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(byte input, out double result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowIntToFloat) == 0) { result = default; return false; }
-            unchecked { result = input; }
+            if ((rule & ConversionRule.AllowIntToFloat) == 0)
+            {
+                result = default;
+                return false;
+            }
+            unchecked
+            {
+                result = input;
+            }
 
             return true;
         }
@@ -184,8 +277,15 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(byte input, out decimal result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowIntToFloat) == 0) { result = default; return false; }
-            unchecked { result = input; }
+            if ((rule & ConversionRule.AllowIntToFloat) == 0)
+            {
+                result = default;
+                return false;
+            }
+            unchecked
+            {
+                result = input;
+            }
 
             return true;
         }
@@ -195,9 +295,16 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input < sbyte.MinValue || input > sbyte.MaxValue) { result = default; return false; }
+                if (input < sbyte.MinValue || input > sbyte.MaxValue)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (sbyte)input; }
+            unchecked
+            {
+                result = (sbyte)input;
+            }
             return true;
         }
 
@@ -206,9 +313,16 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input < byte.MinValue || input > byte.MaxValue) { result = default; return false; }
+                if (input < byte.MinValue || input > byte.MaxValue)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (byte)input; }
+            unchecked
+            {
+                result = (byte)input;
+            }
             return true;
         }
 
@@ -217,16 +331,26 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input < ushort.MinValue) { result = default; return false; }
+                if (input < ushort.MinValue)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (ushort)input; }
+            unchecked
+            {
+                result = (ushort)input;
+            }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(short input, out int result, ConversionRule rule)
         {
-            unchecked { result = input; }
+            unchecked
+            {
+                result = input;
+            }
             return true;
         }
 
@@ -235,16 +359,26 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input < 0) { result = default; return false; }
+                if (input < 0)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (uint)input; }
+            unchecked
+            {
+                result = (uint)input;
+            }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(short input, out long result, ConversionRule rule)
         {
-            unchecked { result = input; }
+            unchecked
+            {
+                result = input;
+            }
             return true;
         }
 
@@ -253,17 +387,31 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input < 0) { result = default; return false; }
+                if (input < 0)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (ulong)input; }
+            unchecked
+            {
+                result = (ulong)input;
+            }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(short input, out float result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowIntToFloat) == 0) { result = default; return false; }
-            unchecked { result = input; }
+            if ((rule & ConversionRule.AllowIntToFloat) == 0)
+            {
+                result = default;
+                return false;
+            }
+            unchecked
+            {
+                result = input;
+            }
 
             return true;
         }
@@ -271,8 +419,15 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(short input, out double result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowIntToFloat) == 0) { result = default; return false; }
-            unchecked { result = input; }
+            if ((rule & ConversionRule.AllowIntToFloat) == 0)
+            {
+                result = default;
+                return false;
+            }
+            unchecked
+            {
+                result = input;
+            }
 
             return true;
         }
@@ -280,8 +435,15 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(short input, out decimal result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowIntToFloat) == 0) { result = default; return false; }
-            unchecked { result = input; }
+            if ((rule & ConversionRule.AllowIntToFloat) == 0)
+            {
+                result = default;
+                return false;
+            }
+            unchecked
+            {
+                result = input;
+            }
 
             return true;
         }
@@ -291,9 +453,16 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input > sbyte.MaxValue) { result = default; return false; }
+                if (input > sbyte.MaxValue)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (sbyte)input; }
+            unchecked
+            {
+                result = (sbyte)input;
+            }
             return true;
         }
 
@@ -302,52 +471,81 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input < byte.MinValue || input > byte.MaxValue) { result = default; return false; }
+                if (input < byte.MinValue || input > byte.MaxValue)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (byte)input; }
+            unchecked
+            {
+                result = (byte)input;
+            }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(ushort input, out short result, ConversionRule rule)
         {
-            unchecked { result = (short)input; }
+            unchecked
+            {
+                result = (short)input;
+            }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(ushort input, out int result, ConversionRule rule)
         {
-            unchecked { result = input; }
+            unchecked
+            {
+                result = input;
+            }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(ushort input, out uint result, ConversionRule rule)
         {
-            unchecked { result = input; }
+            unchecked
+            {
+                result = input;
+            }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(ushort input, out long result, ConversionRule rule)
         {
-            unchecked { result = input; }
+            unchecked
+            {
+                result = input;
+            }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(ushort input, out ulong result, ConversionRule rule)
         {
-            unchecked { result = input; }
+            unchecked
+            {
+                result = input;
+            }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(ushort input, out float result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowIntToFloat) == 0) { result = default; return false; }
-            unchecked { result = input; }
+            if ((rule & ConversionRule.AllowIntToFloat) == 0)
+            {
+                result = default;
+                return false;
+            }
+            unchecked
+            {
+                result = input;
+            }
 
             return true;
         }
@@ -355,8 +553,15 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(ushort input, out double result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowIntToFloat) == 0) { result = default; return false; }
-            unchecked { result = input; }
+            if ((rule & ConversionRule.AllowIntToFloat) == 0)
+            {
+                result = default;
+                return false;
+            }
+            unchecked
+            {
+                result = input;
+            }
 
             return true;
         }
@@ -364,8 +569,15 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(ushort input, out decimal result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowIntToFloat) == 0) { result = default; return false; }
-            unchecked { result = input; }
+            if ((rule & ConversionRule.AllowIntToFloat) == 0)
+            {
+                result = default;
+                return false;
+            }
+            unchecked
+            {
+                result = input;
+            }
 
             return true;
         }
@@ -375,9 +587,16 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input < sbyte.MinValue || input > sbyte.MaxValue) { result = default; return false; }
+                if (input < sbyte.MinValue || input > sbyte.MaxValue)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (sbyte)input; }
+            unchecked
+            {
+                result = (sbyte)input;
+            }
             return true;
         }
 
@@ -386,9 +605,16 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input < byte.MinValue || input > byte.MaxValue) { result = default; return false; }
+                if (input < byte.MinValue || input > byte.MaxValue)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (byte)input; }
+            unchecked
+            {
+                result = (byte)input;
+            }
             return true;
         }
 
@@ -397,9 +623,16 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input < short.MinValue || input > short.MaxValue) { result = default; return false; }
+                if (input < short.MinValue || input > short.MaxValue)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (short)input; }
+            unchecked
+            {
+                result = (short)input;
+            }
             return true;
         }
 
@@ -408,9 +641,16 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input < ushort.MinValue || input > ushort.MaxValue) { result = default; return false; }
+                if (input < ushort.MinValue || input > ushort.MaxValue)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (ushort)input; }
+            unchecked
+            {
+                result = (ushort)input;
+            }
             return true;
         }
 
@@ -419,16 +659,26 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input < uint.MinValue) { result = default; return false; }
+                if (input < uint.MinValue)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (uint)input; }
+            unchecked
+            {
+                result = (uint)input;
+            }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(int input, out long result, ConversionRule rule)
         {
-            unchecked { result = input; }
+            unchecked
+            {
+                result = input;
+            }
             return true;
         }
 
@@ -437,20 +687,35 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input < 0) { result = default; return false; }
+                if (input < 0)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (ulong)input; }
+            unchecked
+            {
+                result = (ulong)input;
+            }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(int input, out float result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowIntToFloat) == 0) { result = default; return false; }
-            unchecked { result = input; }
+            if ((rule & ConversionRule.AllowIntToFloat) == 0)
+            {
+                result = default;
+                return false;
+            }
+            unchecked
+            {
+                result = input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if ((int)result != input) return false;
+                if ((int)result != input)
+                    return false;
             }
             return true;
         }
@@ -458,8 +723,15 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(int input, out double result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowIntToFloat) == 0) { result = default; return false; }
-            unchecked { result = input; }
+            if ((rule & ConversionRule.AllowIntToFloat) == 0)
+            {
+                result = default;
+                return false;
+            }
+            unchecked
+            {
+                result = input;
+            }
 
             return true;
         }
@@ -467,8 +739,15 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(int input, out decimal result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowIntToFloat) == 0) { result = default; return false; }
-            unchecked { result = input; }
+            if ((rule & ConversionRule.AllowIntToFloat) == 0)
+            {
+                result = default;
+                return false;
+            }
+            unchecked
+            {
+                result = input;
+            }
 
             return true;
         }
@@ -478,9 +757,16 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input > sbyte.MaxValue) { result = default; return false; }
+                if (input > sbyte.MaxValue)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (sbyte)input; }
+            unchecked
+            {
+                result = (sbyte)input;
+            }
             return true;
         }
 
@@ -489,9 +775,16 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input < byte.MinValue || input > byte.MaxValue) { result = default; return false; }
+                if (input < byte.MinValue || input > byte.MaxValue)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (byte)input; }
+            unchecked
+            {
+                result = (byte)input;
+            }
             return true;
         }
 
@@ -500,9 +793,16 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input > short.MaxValue) { result = default; return false; }
+                if (input > short.MaxValue)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (short)input; }
+            unchecked
+            {
+                result = (short)input;
+            }
             return true;
         }
 
@@ -511,41 +811,65 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input < ushort.MinValue || input > ushort.MaxValue) { result = default; return false; }
+                if (input < ushort.MinValue || input > ushort.MaxValue)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (ushort)input; }
+            unchecked
+            {
+                result = (ushort)input;
+            }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(uint input, out int result, ConversionRule rule)
         {
-            unchecked { result = (int)input; }
+            unchecked
+            {
+                result = (int)input;
+            }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(uint input, out long result, ConversionRule rule)
         {
-            unchecked { result = input; }
+            unchecked
+            {
+                result = input;
+            }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(uint input, out ulong result, ConversionRule rule)
         {
-            unchecked { result = input; }
+            unchecked
+            {
+                result = input;
+            }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(uint input, out float result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowIntToFloat) == 0) { result = default; return false; }
-            unchecked { result = input; }
+            if ((rule & ConversionRule.AllowIntToFloat) == 0)
+            {
+                result = default;
+                return false;
+            }
+            unchecked
+            {
+                result = input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if ((uint)result != input) return false;
+                if ((uint)result != input)
+                    return false;
             }
             return true;
         }
@@ -553,8 +877,15 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(uint input, out double result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowIntToFloat) == 0) { result = default; return false; }
-            unchecked { result = input; }
+            if ((rule & ConversionRule.AllowIntToFloat) == 0)
+            {
+                result = default;
+                return false;
+            }
+            unchecked
+            {
+                result = input;
+            }
 
             return true;
         }
@@ -562,8 +893,15 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(uint input, out decimal result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowIntToFloat) == 0) { result = default; return false; }
-            unchecked { result = input; }
+            if ((rule & ConversionRule.AllowIntToFloat) == 0)
+            {
+                result = default;
+                return false;
+            }
+            unchecked
+            {
+                result = input;
+            }
 
             return true;
         }
@@ -573,9 +911,16 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input < sbyte.MinValue || input > sbyte.MaxValue) { result = default; return false; }
+                if (input < sbyte.MinValue || input > sbyte.MaxValue)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (sbyte)input; }
+            unchecked
+            {
+                result = (sbyte)input;
+            }
             return true;
         }
 
@@ -584,9 +929,16 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input < byte.MinValue || input > byte.MaxValue) { result = default; return false; }
+                if (input < byte.MinValue || input > byte.MaxValue)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (byte)input; }
+            unchecked
+            {
+                result = (byte)input;
+            }
             return true;
         }
 
@@ -595,9 +947,16 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input < short.MinValue || input > short.MaxValue) { result = default; return false; }
+                if (input < short.MinValue || input > short.MaxValue)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (short)input; }
+            unchecked
+            {
+                result = (short)input;
+            }
             return true;
         }
 
@@ -606,9 +965,16 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input < ushort.MinValue || input > ushort.MaxValue) { result = default; return false; }
+                if (input < ushort.MinValue || input > ushort.MaxValue)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (ushort)input; }
+            unchecked
+            {
+                result = (ushort)input;
+            }
             return true;
         }
 
@@ -617,9 +983,16 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input < int.MinValue || input > int.MaxValue) { result = default; return false; }
+                if (input < int.MinValue || input > int.MaxValue)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (int)input; }
+            unchecked
+            {
+                result = (int)input;
+            }
             return true;
         }
 
@@ -628,9 +1001,16 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input < uint.MinValue || input > uint.MaxValue) { result = default; return false; }
+                if (input < uint.MinValue || input > uint.MaxValue)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (uint)input; }
+            unchecked
+            {
+                result = (uint)input;
+            }
             return true;
         }
 
@@ -639,20 +1019,35 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input < 0) { result = default; return false; }
+                if (input < 0)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (ulong)input; }
+            unchecked
+            {
+                result = (ulong)input;
+            }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(long input, out float result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowIntToFloat) == 0) { result = default; return false; }
-            unchecked { result = input; }
+            if ((rule & ConversionRule.AllowIntToFloat) == 0)
+            {
+                result = default;
+                return false;
+            }
+            unchecked
+            {
+                result = input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if ((long)result != input) return false;
+                if ((long)result != input)
+                    return false;
             }
             return true;
         }
@@ -660,11 +1055,19 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(long input, out double result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowIntToFloat) == 0) { result = default; return false; }
-            unchecked { result = input; }
+            if ((rule & ConversionRule.AllowIntToFloat) == 0)
+            {
+                result = default;
+                return false;
+            }
+            unchecked
+            {
+                result = input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if ((long)result != input) return false;
+                if ((long)result != input)
+                    return false;
             }
             return true;
         }
@@ -672,8 +1075,15 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(long input, out decimal result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowIntToFloat) == 0) { result = default; return false; }
-            unchecked { result = input; }
+            if ((rule & ConversionRule.AllowIntToFloat) == 0)
+            {
+                result = default;
+                return false;
+            }
+            unchecked
+            {
+                result = input;
+            }
 
             return true;
         }
@@ -683,9 +1093,16 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input > (ulong)sbyte.MaxValue) { result = default; return false; }
+                if (input > (ulong)sbyte.MaxValue)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (sbyte)input; }
+            unchecked
+            {
+                result = (sbyte)input;
+            }
             return true;
         }
 
@@ -694,9 +1111,16 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input < byte.MinValue || input > byte.MaxValue) { result = default; return false; }
+                if (input < byte.MinValue || input > byte.MaxValue)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (byte)input; }
+            unchecked
+            {
+                result = (byte)input;
+            }
             return true;
         }
 
@@ -705,9 +1129,16 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input > (int)short.MaxValue) { result = default; return false; }
+                if (input > (int)short.MaxValue)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (short)input; }
+            unchecked
+            {
+                result = (short)input;
+            }
             return true;
         }
 
@@ -716,9 +1147,16 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input < ushort.MinValue || input > ushort.MaxValue) { result = default; return false; }
+                if (input < ushort.MinValue || input > ushort.MaxValue)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (ushort)input; }
+            unchecked
+            {
+                result = (ushort)input;
+            }
             return true;
         }
 
@@ -727,9 +1165,16 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input > int.MaxValue) { result = default; return false; }
+                if (input > int.MaxValue)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (int)input; }
+            unchecked
+            {
+                result = (int)input;
+            }
             return true;
         }
 
@@ -738,27 +1183,45 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input < uint.MinValue || input > uint.MaxValue) { result = default; return false; }
+                if (input < uint.MinValue || input > uint.MaxValue)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (uint)input; }
+            unchecked
+            {
+                result = (uint)input;
+            }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(ulong input, out long result, ConversionRule rule)
         {
-            unchecked { result = (long)input; }
+            unchecked
+            {
+                result = (long)input;
+            }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(ulong input, out float result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowIntToFloat) == 0) { result = default; return false; }
-            unchecked { result = input; }
+            if ((rule & ConversionRule.AllowIntToFloat) == 0)
+            {
+                result = default;
+                return false;
+            }
+            unchecked
+            {
+                result = input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if ((ulong)result != input) return false;
+                if ((ulong)result != input)
+                    return false;
             }
             return true;
         }
@@ -766,11 +1229,19 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(ulong input, out double result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowIntToFloat) == 0) { result = default; return false; }
-            unchecked { result = input; }
+            if ((rule & ConversionRule.AllowIntToFloat) == 0)
+            {
+                result = default;
+                return false;
+            }
+            unchecked
+            {
+                result = input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if ((ulong)result != input) return false;
+                if ((ulong)result != input)
+                    return false;
             }
             return true;
         }
@@ -778,8 +1249,15 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(ulong input, out decimal result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowIntToFloat) == 0) { result = default; return false; }
-            unchecked { result = input; }
+            if ((rule & ConversionRule.AllowIntToFloat) == 0)
+            {
+                result = default;
+                return false;
+            }
+            unchecked
+            {
+                result = input;
+            }
 
             return true;
         }
@@ -787,15 +1265,27 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(float input, out sbyte result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowFloatToInt) == 0) { result = default; return false; }
+            if ((rule & ConversionRule.AllowFloatToInt) == 0)
+            {
+                result = default;
+                return false;
+            }
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (!(input >= sbyte.MinValue && input <= sbyte.MaxValue)) { result = default; return false; }
+                if (!(input >= sbyte.MinValue && input <= sbyte.MaxValue))
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (sbyte)input; }
+            unchecked
+            {
+                result = (sbyte)input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if (result != input) return false;
+                if (result != input)
+                    return false;
             }
             return true;
         }
@@ -803,15 +1293,27 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(float input, out byte result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowFloatToInt) == 0) { result = default; return false; }
+            if ((rule & ConversionRule.AllowFloatToInt) == 0)
+            {
+                result = default;
+                return false;
+            }
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (!(input >= byte.MinValue && input <= byte.MaxValue)) { result = default; return false; }
+                if (!(input >= byte.MinValue && input <= byte.MaxValue))
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (byte)input; }
+            unchecked
+            {
+                result = (byte)input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if (result != input) return false;
+                if (result != input)
+                    return false;
             }
             return true;
         }
@@ -819,15 +1321,27 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(float input, out short result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowFloatToInt) == 0) { result = default; return false; }
+            if ((rule & ConversionRule.AllowFloatToInt) == 0)
+            {
+                result = default;
+                return false;
+            }
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (!(input >= short.MinValue && input <= short.MaxValue)) { result = default; return false; }
+                if (!(input >= short.MinValue && input <= short.MaxValue))
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (short)input; }
+            unchecked
+            {
+                result = (short)input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if (result != input) return false;
+                if (result != input)
+                    return false;
             }
             return true;
         }
@@ -835,15 +1349,27 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(float input, out ushort result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowFloatToInt) == 0) { result = default; return false; }
+            if ((rule & ConversionRule.AllowFloatToInt) == 0)
+            {
+                result = default;
+                return false;
+            }
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (!(input >= ushort.MinValue && input <= ushort.MaxValue)) { result = default; return false; }
+                if (!(input >= ushort.MinValue && input <= ushort.MaxValue))
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (ushort)input; }
+            unchecked
+            {
+                result = (ushort)input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if (result != input) return false;
+                if (result != input)
+                    return false;
             }
             return true;
         }
@@ -851,15 +1377,27 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(float input, out int result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowFloatToInt) == 0) { result = default; return false; }
+            if ((rule & ConversionRule.AllowFloatToInt) == 0)
+            {
+                result = default;
+                return false;
+            }
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (!(input >= int.MinValue && input <= int.MaxValue)) { result = default; return false; }
+                if (!(input >= int.MinValue && input <= int.MaxValue))
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (int)input; }
+            unchecked
+            {
+                result = (int)input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if (result != input) return false;
+                if (result != input)
+                    return false;
             }
             return true;
         }
@@ -867,15 +1405,27 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(float input, out uint result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowFloatToInt) == 0) { result = default; return false; }
+            if ((rule & ConversionRule.AllowFloatToInt) == 0)
+            {
+                result = default;
+                return false;
+            }
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (!(input >= uint.MinValue && input <= uint.MaxValue)) { result = default; return false; }
+                if (!(input >= uint.MinValue && input <= uint.MaxValue))
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (uint)input; }
+            unchecked
+            {
+                result = (uint)input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if (result != input) return false;
+                if (result != input)
+                    return false;
             }
             return true;
         }
@@ -883,16 +1433,32 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(float input, out long result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowFloatToInt) == 0) { result = default; return false; }
-            if (float.IsNaN(input)) { result = default; return false; } // ✅ 修复 NaN
+            if ((rule & ConversionRule.AllowFloatToInt) == 0)
+            {
+                result = default;
+                return false;
+            }
+            if (float.IsNaN(input))
+            {
+                result = default;
+                return false;
+            } // ✅ 修复 NaN
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (!(input >= long.MinValue && input < ((float)9223372036854775808.0f))) { result = default; return false; }
+                if (!(input >= long.MinValue && input < ((float)9223372036854775808.0f)))
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (long)input; }
+            unchecked
+            {
+                result = (long)input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if (result != input) return false;
+                if (result != input)
+                    return false;
             }
             return true;
         }
@@ -900,16 +1466,32 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(float input, out ulong result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowFloatToInt) == 0) { result = default; return false; }
-            if (float.IsNaN(input)) { result = default; return false; } // ✅
+            if ((rule & ConversionRule.AllowFloatToInt) == 0)
+            {
+                result = default;
+                return false;
+            }
+            if (float.IsNaN(input))
+            {
+                result = default;
+                return false;
+            } // ✅
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (!(input >= ((float)0.0) && input < ((float)18446744073709551616.0f))) { result = default; return false; }
+                if (!(input >= ((float)0.0) && input < ((float)18446744073709551616.0f)))
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (ulong)input; }
+            unchecked
+            {
+                result = (ulong)input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if (result != input) return false;
+                if (result != input)
+                    return false;
             }
             return true;
         }
@@ -917,18 +1499,29 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(float input, out double result, ConversionRule rule)
         {
-            unchecked { result = (double)input; }
+            unchecked
+            {
+                result = (double)input;
+            }
             return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(float input, out decimal result, ConversionRule rule)
         {
-            if (!(input >= SafeFloatMinForDecimal && input <= SafeFloatMaxForDecimal)) { result = default; return false; }
-            unchecked { result = (decimal)input; }
+            if (!(input >= SafeFloatMinForDecimal && input <= SafeFloatMaxForDecimal))
+            {
+                result = default;
+                return false;
+            }
+            unchecked
+            {
+                result = (decimal)input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if ((float)result != input) return false;
+                if ((float)result != input)
+                    return false;
             }
             return true;
         }
@@ -936,15 +1529,27 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(double input, out sbyte result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowFloatToInt) == 0) { result = default; return false; }
+            if ((rule & ConversionRule.AllowFloatToInt) == 0)
+            {
+                result = default;
+                return false;
+            }
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (!(input >= sbyte.MinValue && input <= sbyte.MaxValue)) { result = default; return false; }
+                if (!(input >= sbyte.MinValue && input <= sbyte.MaxValue))
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (sbyte)input; }
+            unchecked
+            {
+                result = (sbyte)input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if (result != input) return false;
+                if (result != input)
+                    return false;
             }
             return true;
         }
@@ -952,15 +1557,27 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(double input, out byte result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowFloatToInt) == 0) { result = default; return false; }
+            if ((rule & ConversionRule.AllowFloatToInt) == 0)
+            {
+                result = default;
+                return false;
+            }
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (!(input >= byte.MinValue && input <= byte.MaxValue)) { result = default; return false; }
+                if (!(input >= byte.MinValue && input <= byte.MaxValue))
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (byte)input; }
+            unchecked
+            {
+                result = (byte)input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if (result != input) return false;
+                if (result != input)
+                    return false;
             }
             return true;
         }
@@ -968,15 +1585,27 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(double input, out short result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowFloatToInt) == 0) { result = default; return false; }
+            if ((rule & ConversionRule.AllowFloatToInt) == 0)
+            {
+                result = default;
+                return false;
+            }
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (!(input >= short.MinValue && input <= short.MaxValue)) { result = default; return false; }
+                if (!(input >= short.MinValue && input <= short.MaxValue))
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (short)input; }
+            unchecked
+            {
+                result = (short)input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if (result != input) return false;
+                if (result != input)
+                    return false;
             }
             return true;
         }
@@ -984,15 +1613,27 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(double input, out ushort result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowFloatToInt) == 0) { result = default; return false; }
+            if ((rule & ConversionRule.AllowFloatToInt) == 0)
+            {
+                result = default;
+                return false;
+            }
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (!(input >= ushort.MinValue && input <= ushort.MaxValue)) { result = default; return false; }
+                if (!(input >= ushort.MinValue && input <= ushort.MaxValue))
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (ushort)input; }
+            unchecked
+            {
+                result = (ushort)input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if (result != input) return false;
+                if (result != input)
+                    return false;
             }
             return true;
         }
@@ -1000,15 +1641,27 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(double input, out int result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowFloatToInt) == 0) { result = default; return false; }
+            if ((rule & ConversionRule.AllowFloatToInt) == 0)
+            {
+                result = default;
+                return false;
+            }
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (!(input >= int.MinValue && input <= int.MaxValue)) { result = default; return false; }
+                if (!(input >= int.MinValue && input <= int.MaxValue))
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (int)input; }
+            unchecked
+            {
+                result = (int)input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if (result != input) return false;
+                if (result != input)
+                    return false;
             }
             return true;
         }
@@ -1016,15 +1669,27 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(double input, out uint result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowFloatToInt) == 0) { result = default; return false; }
+            if ((rule & ConversionRule.AllowFloatToInt) == 0)
+            {
+                result = default;
+                return false;
+            }
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (!(input >= uint.MinValue && input <= uint.MaxValue)) { result = default; return false; }
+                if (!(input >= uint.MinValue && input <= uint.MaxValue))
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (uint)input; }
+            unchecked
+            {
+                result = (uint)input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if (result != input) return false;
+                if (result != input)
+                    return false;
             }
             return true;
         }
@@ -1032,16 +1697,32 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(double input, out long result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowFloatToInt) == 0) { result = default; return false; }
-            if (double.IsNaN(input)) { result = default; return false; } // ✅
+            if ((rule & ConversionRule.AllowFloatToInt) == 0)
+            {
+                result = default;
+                return false;
+            }
+            if (double.IsNaN(input))
+            {
+                result = default;
+                return false;
+            } // ✅
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (!(input >= long.MinValue && input < ((double)9223372036854775808.0d))) { result = default; return false; }
+                if (!(input >= long.MinValue && input < ((double)9223372036854775808.0d)))
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (long)input; }
+            unchecked
+            {
+                result = (long)input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if (result != input) return false;
+                if (result != input)
+                    return false;
             }
             return true;
         }
@@ -1049,16 +1730,32 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(double input, out ulong result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowFloatToInt) == 0) { result = default; return false; }
-            if (double.IsNaN(input)) { result = default; return false; }
+            if ((rule & ConversionRule.AllowFloatToInt) == 0)
+            {
+                result = default;
+                return false;
+            }
+            if (double.IsNaN(input))
+            {
+                result = default;
+                return false;
+            }
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (!(input >= ((double)0.0) && input < ((double)18446744073709551616.0d))) { result = default; return false; }
+                if (!(input >= ((double)0.0) && input < ((double)18446744073709551616.0d)))
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (ulong)input; }
+            unchecked
+            {
+                result = (ulong)input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if (result != input) return false;
+                if (result != input)
+                    return false;
             }
             return true;
         }
@@ -1068,12 +1765,20 @@ namespace SCADA.Common
         {
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (input < float.MinValue || input > float.MaxValue) { result = default; return false; }
+                if (input < float.MinValue || input > float.MaxValue)
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (float)input; }
+            unchecked
+            {
+                result = (float)input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if ((double)result != input) return false;
+                if ((double)result != input)
+                    return false;
             }
             return true;
         }
@@ -1081,11 +1786,19 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(double input, out decimal result, ConversionRule rule)
         {
-            if (!(input >= SafeDoubleMinForDecimal && input <= SafeDoubleMaxForDecimal)) { result = default; return false; }
-            unchecked { result = (decimal)input; }
+            if (!(input >= SafeDoubleMinForDecimal && input <= SafeDoubleMaxForDecimal))
+            {
+                result = default;
+                return false;
+            }
+            unchecked
+            {
+                result = (decimal)input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if ((double)result != input) return false;
+                if ((double)result != input)
+                    return false;
             }
             return true;
         }
@@ -1093,15 +1806,27 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(decimal input, out sbyte result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowFloatToInt) == 0) { result = default; return false; }
+            if ((rule & ConversionRule.AllowFloatToInt) == 0)
+            {
+                result = default;
+                return false;
+            }
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (!(input >= sbyte.MinValue && input <= sbyte.MaxValue)) { result = default; return false; }
+                if (!(input >= sbyte.MinValue && input <= sbyte.MaxValue))
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (sbyte)input; }
+            unchecked
+            {
+                result = (sbyte)input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if (result != input) return false;
+                if (result != input)
+                    return false;
             }
             return true;
         }
@@ -1109,15 +1834,27 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(decimal input, out byte result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowFloatToInt) == 0) { result = default; return false; }
+            if ((rule & ConversionRule.AllowFloatToInt) == 0)
+            {
+                result = default;
+                return false;
+            }
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (!(input >= byte.MinValue && input <= byte.MaxValue)) { result = default; return false; }
+                if (!(input >= byte.MinValue && input <= byte.MaxValue))
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (byte)input; }
+            unchecked
+            {
+                result = (byte)input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if (result != input) return false;
+                if (result != input)
+                    return false;
             }
             return true;
         }
@@ -1125,15 +1862,27 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(decimal input, out short result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowFloatToInt) == 0) { result = default; return false; }
+            if ((rule & ConversionRule.AllowFloatToInt) == 0)
+            {
+                result = default;
+                return false;
+            }
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (!(input >= short.MinValue && input <= short.MaxValue)) { result = default; return false; }
+                if (!(input >= short.MinValue && input <= short.MaxValue))
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (short)input; }
+            unchecked
+            {
+                result = (short)input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if (result != input) return false;
+                if (result != input)
+                    return false;
             }
             return true;
         }
@@ -1141,15 +1890,27 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(decimal input, out ushort result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowFloatToInt) == 0) { result = default; return false; }
+            if ((rule & ConversionRule.AllowFloatToInt) == 0)
+            {
+                result = default;
+                return false;
+            }
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (!(input >= ushort.MinValue && input <= ushort.MaxValue)) { result = default; return false; }
+                if (!(input >= ushort.MinValue && input <= ushort.MaxValue))
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (ushort)input; }
+            unchecked
+            {
+                result = (ushort)input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if (result != input) return false;
+                if (result != input)
+                    return false;
             }
             return true;
         }
@@ -1157,15 +1918,27 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(decimal input, out int result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowFloatToInt) == 0) { result = default; return false; }
+            if ((rule & ConversionRule.AllowFloatToInt) == 0)
+            {
+                result = default;
+                return false;
+            }
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (!(input >= int.MinValue && input <= int.MaxValue)) { result = default; return false; }
+                if (!(input >= int.MinValue && input <= int.MaxValue))
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (int)input; }
+            unchecked
+            {
+                result = (int)input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if (result != input) return false;
+                if (result != input)
+                    return false;
             }
             return true;
         }
@@ -1173,15 +1946,27 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(decimal input, out uint result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowFloatToInt) == 0) { result = default; return false; }
+            if ((rule & ConversionRule.AllowFloatToInt) == 0)
+            {
+                result = default;
+                return false;
+            }
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (!(input >= uint.MinValue && input <= uint.MaxValue)) { result = default; return false; }
+                if (!(input >= uint.MinValue && input <= uint.MaxValue))
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (uint)input; }
+            unchecked
+            {
+                result = (uint)input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if (result != input) return false;
+                if (result != input)
+                    return false;
             }
             return true;
         }
@@ -1189,15 +1974,27 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(decimal input, out long result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowFloatToInt) == 0) { result = default; return false; }
+            if ((rule & ConversionRule.AllowFloatToInt) == 0)
+            {
+                result = default;
+                return false;
+            }
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (!(input >= long.MinValue && input < ((decimal)9223372036854775808.0d))) { result = default; return false; }
+                if (!(input >= long.MinValue && input < ((decimal)9223372036854775808.0d)))
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (long)input; }
+            unchecked
+            {
+                result = (long)input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if (result != input) return false;
+                if (result != input)
+                    return false;
             }
             return true;
         }
@@ -1205,15 +2002,27 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(decimal input, out ulong result, ConversionRule rule)
         {
-            if ((rule & ConversionRule.AllowFloatToInt) == 0) { result = default; return false; }
+            if ((rule & ConversionRule.AllowFloatToInt) == 0)
+            {
+                result = default;
+                return false;
+            }
             if ((rule & ConversionRule.CheckOverflow) != 0)
             {
-                if (!(input >= ((decimal)0.0) && input < ((decimal)18446744073709551616.0d))) { result = default; return false; }
+                if (!(input >= ((decimal)0.0) && input < ((decimal)18446744073709551616.0d)))
+                {
+                    result = default;
+                    return false;
+                }
             }
-            unchecked { result = (ulong)input; }
+            unchecked
+            {
+                result = (ulong)input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if (result != input) return false;
+                if (result != input)
+                    return false;
             }
             return true;
         }
@@ -1221,10 +2030,14 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(decimal input, out float result, ConversionRule rule)
         {
-            unchecked { result = (float)input; }
+            unchecked
+            {
+                result = (float)input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if ((decimal)result != input) return false;
+                if ((decimal)result != input)
+                    return false;
             }
             return true;
         }
@@ -1232,10 +2045,14 @@ namespace SCADA.Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Try(decimal input, out double result, ConversionRule rule)
         {
-            unchecked { result = (double)input; }
+            unchecked
+            {
+                result = (double)input;
+            }
             if ((rule & ConversionRule.CheckPrecision) != 0)
             {
-                if ((decimal)result != input) return false;
+                if ((decimal)result != input)
+                    return false;
             }
             return true;
         }

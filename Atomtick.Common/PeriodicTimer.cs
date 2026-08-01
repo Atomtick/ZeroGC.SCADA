@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace SCADA.Common
+namespace Atomtick.Common
 {
     public sealed class PeriodicTimer : IDisposable
     {
@@ -11,9 +11,8 @@ namespace SCADA.Common
         private volatile int _periodMS;
         private Timer _timer;
 
-        public PeriodicTimer() : this(100)
-        {
-        }
+        public PeriodicTimer()
+            : this(100) { }
 
         public PeriodicTimer(int periodMS)
         {
@@ -72,43 +71,48 @@ namespace SCADA.Common
                 if (_timer == null)
                 {
                     _cts = new CancellationTokenSource();
-                    _timer = new Timer((state) =>
-                    {
-                        var callback = Callback;
+                    _timer = new Timer(
+                        (state) =>
+                        {
+                            var callback = Callback;
 
-                        if (callback == null)
-                        {
-                            return; // No subscribers, nothing to do
-                        }
-                        foreach (var del in callback?.GetInvocationList())
-                        {
-                            var cts = _cts;
-                            if (cts == null || cts.Token.IsCancellationRequested)
+                            if (callback == null)
                             {
-                                break;
+                                return; // No subscribers, nothing to do
+                            }
+                            foreach (var del in callback?.GetInvocationList())
+                            {
+                                var cts = _cts;
+                                if (cts == null || cts.Token.IsCancellationRequested)
+                                {
+                                    break;
+                                }
+                                try
+                                {
+                                    //del.DynamicInvoke(cts.Token); // low performance
+                                    ((Action<CancellationToken>)del)?.Invoke(cts.Token);
+                                }
+                                catch (Exception ex)
+                                {
+                                    CallbackExceptionOccured?.Invoke(ex);
+
+                                    if (!ContinueOtherTasksWhenExceptionOccured)
+                                        break; // Stop invoking further subscribers on exception
+                                }
                             }
                             try
                             {
-                                //del.DynamicInvoke(cts.Token); // low performance
-                                ((Action<CancellationToken>)del)?.Invoke(cts.Token);
+                                _timer?.Change(_periodMS, Timeout.Infinite);
                             }
-                            catch (Exception ex)
+                            catch (ObjectDisposedException)
                             {
-                                CallbackExceptionOccured?.Invoke(ex);
-
-                                if (!ContinueOtherTasksWhenExceptionOccured)
-                                    break; // Stop invoking further subscribers on exception
+                                ; // empty
                             }
-                        }
-                        try
-                        {
-                            _timer?.Change(_periodMS, Timeout.Infinite);
-                        }
-                        catch (ObjectDisposedException)
-                        {
-                            ; // empty
-                        }
-                    }, null, Timeout.Infinite, Timeout.Infinite);
+                        },
+                        null,
+                        Timeout.Infinite,
+                        Timeout.Infinite
+                    );
 
                     _timer?.Change(0, Timeout.Infinite);
                 }

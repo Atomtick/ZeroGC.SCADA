@@ -14,9 +14,9 @@ using SCADA.Common;
 
 namespace SCADA.Events
 {
-    public class EventManager
+    public class EventManager : IEventManager
     {
-        private object _lock = new object();
+        private readonly object _lock = new object();
 
         private volatile EventInstance[] _alarmEventInstances = Array.Empty<EventInstance>();
 

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using Atomtick.Common;
 using Microsoft.Data.Sqlite;
 using SCADA.Common;
 #if NET8_0_OR_GREATER

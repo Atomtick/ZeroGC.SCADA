@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace SCADA.Common
+namespace Atomtick.Common
 {
     public static class Utility
     {
@@ -50,11 +50,9 @@ namespace SCADA.Common
         public static float[] ToHostFloat(IList<byte> bytes, int startIndex, int length, ByteOrder4 byteOrder) =>
             ToHostUInt32(bytes, startIndex, length, byteOrder).Select(item => (float)item).ToArray();
 
-        public static float[] ToHostFloat(IList<byte> bytes, ByteOrder4 byteOrder) =>
-            ToHostFloat(bytes, 0, bytes.Count, byteOrder);
+        public static float[] ToHostFloat(IList<byte> bytes, ByteOrder4 byteOrder) => ToHostFloat(bytes, 0, bytes.Count, byteOrder);
 
-        public static int[] ToHostInt32(IList<byte> bytes, int startIndex, int length, ByteOrder4 byteOrder) =>
-            ToHostUInt32(bytes, startIndex, length, byteOrder).Select(item => (int)item).ToArray();
+        public static int[] ToHostInt32(IList<byte> bytes, int startIndex, int length, ByteOrder4 byteOrder) => ToHostUInt32(bytes, startIndex, length, byteOrder).Select(item => (int)item).ToArray();
 
         public static int[] ToHostInt32(IList<byte> bytes, ByteOrder4 byteOrder)
         {
@@ -123,17 +121,11 @@ namespace SCADA.Common
                 throw new ArgumentOutOfRangeException();
             }
 
-            if (startIndex < 0)
-            {
-            }
+            if (startIndex < 0) { }
 
-            if (length < 0)
-            {
-            }
+            if (length < 0) { }
 
-            if (startIndex + length > 0)
-            {
-            }
+            if (startIndex + length > 0) { }
 
             bool isLittleEndian = BitConverter.IsLittleEndian;
             uint[] uints = new uint[bytes.Count / 4];

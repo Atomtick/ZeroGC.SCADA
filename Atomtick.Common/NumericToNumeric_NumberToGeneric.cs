@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-namespace SCADA.Common
+namespace Atomtick.Common
 {
     /// <summary>
     /// 具体类型 => 泛型
@@ -150,7 +150,7 @@ namespace SCADA.Common
                 if (Try(@sbyte, out byte res, rule))
                 {
 #if NET8_0_OR_GREATER
-                    number = Unsafe.As<byte, T>(ref res);// 0 开销强制转换
+                    number = Unsafe.As<byte, T>(ref res); // 0 开销强制转换
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
 #endif
@@ -168,7 +168,7 @@ namespace SCADA.Common
                 if (Try(@sbyte, out short res, rule))
                 {
 #if NET8_0_OR_GREATER
-                    number = Unsafe.As<short, T>(ref res);// 0 开销强制转换
+                    number = Unsafe.As<short, T>(ref res); // 0 开销强制转换
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
 #endif
@@ -186,7 +186,7 @@ namespace SCADA.Common
                 if (Try(@sbyte, out ushort res, rule))
                 {
 #if NET8_0_OR_GREATER
-                    number = Unsafe.As<ushort, T>(ref res);// 0 开销强制转换
+                    number = Unsafe.As<ushort, T>(ref res); // 0 开销强制转换
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
 #endif
@@ -204,7 +204,7 @@ namespace SCADA.Common
                 if (Try(@sbyte, out int res, rule))
                 {
 #if NET8_0_OR_GREATER
-                    number = Unsafe.As<int, T>(ref res);// 0 开销强制转换
+                    number = Unsafe.As<int, T>(ref res); // 0 开销强制转换
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
 #endif
@@ -222,7 +222,7 @@ namespace SCADA.Common
                 if (Try(@sbyte, out uint res, rule))
                 {
 #if NET8_0_OR_GREATER
-                    number = Unsafe.As<uint, T>(ref res);// 0 开销强制转换
+                    number = Unsafe.As<uint, T>(ref res); // 0 开销强制转换
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
 #endif
@@ -240,7 +240,7 @@ namespace SCADA.Common
                 if (Try(@sbyte, out long res, rule))
                 {
 #if NET8_0_OR_GREATER
-                    number = Unsafe.As<long, T>(ref res);// 0 开销强制转换
+                    number = Unsafe.As<long, T>(ref res); // 0 开销强制转换
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
 #endif
@@ -258,7 +258,7 @@ namespace SCADA.Common
                 if (Try(@sbyte, out ulong res, rule))
                 {
 #if NET8_0_OR_GREATER
-                    number = Unsafe.As<ulong, T>(ref res);// 0 开销强制转换
+                    number = Unsafe.As<ulong, T>(ref res); // 0 开销强制转换
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
 #endif
@@ -276,7 +276,7 @@ namespace SCADA.Common
                 if (Try(@sbyte, out decimal res, rule))
                 {
 #if NET8_0_OR_GREATER
-                    number = Unsafe.As<decimal, T>(ref res);// 0 开销强制转换
+                    number = Unsafe.As<decimal, T>(ref res); // 0 开销强制转换
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
 #endif
@@ -294,7 +294,7 @@ namespace SCADA.Common
                 if (Try(@sbyte, out double res, rule))
                 {
 #if NET8_0_OR_GREATER
-                    number = Unsafe.As<double, T>(ref res);// 0 开销强制转换
+                    number = Unsafe.As<double, T>(ref res); // 0 开销强制转换
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
 #endif
@@ -312,7 +312,7 @@ namespace SCADA.Common
                 if (Try(@sbyte, out float res, rule))
                 {
 #if NET8_0_OR_GREATER
-                    number = Unsafe.As<float, T>(ref res);// 0 开销强制转换
+                    number = Unsafe.As<float, T>(ref res); // 0 开销强制转换
 #elif NET462_OR_GREATER
                     number = (T)(object)res;
 #endif
@@ -341,7 +341,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(byte))
@@ -355,7 +359,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(short))
@@ -369,7 +377,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(ushort))
@@ -383,7 +395,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(int))
@@ -397,7 +413,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(uint))
@@ -411,7 +431,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(long))
@@ -425,7 +449,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(ulong))
@@ -439,7 +467,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(decimal))
@@ -453,7 +485,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(double))
@@ -467,7 +503,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(float))
@@ -481,7 +521,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             throw new InvalidOperationException($"Unsupported conversion from byte to {typeof(T)}");
@@ -501,7 +545,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(byte))
@@ -515,7 +563,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(short))
@@ -529,7 +581,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(ushort))
@@ -543,7 +599,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(int))
@@ -557,7 +617,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(uint))
@@ -571,7 +635,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(long))
@@ -585,7 +653,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(ulong))
@@ -599,7 +671,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(decimal))
@@ -613,7 +689,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(double))
@@ -627,7 +707,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(float))
@@ -641,7 +725,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             throw new InvalidOperationException($"Unsupported conversion from short to {typeof(T)}");
@@ -661,7 +749,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(byte))
@@ -675,7 +767,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(short))
@@ -689,7 +785,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(ushort))
@@ -703,7 +803,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(int))
@@ -717,7 +821,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(uint))
@@ -731,7 +839,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(long))
@@ -745,7 +857,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(ulong))
@@ -759,7 +875,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(decimal))
@@ -773,7 +893,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(double))
@@ -787,7 +911,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(float))
@@ -801,7 +929,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             throw new InvalidOperationException($"Unsupported conversion from ushort to {typeof(T)}");
@@ -821,7 +953,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(byte))
@@ -835,7 +971,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(short))
@@ -849,7 +989,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(ushort))
@@ -863,7 +1007,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(int))
@@ -877,7 +1025,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(uint))
@@ -891,7 +1043,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(long))
@@ -905,7 +1061,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(ulong))
@@ -919,7 +1079,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(decimal))
@@ -933,7 +1097,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(double))
@@ -947,7 +1115,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(float))
@@ -961,7 +1133,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             throw new InvalidOperationException($"Unsupported conversion from int to {typeof(T)}");
@@ -981,7 +1157,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(byte))
@@ -995,7 +1175,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(short))
@@ -1009,7 +1193,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(ushort))
@@ -1023,7 +1211,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(int))
@@ -1037,7 +1229,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(uint))
@@ -1051,7 +1247,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(long))
@@ -1065,7 +1265,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(ulong))
@@ -1079,7 +1283,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(decimal))
@@ -1093,7 +1301,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(double))
@@ -1107,7 +1319,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(float))
@@ -1121,7 +1337,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             throw new InvalidOperationException($"Unsupported conversion from uint to {typeof(T)}");
@@ -1141,7 +1361,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(byte))
@@ -1155,7 +1379,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(short))
@@ -1169,7 +1397,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(ushort))
@@ -1183,7 +1415,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(int))
@@ -1197,7 +1433,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(uint))
@@ -1211,7 +1451,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(long))
@@ -1235,7 +1479,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(decimal))
@@ -1249,7 +1497,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(double))
@@ -1263,7 +1515,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(float))
@@ -1277,7 +1533,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             throw new InvalidOperationException($"Unsupported conversion from long to {typeof(T)}");
@@ -1297,7 +1557,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(byte))
@@ -1311,7 +1575,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(short))
@@ -1325,7 +1593,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(ushort))
@@ -1339,7 +1611,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(int))
@@ -1353,7 +1629,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(uint))
@@ -1367,7 +1647,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(long))
@@ -1381,7 +1665,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(ulong))
@@ -1405,7 +1693,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(double))
@@ -1419,7 +1711,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(float))
@@ -1433,7 +1729,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             throw new InvalidOperationException($"Unsupported conversion from ulong to {typeof(T)}");
@@ -1453,7 +1753,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(byte))
@@ -1467,7 +1771,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(short))
@@ -1481,7 +1789,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(ushort))
@@ -1495,7 +1807,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(int))
@@ -1509,7 +1825,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(uint))
@@ -1523,7 +1843,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(long))
@@ -1537,7 +1861,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(ulong))
@@ -1551,7 +1879,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(decimal))
@@ -1575,7 +1907,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(float))
@@ -1589,7 +1925,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             throw new InvalidOperationException($"Unsupported conversion from decimal to {typeof(T)}");
@@ -1609,7 +1949,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(byte))
@@ -1623,7 +1967,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(short))
@@ -1637,7 +1985,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(ushort))
@@ -1651,7 +2003,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(int))
@@ -1665,7 +2021,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(uint))
@@ -1679,7 +2039,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(long))
@@ -1693,7 +2057,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(ulong))
@@ -1707,7 +2075,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(decimal))
@@ -1721,7 +2093,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(double))
@@ -1745,7 +2121,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             throw new InvalidOperationException($"Unsupported conversion from double to {typeof(T)}");
@@ -1765,7 +2145,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(byte))
@@ -1779,7 +2163,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(short))
@@ -1793,7 +2181,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(ushort))
@@ -1807,7 +2199,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(int))
@@ -1821,7 +2217,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(uint))
@@ -1835,7 +2235,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(long))
@@ -1849,7 +2253,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(ulong))
@@ -1863,7 +2271,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(decimal))
@@ -1877,7 +2289,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(double))
@@ -1891,7 +2307,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             if (typeof(T) == typeof(float))
@@ -1905,7 +2325,11 @@ namespace SCADA.Common
 #endif
                     return true;
                 }
-                else { number = default; return false; }
+                else
+                {
+                    number = default;
+                    return false;
+                }
             }
 
             throw new InvalidOperationException($"Unsupported conversion from float to {typeof(T)}");

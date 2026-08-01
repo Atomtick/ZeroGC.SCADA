@@ -59,7 +59,7 @@ if (result != null) {
 }
  */
 
-namespace SCADA.Common
+namespace Atomtick.Common
 {
     /*   !!!!!!!!!!!!!!!!  此类能正常工作的前提是:ID必须永远递增且不重复 !!!!!!!!!!!!!!   */
 
@@ -155,9 +155,9 @@ namespace SCADA.Common
         [StructLayout(LayoutKind.Sequential, Pack = 8)]
         private struct Slot
         {
-            public long Id;          // 存储的唯一消息ID
-            public TResult Result;   // 响应结果引用
-            public int State;        // 内部状态流转
+            public long Id; // 存储的唯一消息ID
+            public TResult Result; // 响应结果引用
+            public int State; // 内部状态流转
         }
     }
 }
