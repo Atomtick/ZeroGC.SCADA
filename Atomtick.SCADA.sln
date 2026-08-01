@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomtick.ObjectModel", "Ato
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomtick.PLCFramework", "Atomtick.PLCFramework\Atomtick.PLCFramework.csproj", "{7A180459-E064-4034-A2D9-8387D47834D3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomtick.HFSM", "Atomtick.HFSM\Atomtick.HFSM.csproj", "{7C57F93B-2985-4836-926F-DFADB7814CE2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomtick.FSM", "Atomtick.FSM\Atomtick.FSM.csproj", "{7C57F93B-2985-4836-926F-DFADB7814CE2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomtick.HardwareUnits", "Atomtick.HardwareUnits\Atomtick.HardwareUnits.csproj", "{268D2EF2-9CF2-4ECE-8453-9894361721B2}"
 EndProject
@@ -53,7 +53,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomtick.Setup", "Atomtick.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{D4EA9481-E402-4E37-AC23-95AF39BB4BC3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomtick.HFSM.Samples", "Atomtick.HFSM.Samples\Atomtick.HFSM.Samples.csproj", "{92B23FA6-211F-476C-A34C-5F7DAC7BEF0C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomtick.FSM.Samples", "Atomtick.FSM.Samples\Atomtick.FSM.Samples.csproj", "{92B23FA6-211F-476C-A34C-5F7DAC7BEF0C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomtick.UI_Test", "Atomtick.UI_Test\Atomtick.UI_Test.csproj", "{AD42A498-2ACE-4D51-8129-AD6B05A15CB4}"
 EndProject
@@ -61,9 +61,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomtick.Events", "Atomtick
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomtick.Data", "Atomtick.Data\Atomtick.Data.csproj", "{FF72576D-BE86-4C36-A624-E0C7469FB667}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomtick.SecsGem", "Atomtick.SecsGem\Atomtick.SecsGem.csproj", "{F8677A32-0C71-40ED-A259-B238128E4E7E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomtick.FA", "Atomtick.FA\Atomtick.FA.csproj", "{F8677A32-0C71-40ED-A259-B238128E4E7E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomtick.SecsGem.App", "Atomtick.SecsGem.App\Atomtick.SecsGem.App.csproj", "{AA225182-F9AE-473F-8FE0-4D9F81DE22DE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomtick.FA.App", "Atomtick.FA.App\Atomtick.FA.App.csproj", "{AA225182-F9AE-473F-8FE0-4D9F81DE22DE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atomtick.Configuration.Benchmarks", "Atomtick.Configuration.Benchmarks\Atomtick.Configuration.Benchmarks.csproj", "{EFF8E2F5-32B0-4DBA-A535-79F5BD526661}"
 EndProject
