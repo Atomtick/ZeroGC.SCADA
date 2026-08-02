@@ -1,15 +1,28 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Runtime.InteropServices;
 using SCADA.Common;
 
 namespace SCADA.Events
 {
     public class EventInstance
     {
+        private string _source;
+
         public EventDef EventDef { get; internal set; }
         public long Id { get; internal set; }
         public DateTime OccurTime { get; internal set; }
-        public string Source { get; internal set; }
+        public string Source
+        {
+            get => _source;
+            internal set
+            {
+                _source = value;
+                var index = _source.IndexOf('.');
+                Module = index == -1 ? value : _source.Substring(0, index);
+            }
+        }
+        public string Module { get; internal set; }
         public string Description { get; internal set; }
         public ListDictionary DvidValues { get; internal set; }
     }

@@ -9,7 +9,7 @@ namespace SCADA.Events
         event EventHandler<EventInstance> OnEventAsync;
         event EventHandler<EventInstance> OnEventSync;
 
-        void ClearAlarmEvent();
+        void ClearAllAlarmEvents();
         void ClearAlarmEvent(long instanceId);
         void ClearAlarmEvent(string source);
         bool HasAlarmEvent(out IList<EventInstance> events);

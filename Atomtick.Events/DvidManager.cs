@@ -44,7 +44,6 @@ namespace Atomtick.Events
                 {
                     dvidInstance.LongCurrentValue = Convert.ToInt64(dvidDef.InitialValue);
                 }
-                ;
                 dvidDefList.Add(dvidInstance);
             }
             bool ok = _dvidInstancesByNameAndId.Add(

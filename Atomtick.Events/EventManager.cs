@@ -14,13 +14,13 @@ using SCADA.Common;
 
 namespace SCADA.Events
 {
-    public class EventManager : IEventManager
+    public sealed class EventManager : IEventManager
     {
         private readonly object _lock = new object();
 
         private volatile EventInstance[] _alarmEventInstances = Array.Empty<EventInstance>();
 
-        public void ClearAlarmEvent()
+        public void ClearAllAlarmEvents()
         {
             lock (_lock)
             {
@@ -28,33 +28,45 @@ namespace SCADA.Events
             }
         }
 
-        public void ClearAlarmEvent(string source)
+        public void ClearModuleAlarmEvents(string module)
         {
             lock (_lock)
             {
                 var alarms = _alarmEventInstances;
                 GC.KeepAlive(alarms);
-                if (alarms.Length == 0)
+                if (alarms.Length != 0)
                 {
-                    return;
+                    var newAlarms = alarms.Where(x => x.Module != module).ToArray();
+                    _alarmEventInstances = newAlarms;
                 }
-                var newAlarms = alarms.Where(x => x.Source != source).ToArray();
-                _alarmEventInstances = newAlarms;
             }
         }
 
-        public void ClearAlarmEvent(long instanceId)
+        public void ClearSourceAlarmEvents(string source)
         {
             lock (_lock)
             {
                 var alarms = _alarmEventInstances;
                 GC.KeepAlive(alarms);
-                if (alarms.Length == 0)
+                if (alarms.Length != 0)
                 {
-                    return;
+                    var newAlarms = alarms.Where(x => x.Source != source).ToArray();
+                    _alarmEventInstances = newAlarms;
                 }
-                var newAlarms = alarms.Where(x => x.Id != instanceId).ToArray();
-                _alarmEventInstances = newAlarms;
+            }
+        }
+
+        public void ClearSingleAlarmEvent(long instanceId)
+        {
+            lock (_lock)
+            {
+                var alarms = _alarmEventInstances;
+                GC.KeepAlive(alarms);
+                if (alarms.Length != 0)
+                {
+                    var newAlarms = alarms.Where(x => x.Id != instanceId).ToArray();
+                    _alarmEventInstances = newAlarms;
+                }
             }
         }
 
@@ -64,6 +76,20 @@ namespace SCADA.Events
             GC.KeepAlive(alarms);
             events = alarms;
             return alarms.Length > 0;
+        }
+
+        public bool HasAlarmEvent(string module, out IList<EventInstance> events)
+        {
+            var alarms = _alarmEventInstances;
+            GC.KeepAlive(alarms);
+            if (alarms.Length == 0)
+            {
+                events = null;
+                return false;
+            }
+            var count = alarms.Count(x => x.Module == module);
+            events = count > 0 ? alarms.Where(x => x.Module == module).ToArray() : null;
+            return count > 0;
         }
 
         public bool HasAlarmEvent(string source, out IList<EventInstance> events)
