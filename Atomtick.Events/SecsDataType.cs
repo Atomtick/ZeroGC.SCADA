@@ -20,6 +20,5 @@ namespace Atomtick.Events
         F8,
         ASCII,
         Boolean,
-        List,
     }
 }

@@ -22,9 +22,40 @@ namespace Atomtick.Events
 
         public static DvidManager Instance { get; } = new DvidManager();
 
-        public void Register(params DvidDef[] dvidDefs)
+        public void Register(IEnumerable<DvidDef> dvidDefs)
         {
-            _dvidInstancesByNameAndId.Add(dvidDefs.Select(dvidDef => new DoubleKeyPairs<string, long, DvidInstance>(dvidDef.Name, dvidDef.Dvid, new DvidInstance(dvidDef))).ToArray());
+            List<DvidInstance> dvidDefList = new List<DvidInstance>(8);
+            foreach (var dvidDef in dvidDefs)
+            {
+                var dvidInstance = new DvidInstance(dvidDef);
+                if (dvidDef.DataType == SecsDataType.Boolean)
+                {
+                    dvidInstance.BoolCurrentValue = (bool)dvidDef.InitialValue;
+                }
+                else if (dvidDef.DataType == SecsDataType.ASCII)
+                {
+                    dvidInstance.StringCurrentValue = (string)dvidDef.InitialValue;
+                }
+                else if (dvidDef.DataType == SecsDataType.F4 || dvidDef.DataType == SecsDataType.F8)
+                {
+                    dvidInstance.DoubleCurrentValue = Convert.ToDouble(dvidDef.InitialValue);
+                }
+                else
+                {
+                    dvidInstance.LongCurrentValue = Convert.ToInt64(dvidDef.InitialValue);
+                }
+                ;
+                dvidDefList.Add(dvidInstance);
+            }
+            bool ok = _dvidInstancesByNameAndId.Add(
+                dvidDefList.Select(x => new DoubleKeyValuePairs<string, long, DvidInstance>(x.DvidDef.Name, x.DvidDef.Dvid, x)),
+                out var duplicateKey1,
+                out var duplicateKey2
+            );
+            if (ok == false)
+            {
+                throw new ArgumentException($"Duplicate DVID definitions found. Duplicate name: '{duplicateKey1}', Duplicate ID: '{duplicateKey2}'");
+            }
         }
 
         public bool TryUpdate<T>(long dvid, T value, out string errMsg)
@@ -32,7 +63,7 @@ namespace Atomtick.Events
         {
             if (_dvidInstancesByNameAndId.GetByKey2(dvid, out var dvidInstance))
                 return TryUpdate(dvidInstance, value, out errMsg);
-            errMsg = "DVID with ID '{dvid}' not found.";
+            errMsg = $"DVID with ID '{dvid}' not found.";
             return false;
         }
 
@@ -50,7 +81,7 @@ namespace Atomtick.Events
         {
             if (_dvidInstancesByNameAndId.GetByKey1(name, out var dvidInstance))
                 return TryUpdate(dvidInstance, value, out errMsg);
-            errMsg = "DVID with name '{name}' not found.";
+            errMsg = $"DVID with name '{name}' not found.";
             return false;
         }
 
