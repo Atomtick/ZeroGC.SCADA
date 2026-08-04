@@ -14,6 +14,13 @@ using SCADA.Common;
 
 namespace SCADA.Events
 {
+    // 采用快照模式,在接收到Alarm,Warning事件时,将事件实例存储在内存中,并提供查询接口,以便在需要时获取当前的Alarm事件列表。
+    // Source -> Alarm
+    // Module -> Alarm
+    // Source -> Warning
+    // Module -> Warning
+    // 高频查询时,返回的是同一个列表,避免频繁创建新的列表对象,降低GC压力。
+
     public sealed class EventManager : IEventManager
     {
         private readonly object _lock = new object();
