@@ -1,7 +1,7 @@
 ﻿using System;
 using SCADA.Common;
 
-namespace SCADA.Events
+namespace Atomtick.Events.CEID
 {
     public sealed class EventDef
     {

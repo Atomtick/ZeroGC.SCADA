@@ -3,7 +3,7 @@ using System.Collections.Specialized;
 using System.Runtime.InteropServices;
 using SCADA.Common;
 
-namespace SCADA.Events
+namespace Atomtick.Events.CEID
 {
     public class EventInstance
     {

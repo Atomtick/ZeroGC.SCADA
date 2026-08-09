@@ -12,7 +12,7 @@ using System.Threading.Channels;
 using System.Threading.Tasks;
 using SCADA.Common;
 
-namespace SCADA.Events
+namespace Atomtick.Events.CEID
 {
     // 采用快照模式,在接收到Alarm,Warning事件时,将事件实例存储在内存中,并提供查询接口,以便在需要时获取当前的Alarm事件列表。
     // Source -> Alarm

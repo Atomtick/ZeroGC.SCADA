@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 
-namespace SCADA.Events
+namespace Atomtick.Events.CEID
 {
     public interface IEventManager
     {

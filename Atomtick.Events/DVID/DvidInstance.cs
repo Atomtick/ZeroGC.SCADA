@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 
-namespace Atomtick.Events
+namespace Atomtick.Events.DVID
 {
     public class DvidInstance
     {

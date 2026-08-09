@@ -9,7 +9,7 @@ using System.Xml.Linq;
 using Atomtick.Common;
 using SCADA.Common;
 
-namespace Atomtick.Events
+namespace Atomtick.Events.DVID
 {
     public class DvidManager
     {
