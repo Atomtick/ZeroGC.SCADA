@@ -26,7 +26,8 @@ namespace Atomtick.Events.REPTID
 #endif
 
         public Func<long, bool> CheckVidPresent;
-        private object _lock = new object();
+
+        private readonly object _lock = new object();
 
         public void Clear()
         {

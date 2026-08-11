@@ -21,17 +21,105 @@ namespace Atomtick.Events.CEID
     // Module -> Warning
     // 高频查询时,返回的是同一个列表,避免频繁创建新的列表对象,降低GC压力。
 
-    public sealed class EventManager : IEventManager
+    public sealed class EventManager 
     {
         private readonly object _lock = new object();
 
-        private volatile EventInstance[] _alarmEventInstances = Array.Empty<EventInstance>();
+        private volatile EventInstance[] _alertEventInstances;
 
-        public void ClearAllAlarmEvents()
+
+        public EventManager()
+        {
+            _alertEventInstances = Array.Empty<EventInstance>();
+        }
+
+        public void ClearAlertEvents()
         {
             lock (_lock)
             {
-                _alarmEventInstances = Array.Empty<EventInstance>();
+                _alertEventInstances = Array.Empty<EventInstance>();
+            }
+        }
+
+        public void ClearAlarmEvents()
+        {
+            lock(_lock)
+            {
+                _alertEventInstances = _alertEventInstances.Where(x => x.EventDef.Level == EventLevel.Warn).ToArray();
+            }
+        }
+
+        public void ClearWarnEvents()
+        {
+            lock (_lock)
+            {
+                _alertEventInstances = _alertEventInstances.Where(x => x.EventDef.Level == EventLevel.Alarm).ToArray();
+            }
+        }
+
+        public void HasAlertEvent(out bool hasAlarm, out bool hasWarn)
+        {
+            hasAlarm = false;
+            hasWarn = false;
+            var alertEventInstances = _alertEventInstances;
+            foreach (var alertEventInstance in alertEventInstances)
+            {
+                if (hasAlarm && hasWarn)
+                {
+                    break;
+                }
+                if (alertEventInstance.EventDef.Level == EventLevel.Alarm)
+                {
+                    hasAlarm = true;
+                }
+                if (alertEventInstance.EventDef.Level == EventLevel.Warn)
+                {
+                    hasWarn = true;
+                }
+            }
+        }
+
+        public void HasSourceAlertEvent(string source, out bool hasAlarm, out bool hasWarn)
+        {
+            hasAlarm = false;
+            hasWarn = false;
+            var alertEventInstances = _alertEventInstances;
+            foreach (var alertEventInstance in alertEventInstances)
+            {
+                if (hasAlarm && hasWarn)
+                {
+                    break;
+                }
+                if (alertEventInstance.EventDef.Level == EventLevel.Alarm && alertEventInstance.Source == source)
+                {
+                    hasAlarm = true;
+                }
+                if (alertEventInstance.EventDef.Level == EventLevel.Warn && alertEventInstance.Source == source)
+                {
+                    hasWarn = true;
+                }
+            }
+        }
+
+        public void HasModuleAlertEvent(string module, out bool hasAlarm, out bool hasWarn)
+        {
+            hasAlarm = false;
+            hasWarn = false;
+            var alertEventInstances = _alertEventInstances;
+            foreach (var alertEventInstance in alertEventInstances)
+            {
+                if (hasAlarm && hasWarn)
+                {
+                    break;
+                }
+                if (alertEventInstance.EventDef.Level == EventLevel.Alarm && alertEventInstance.Module == module)
+                {
+                    hasAlarm = true;
+                }
+                if (alertEventInstance.EventDef.Level == EventLevel.Warn && alertEventInstance.Module == module)
+                {
+                    hasWarn = true;
+                }
             }
         }
 
@@ -39,12 +127,12 @@ namespace Atomtick.Events.CEID
         {
             lock (_lock)
             {
-                var alarms = _alarmEventInstances;
-                GC.KeepAlive(alarms);
+                var alarms = _alertEventInstances;
+                
                 if (alarms.Length != 0)
                 {
                     var newAlarms = alarms.Where(x => x.Module != module).ToArray();
-                    _alarmEventInstances = newAlarms;
+                    _alertEventInstances = newAlarms;
                 }
             }
         }
@@ -53,12 +141,12 @@ namespace Atomtick.Events.CEID
         {
             lock (_lock)
             {
-                var alarms = _alarmEventInstances;
-                GC.KeepAlive(alarms);
+                var alarms = _alertEventInstances;
+              
                 if (alarms.Length != 0)
                 {
                     var newAlarms = alarms.Where(x => x.Source != source).ToArray();
-                    _alarmEventInstances = newAlarms;
+                    _alertEventInstances = newAlarms;
                 }
             }
         }
@@ -67,28 +155,28 @@ namespace Atomtick.Events.CEID
         {
             lock (_lock)
             {
-                var alarms = _alarmEventInstances;
-                GC.KeepAlive(alarms);
+                var alarms = _alertEventInstances;
+                
                 if (alarms.Length != 0)
                 {
                     var newAlarms = alarms.Where(x => x.Id != instanceId).ToArray();
-                    _alarmEventInstances = newAlarms;
+                    _alertEventInstances = newAlarms;
                 }
             }
         }
 
         public bool HasAlarmEvent(out IList<EventInstance> events)
         {
-            var alarms = _alarmEventInstances;
-            GC.KeepAlive(alarms);
+            var alarms = _alertEventInstances;
+           
             events = alarms;
             return alarms.Length > 0;
         }
 
         public bool HasAlarmEvent(string module, out IList<EventInstance> events)
         {
-            var alarms = _alarmEventInstances;
-            GC.KeepAlive(alarms);
+            var alarms = _alertEventInstances;
+           
             if (alarms.Length == 0)
             {
                 events = null;
@@ -101,7 +189,7 @@ namespace Atomtick.Events.CEID
 
         public bool HasAlarmEvent(string source, out IList<EventInstance> events)
         {
-            var alarms = _alarmEventInstances;
+            var alarms = _alertEventInstances;
             GC.KeepAlive(alarms);
             if (alarms.Length == 0)
             {
@@ -279,12 +367,12 @@ namespace Atomtick.Events.CEID
             {
                 lock (_lock)
                 {
-                    var alarms = _alarmEventInstances;
+                    var alarms = _alertEventInstances;
                     GC.KeepAlive(alarms);
                     var newAlarms = new EventInstance[alarms.Length + 1];
                     Array.Copy(alarms, newAlarms, alarms.Length);
                     newAlarms[alarms.Length] = eventInstance;
-                    _alarmEventInstances = newAlarms;
+                    _alertEventInstances = newAlarms;
                 }
             }
             _eventChannel.Writer.TryWrite(eventInstance);
