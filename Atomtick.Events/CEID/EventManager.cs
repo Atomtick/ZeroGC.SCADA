@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using Atomtick.Common;
 using SCADA.Common;
 
 namespace Atomtick.Events.CEID
@@ -23,22 +24,21 @@ namespace Atomtick.Events.CEID
 
     public sealed class EventManager
     {
+        // 要判别事件是否重复，必须要有一个唯一的事件 Dvid，不能使用 EventDef 的 Id，因为 EventDef 是静态的，可能会被多个事件实例共享。
+        private readonly Channel<EventInstance> _eventChannel;
+
         private readonly ConcurrentDictionary<string, EventDef> _eventDefs = new ConcurrentDictionary<string, EventDef>();
         private readonly object _lock = new object();
 
         private volatile EventInstance[] _alertEventInstances = new EventInstance[0];
-
-        // 要判别事件是否重复，必须要有一个唯一的事件 Dvid，不能使用 EventDef 的 Id，因为 EventDef 是静态的，可能会被多个事件实例共享。
-        private readonly Channel<EventInstance> _eventChannel;
-
         private long _eventIdCounter;
 
         private EventManager()
         {
             // 内置的三个事件类型，分别是信息、警告和报警，名称分别是 @、% 和 $，用于快速发布事件。
-            Register(new EventDef(-1, "@", EventLevel.Info, "description", false));
-            Register(new EventDef(-2, "%", EventLevel.Warn, "description", false));
-            Register(new EventDef(-3, "$", EventLevel.Alarm, "description", false));
+            Register(new EventDef(-1, "?", EventLevel.Info, "description", false));
+            Register(new EventDef(-2, "??", EventLevel.Warn, "description", false));
+            Register(new EventDef(-3, "???", EventLevel.Alarm, "description", false));
 
             // 推荐使用 Bounded (有界队列) 防止消费者卡死时引发 OOM 内存爆炸
             var channelOptions = new BoundedChannelOptions(capacity: 1000)
@@ -368,45 +368,43 @@ namespace Atomtick.Events.CEID
             PostEvent(name, source, null, null);
         }
 
-        public void PostEvent(string name, string source, ListDictionary DvidValues)
+        public void PostEvent(string name, string source, ListDict DvidValues)
         {
             PostEvent(name, source, DvidValues, null);
         }
 
         #endregion 发布预定义事件
 
-        #region 发布即时事件
+        #region 发布未定义事件
 
-        public void PostAlramEvent(string source, string description)
+        public void PostUndefEvent(string source, EventLevel eventLevel, string description)
         {
-            PostEvent("$", source, null, description);
+            PostUndefEvent(source, eventLevel, description, null);
         }
 
-        public void PostAlramEvent(string source, string description, ListDictionary DvidValues)
+        public void PostUndefEvent(string source, EventLevel eventLevel, string description, ListDict DvidValues)
         {
-            PostEvent("$", source, DvidValues, description);
+            string name;
+            if (eventLevel == EventLevel.Info)
+            {
+                name = "?";
+            }
+            else if (eventLevel == EventLevel.Warn)
+            {
+                name = "??";
+            }
+            else if (eventLevel == EventLevel.Alarm)
+            {
+                name = "???";
+            }
+            else
+            {
+                name = null;
+            }
+            PostEvent(name, source, DvidValues, description);
         }
 
-        public void PostInfoEvent(string source, string description)
-        {
-            PostEvent("@", source, null, description);
-        }
-
-        public void PostInfoEvent(string source, string description, ListDictionary DvidValues)
-        {
-            PostEvent("@", source, DvidValues, description);
-        }
-
-        public void PostWarningEvent(string source, string description)
-        {
-            PostEvent("%", source, null, description);
-        }
-
-        public void PostWarningEvent(string source, string description, ListDictionary DvidValues)
-        {
-            PostEvent("%", source, DvidValues, description);
-        }
-        #endregion 发布即时事件
+        #endregion 发布未定义事件
 
         #region 注册预定义事件
 
@@ -429,14 +427,14 @@ namespace Atomtick.Events.CEID
 
         #endregion 注册预定义事件
 
-        private string FormatDescription(string template, ListDictionary DvidValues)
+        private string FormatDescription(string template, ListDict DvidValues)
         {
             if (DvidValues == null || DvidValues.Count == 0)
             {
                 return template;
             }
             StringBuilder sb = new StringBuilder(template);
-            foreach (DictionaryEntry entry in DvidValues)
+            foreach (var entry in DvidValues)
             {
                 string placeholder = $"{{{entry.Key}}}";
                 string value = entry.Value != null ? $"'{entry.Value}'" : "' '";
@@ -445,7 +443,7 @@ namespace Atomtick.Events.CEID
             return sb.ToString();
         }
 
-        private void PostEvent(string name, string source, ListDictionary DvidValues, string description)
+        private void PostEvent(string name, string source, ListDict DvidValues, string description)
         {
             if (!_eventDefs.TryGetValue(name, out var eventDef))
             {
@@ -459,7 +457,7 @@ namespace Atomtick.Events.CEID
                 DvidValues = DvidValues,
                 OccurTime = DateTime.Now,
             };
-            if (eventDef.Name == "@" || eventDef.Name == "%" || eventDef.Name == "$")
+            if (eventDef.Name == "?" || eventDef.Name == "??" || eventDef.Name == "???")
             {
                 eventInstance.Description = description;
             }

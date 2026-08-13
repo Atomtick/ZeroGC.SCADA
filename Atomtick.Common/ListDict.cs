@@ -7,8 +7,14 @@ using System.Threading.Tasks;
 
 namespace Atomtick.Common
 {
-    public class LightWeightMap : IEnumerable<KeyValuePair<string, object>>
+    public interface IReadonlyListDict
     {
+        object this[string key] { get; }
+    }
+
+    public class ListDict : IEnumerable<KeyValuePair<string, object>>, IReadonlyListDict
+    {
+
         /// <summary>
         /// 当前容器内元素的个数
         /// </summary>
@@ -16,7 +22,7 @@ namespace Atomtick.Common
 
         private Entry[] _entries;
 
-        public LightWeightMap(int initialCapacity = 16)
+        public ListDict(int initialCapacity = 8)
         {
             _entries = new Entry[initialCapacity];
         }
@@ -98,10 +104,10 @@ namespace Atomtick.Common
         // 嵌套的 struct 枚举器，可以直接访问外部类的私有字段 _entries 和 _count
         public struct Enumerator : IEnumerator<KeyValuePair<string, object>>
         {
-            private readonly LightWeightMap _dict;
+            private readonly ListDict _dict;
             private int _index;
 
-            internal Enumerator(LightWeightMap dict)
+            internal Enumerator(ListDict dict)
             {
                 _dict = dict;
                 _index = -1; // 初始状态游标在第一个元素之前

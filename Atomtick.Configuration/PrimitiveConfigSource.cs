@@ -19,7 +19,7 @@ namespace Atomtick.Configuration
 
     public partial class PrimitiveConfigSource : IDisposable
     {
-        private readonly Channel<LightWeightMap> _channel = Channel.CreateUnbounded<LightWeightMap>();
+        private readonly Channel<ListDict> _channel = Channel.CreateUnbounded<ListDict>();
 
         private readonly string _dbConnectionString;
         private readonly Task _saveTask;
@@ -52,8 +52,8 @@ namespace Atomtick.Configuration
             _saveTask = Function();
         }
 
-        public event Action<LightWeightMap> ValueChanged;
-        public event Action<LightWeightMap> ValueChanging;
+        public event Action<ListDict> ValueChanged;
+        public event Action<ListDict> ValueChanging;
 
         public ConfigSettings Settings { get; }
 
@@ -124,7 +124,7 @@ namespace Atomtick.Configuration
             }
         }
 
-        private void SaveToSqlite(LightWeightMap changedItems)
+        private void SaveToSqlite(ListDict changedItems)
         {
             if (!Settings.RestoreOnAppStartup)
             {

@@ -14,7 +14,7 @@ namespace Atomtick.Configuration
     {
         // long 事务id,允许多个事务并行.
         // ConcurrentDictionary<string, object> 单个事务需要修改的的配置项集合.使用字典的好处是如果在同一个事务中多次修改同一个配置项的值,会以最后一次为准!
-        private readonly ConcurrentDictionary<long, LightWeightMap> _transactionCache;
+        private readonly ConcurrentDictionary<long, ListDict> _transactionCache;
         private readonly List<string> _equalsKeys = new List<string>();
         private long _id;
 
@@ -22,7 +22,7 @@ namespace Atomtick.Configuration
         {
             // _id: 0,1,2...long.max,long.min(overflow),long.min + 1...0...long.max...如此循环往复.
             transactionId = Interlocked.Increment(ref _id);
-            _transactionCache.TryAdd(transactionId, new LightWeightMap());
+            _transactionCache.TryAdd(transactionId, new ListDict());
             return this;
         }
 
@@ -58,7 +58,7 @@ namespace Atomtick.Configuration
 
             ValidateValue(config, value);
 
-            if (_transactionCache.TryGetValue(transactionId, out LightWeightMap configs))
+            if (_transactionCache.TryGetValue(transactionId, out ListDict configs))
             {
                 configs.AddOrUpdate(config, value);
             }
@@ -70,7 +70,7 @@ namespace Atomtick.Configuration
             return this;
         }
 
-        private void Save(LightWeightMap modificationConfigs)
+        private void Save(ListDict modificationConfigs)
         {
             if (modificationConfigs != null && modificationConfigs.Any())
             {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Runtime.InteropServices;
+using Atomtick.Common;
 using SCADA.Common;
 
 namespace Atomtick.Events.CEID
@@ -24,6 +25,6 @@ namespace Atomtick.Events.CEID
         }
         public string Module { get; internal set; }
         public string Description { get; internal set; }
-        public ListDictionary DvidValues { get; internal set; }
+        public IReadonlyListDict DvidValues { get; internal set; }
     }
 }
