@@ -21,195 +21,19 @@ namespace Atomtick.Events.CEID
     // Module -> Warning
     // 高频查询时,返回的是同一个列表,避免频繁创建新的列表对象,降低GC压力。
 
-    public sealed class EventManager 
+    public sealed class EventManager
     {
+        private readonly ConcurrentDictionary<string, EventDef> _eventDefs = new ConcurrentDictionary<string, EventDef>();
         private readonly object _lock = new object();
 
-        private volatile EventInstance[] _alertEventInstances;
-
-
-        public EventManager()
-        {
-            _alertEventInstances = Array.Empty<EventInstance>();
-        }
-
-        public void ClearAlertEvents()
-        {
-            lock (_lock)
-            {
-                _alertEventInstances = Array.Empty<EventInstance>();
-            }
-        }
-
-        public void ClearAlarmEvents()
-        {
-            lock(_lock)
-            {
-                _alertEventInstances = _alertEventInstances.Where(x => x.EventDef.Level == EventLevel.Warn).ToArray();
-            }
-        }
-
-        public void ClearWarnEvents()
-        {
-            lock (_lock)
-            {
-                _alertEventInstances = _alertEventInstances.Where(x => x.EventDef.Level == EventLevel.Alarm).ToArray();
-            }
-        }
-
-        public void HasAlertEvent(out bool hasAlarm, out bool hasWarn)
-        {
-            hasAlarm = false;
-            hasWarn = false;
-            var alertEventInstances = _alertEventInstances;
-            foreach (var alertEventInstance in alertEventInstances)
-            {
-                if (hasAlarm && hasWarn)
-                {
-                    break;
-                }
-                if (alertEventInstance.EventDef.Level == EventLevel.Alarm)
-                {
-                    hasAlarm = true;
-                }
-                if (alertEventInstance.EventDef.Level == EventLevel.Warn)
-                {
-                    hasWarn = true;
-                }
-            }
-        }
-
-        public void HasSourceAlertEvent(string source, out bool hasAlarm, out bool hasWarn)
-        {
-            hasAlarm = false;
-            hasWarn = false;
-            var alertEventInstances = _alertEventInstances;
-            foreach (var alertEventInstance in alertEventInstances)
-            {
-                if (hasAlarm && hasWarn)
-                {
-                    break;
-                }
-                if (alertEventInstance.EventDef.Level == EventLevel.Alarm && alertEventInstance.Source == source)
-                {
-                    hasAlarm = true;
-                }
-                if (alertEventInstance.EventDef.Level == EventLevel.Warn && alertEventInstance.Source == source)
-                {
-                    hasWarn = true;
-                }
-            }
-        }
-
-        public void HasModuleAlertEvent(string module, out bool hasAlarm, out bool hasWarn)
-        {
-            hasAlarm = false;
-            hasWarn = false;
-            var alertEventInstances = _alertEventInstances;
-            foreach (var alertEventInstance in alertEventInstances)
-            {
-                if (hasAlarm && hasWarn)
-                {
-                    break;
-                }
-                if (alertEventInstance.EventDef.Level == EventLevel.Alarm && alertEventInstance.Module == module)
-                {
-                    hasAlarm = true;
-                }
-                if (alertEventInstance.EventDef.Level == EventLevel.Warn && alertEventInstance.Module == module)
-                {
-                    hasWarn = true;
-                }
-            }
-        }
-
-        public void ClearModuleAlarmEvents(string module)
-        {
-            lock (_lock)
-            {
-                var alarms = _alertEventInstances;
-                
-                if (alarms.Length != 0)
-                {
-                    var newAlarms = alarms.Where(x => x.Module != module).ToArray();
-                    _alertEventInstances = newAlarms;
-                }
-            }
-        }
-
-        public void ClearSourceAlarmEvents(string source)
-        {
-            lock (_lock)
-            {
-                var alarms = _alertEventInstances;
-              
-                if (alarms.Length != 0)
-                {
-                    var newAlarms = alarms.Where(x => x.Source != source).ToArray();
-                    _alertEventInstances = newAlarms;
-                }
-            }
-        }
-
-        public void ClearSingleAlarmEvent(long instanceId)
-        {
-            lock (_lock)
-            {
-                var alarms = _alertEventInstances;
-                
-                if (alarms.Length != 0)
-                {
-                    var newAlarms = alarms.Where(x => x.Id != instanceId).ToArray();
-                    _alertEventInstances = newAlarms;
-                }
-            }
-        }
-
-        public bool HasAlarmEvent(out IList<EventInstance> events)
-        {
-            var alarms = _alertEventInstances;
-           
-            events = alarms;
-            return alarms.Length > 0;
-        }
-
-        public bool HasAlarmEvent(string module, out IList<EventInstance> events)
-        {
-            var alarms = _alertEventInstances;
-           
-            if (alarms.Length == 0)
-            {
-                events = null;
-                return false;
-            }
-            var count = alarms.Count(x => x.Module == module);
-            events = count > 0 ? alarms.Where(x => x.Module == module).ToArray() : null;
-            return count > 0;
-        }
-
-        public bool HasAlarmEvent(string source, out IList<EventInstance> events)
-        {
-            var alarms = _alertEventInstances;
-            GC.KeepAlive(alarms);
-            if (alarms.Length == 0)
-            {
-                events = null;
-                return false;
-            }
-            var count = alarms.Count(x => x.Source == source);
-            events = count > 0 ? alarms.Where(x => x.Source == source).ToArray() : null;
-            return count > 0;
-        }
+        private volatile EventInstance[] _alertEventInstances = new EventInstance[0];
 
         // 要判别事件是否重复，必须要有一个唯一的事件 Dvid，不能使用 EventDef 的 Id，因为 EventDef 是静态的，可能会被多个事件实例共享。
-
-        private readonly ConcurrentDictionary<string, EventDef> _eventDefs = new ConcurrentDictionary<string, EventDef>();
-
-        private Channel<EventInstance> _eventChannel;
+        private readonly Channel<EventInstance> _eventChannel;
 
         private long _eventIdCounter;
 
-        public EventManager()
+        private EventManager()
         {
             // 内置的三个事件类型，分别是信息、警告和报警，名称分别是 @、% 和 $，用于快速发布事件。
             Register(new EventDef(-1, "@", EventLevel.Info, "description", false));
@@ -253,6 +77,290 @@ namespace Atomtick.Events.CEID
 
         public event EventHandler<EventInstance> OnEventSync;
 
+        public void ClearAlarmEvents()
+        {
+            lock (_lock)
+            {
+                var alertEventInstances = _alertEventInstances;
+                if (alertEventInstances.Length > 0)
+                {
+                    _alertEventInstances = alertEventInstances.Where(x => x.EventDef.Level == EventLevel.Warn).ToArray();
+                }
+            }
+        }
+
+        public void ClearAlertEvent(long instanceId)
+        {
+            lock (_lock)
+            {
+                var alertEventInstances = _alertEventInstances;
+                if (alertEventInstances.Length > 0)
+                {
+                    _alertEventInstances = alertEventInstances.Where(x => x.Id != instanceId).ToArray();
+                }
+            }
+        }
+
+        public void ClearAlertEvents()
+        {
+            lock (_lock)
+            {
+                _alertEventInstances = Array.Empty<EventInstance>();
+            }
+        }
+
+        public void ClearModuleAlarmEvents(string module)
+        {
+            lock (_lock)
+            {
+                var alertEventInstances = _alertEventInstances;
+                if (alertEventInstances.Length > 0)
+                {
+                    _alertEventInstances = alertEventInstances.Where(x => x.Module != module || x.EventDef.Level == EventLevel.Warn).ToArray();
+                }
+            }
+        }
+
+        public void ClearModuleAlertEvents(string module)
+        {
+            lock (_lock)
+            {
+                var alertEventInstances = _alertEventInstances;
+                if (alertEventInstances.Length > 0)
+                {
+                    _alertEventInstances = alertEventInstances.Where(x => x.Module != module).ToArray();
+                }
+            }
+        }
+
+        public void ClearModuleWarnEvents(string module)
+        {
+            lock (_lock)
+            {
+                var alertEventInstances = _alertEventInstances;
+                if (alertEventInstances.Length > 0)
+                {
+                    _alertEventInstances = alertEventInstances.Where(x => x.Module != module || x.EventDef.Level == EventLevel.Alarm).ToArray();
+                }
+            }
+        }
+
+        public void ClearSourceAlarmEvents(string source)
+        {
+            lock (_lock)
+            {
+                var alertEventInstances = _alertEventInstances;
+                if (alertEventInstances.Length > 0)
+                {
+                    _alertEventInstances = alertEventInstances.Where(x => x.Source != source || x.EventDef.Level == EventLevel.Warn).ToArray();
+                }
+            }
+        }
+
+        public void ClearSourceAlertEvents(string source)
+        {
+            lock (_lock)
+            {
+                var alertEventInstances = _alertEventInstances;
+                if (alertEventInstances.Length > 0)
+                {
+                    _alertEventInstances = alertEventInstances.Where(x => x.Source != source).ToArray();
+                }
+            }
+        }
+
+        public void ClearSourceWarnEvents(string source)
+        {
+            lock (_lock)
+            {
+                var alertEventInstances = _alertEventInstances;
+                if (alertEventInstances.Length > 0)
+                {
+                    _alertEventInstances = alertEventInstances.Where(x => x.Source != source || x.EventDef.Level == EventLevel.Alarm).ToArray();
+                }
+            }
+        }
+
+        public void ClearWarnEvents()
+        {
+            lock (_lock)
+            {
+                var alertEventInstances = _alertEventInstances;
+                if (alertEventInstances.Length > 0)
+                {
+                    _alertEventInstances = alertEventInstances.Where(x => x.EventDef.Level == EventLevel.Alarm).ToArray();
+                }
+            }
+        }
+
+        public void GetAlertEvents(out IList<EventInstance> alarms, out IList<EventInstance> warns)
+        {
+            alarms = null;
+            warns = null;
+            var alertEventInstances = _alertEventInstances;
+            if (alertEventInstances.Length > 0)
+            {
+                foreach (var alertEventInstance in alertEventInstances)
+                {
+                    if (alertEventInstance.EventDef.Level == EventLevel.Alarm)
+                    {
+                        if (alarms == null)
+                        {
+                            alarms = new List<EventInstance>();
+                        }
+                        alarms.Add(alertEventInstance);
+                    }
+                    if (alertEventInstance.EventDef.Level == EventLevel.Warn)
+                    {
+                        if (warns == null)
+                        {
+                            warns = new List<EventInstance>();
+                        }
+                        warns.Add(alertEventInstance);
+                    }
+                }
+            }
+        }
+
+        public void GetModuleAlertEvents(string module, out IList<EventInstance> alarms, out IList<EventInstance> warns)
+        {
+            alarms = null;
+            warns = null;
+            var alertEventInstances = _alertEventInstances;
+            if (alertEventInstances.Length > 0)
+            {
+                foreach (var alertEventInstance in alertEventInstances)
+                {
+                    if (alertEventInstance.Module == module)
+                    {
+                        if (alertEventInstance.EventDef.Level == EventLevel.Alarm)
+                        {
+                            if (alarms == null)
+                            {
+                                alarms = new List<EventInstance>();
+                            }
+                            alarms.Add(alertEventInstance);
+                        }
+                        if (alertEventInstance.EventDef.Level == EventLevel.Warn)
+                        {
+                            if (warns == null)
+                            {
+                                warns = new List<EventInstance>();
+                            }
+                            warns.Add(alertEventInstance);
+                        }
+                    }
+                }
+            }
+        }
+
+        public void GetSourceAlertEvents(string source, out IList<EventInstance> alarms, out IList<EventInstance> warns)
+        {
+            alarms = null;
+            warns = null;
+            var alertEventInstances = _alertEventInstances;
+            if (alertEventInstances.Length > 0)
+            {
+                foreach (var alertEventInstance in alertEventInstances)
+                {
+                    if (alertEventInstance.Source == source)
+                    {
+                        if (alertEventInstance.EventDef.Level == EventLevel.Alarm)
+                        {
+                            if (alarms == null)
+                            {
+                                alarms = new List<EventInstance>();
+                            }
+                            alarms.Add(alertEventInstance);
+                        }
+                        if (alertEventInstance.EventDef.Level == EventLevel.Warn)
+                        {
+                            if (warns == null)
+                            {
+                                warns = new List<EventInstance>();
+                            }
+                            warns.Add(alertEventInstance);
+                        }
+                    }
+                }
+            }
+        }
+
+        public void HasAlertEvent(out bool hasAlarm, out bool hasWarn)
+        {
+            hasAlarm = false;
+            hasWarn = false;
+            var alertEventInstances = _alertEventInstances;
+            if (alertEventInstances.Length > 0)
+            {
+                foreach (var alertEventInstance in alertEventInstances)
+                {
+                    if (hasAlarm && hasWarn)
+                    {
+                        break;
+                    }
+                    if (alertEventInstance.EventDef.Level == EventLevel.Alarm)
+                    {
+                        hasAlarm = true;
+                    }
+                    if (alertEventInstance.EventDef.Level == EventLevel.Warn)
+                    {
+                        hasWarn = true;
+                    }
+                }
+            }
+        }
+
+        public void HasModuleAlertEvent(string module, out bool hasAlarm, out bool hasWarn)
+        {
+            hasAlarm = false;
+            hasWarn = false;
+            var alertEventInstances = _alertEventInstances;
+            if (alertEventInstances.Length > 0)
+            {
+                foreach (var alertEventInstance in alertEventInstances)
+                {
+                    if (hasAlarm && hasWarn)
+                    {
+                        break;
+                    }
+                    if (alertEventInstance.EventDef.Level == EventLevel.Alarm && alertEventInstance.Module == module)
+                    {
+                        hasAlarm = true;
+                    }
+                    if (alertEventInstance.EventDef.Level == EventLevel.Warn && alertEventInstance.Module == module)
+                    {
+                        hasWarn = true;
+                    }
+                }
+            }
+        }
+
+        public void HasSourceAlertEvent(string source, out bool hasAlarm, out bool hasWarn)
+        {
+            hasAlarm = false;
+            hasWarn = false;
+            var alertEventInstances = _alertEventInstances;
+            if (alertEventInstances.Length > 0)
+            {
+                foreach (var alertEventInstance in alertEventInstances)
+                {
+                    if (hasAlarm && hasWarn)
+                    {
+                        break;
+                    }
+                    if (alertEventInstance.EventDef.Level == EventLevel.Alarm && alertEventInstance.Source == source)
+                    {
+                        hasAlarm = true;
+                    }
+                    if (alertEventInstance.EventDef.Level == EventLevel.Warn && alertEventInstance.Source == source)
+                    {
+                        hasWarn = true;
+                    }
+                }
+            }
+        }
+
         #region 发布预定义事件
 
         public void PostEvent(string name, string source)
@@ -268,6 +376,16 @@ namespace Atomtick.Events.CEID
         #endregion 发布预定义事件
 
         #region 发布即时事件
+
+        public void PostAlramEvent(string source, string description)
+        {
+            PostEvent("$", source, null, description);
+        }
+
+        public void PostAlramEvent(string source, string description, ListDictionary DvidValues)
+        {
+            PostEvent("$", source, DvidValues, description);
+        }
 
         public void PostInfoEvent(string source, string description)
         {
@@ -288,17 +406,6 @@ namespace Atomtick.Events.CEID
         {
             PostEvent("%", source, DvidValues, description);
         }
-
-        public void PostAlramEvent(string source, string description)
-        {
-            PostEvent("$", source, null, description);
-        }
-
-        public void PostAlramEvent(string source, string description, ListDictionary DvidValues)
-        {
-            PostEvent("$", source, DvidValues, description);
-        }
-
         #endregion 发布即时事件
 
         #region 注册预定义事件
@@ -368,7 +475,6 @@ namespace Atomtick.Events.CEID
                 lock (_lock)
                 {
                     var alarms = _alertEventInstances;
-                    GC.KeepAlive(alarms);
                     var newAlarms = new EventInstance[alarms.Length + 1];
                     Array.Copy(alarms, newAlarms, alarms.Length);
                     newAlarms[alarms.Length] = eventInstance;
