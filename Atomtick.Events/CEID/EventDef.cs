@@ -1,11 +1,10 @@
 ﻿using System;
-using SCADA.Common;
 
 namespace Atomtick.Events.CEID
 {
     public sealed class EventDef
     {
-        public EventDef(int id, string name, EventLevel level, string descriptionTemplate, bool enabled)
+        public EventDef(long id, string name, EventLevel level, string descriptionTemplate, bool enabled)
         {
             Id = id;
             Name = name;
@@ -14,7 +13,7 @@ namespace Atomtick.Events.CEID
             Enabled = enabled;
         }
 
-        public int Id { get; }
+        public long Id { get; }
         public string Name { get; }
         public EventLevel Level { get; internal set; }
         public string DescriptionTemplate { get; }
