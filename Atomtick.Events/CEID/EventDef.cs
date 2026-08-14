@@ -16,7 +16,7 @@ namespace Atomtick.Events.CEID
 
         public int Id { get; }
         public string Name { get; }
-        public EventLevel Level { get; }
+        public EventLevel Level { get; internal set; }
         public string DescriptionTemplate { get; }
         public bool Enabled { get; internal set; }
     }

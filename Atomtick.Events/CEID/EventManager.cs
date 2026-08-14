@@ -36,9 +36,7 @@ namespace Atomtick.Events.CEID
         private EventManager()
         {
             // 内置的三个事件类型，分别是信息、警告和报警，名称分别是 @、% 和 $，用于快速发布事件。
-            Register(new EventDef(-1, "?", EventLevel.Info, "description", false));
-            Register(new EventDef(-2, "??", EventLevel.Warn, "description", false));
-            Register(new EventDef(-3, "???", EventLevel.Alarm, "description", false));
+            Register(new EventDef(-1, "?", EventLevel.Info, "", false));
 
             // 推荐使用 Bounded (有界队列) 防止消费者卡死时引发 OOM 内存爆炸
             var channelOptions = new BoundedChannelOptions(capacity: 1000)
@@ -384,24 +382,7 @@ namespace Atomtick.Events.CEID
 
         public void PostUndefEvent(string source, EventLevel eventLevel, string description, ListDict DvidValues)
         {
-            string name;
-            if (eventLevel == EventLevel.Info)
-            {
-                name = "?";
-            }
-            else if (eventLevel == EventLevel.Warn)
-            {
-                name = "??";
-            }
-            else if (eventLevel == EventLevel.Alarm)
-            {
-                name = "???";
-            }
-            else
-            {
-                name = null;
-            }
-            PostEvent(name, source, DvidValues, description);
+            PostEvent("?", source, DvidValues, description, eventLevel);
         }
 
         #endregion 发布未定义事件
@@ -443,7 +424,7 @@ namespace Atomtick.Events.CEID
             return sb.ToString();
         }
 
-        private void PostEvent(string name, string source, ListDict DvidValues, string description)
+        private void PostEvent(string name, string source, ListDict DvidValues, string description, EventLevel eventLevel = EventLevel.Info)
         {
             if (!_eventDefs.TryGetValue(name, out var eventDef))
             {
@@ -457,8 +438,9 @@ namespace Atomtick.Events.CEID
                 DvidValues = DvidValues,
                 OccurTime = DateTime.Now,
             };
-            if (eventDef.Name == "?" || eventDef.Name == "??" || eventDef.Name == "???")
+            if (eventDef.Name == "?")
             {
+                eventDef.Level = eventLevel;
                 eventInstance.Description = description;
             }
             else
@@ -468,19 +450,19 @@ namespace Atomtick.Events.CEID
                     eventInstance.Description = FormatDescription(eventDef.DescriptionTemplate, DvidValues);
                 }
             }
-            if (eventInstance.EventDef.Level == EventLevel.Alarm)
+            if (eventInstance.EventDef.Level == EventLevel.Alarm || eventInstance.EventDef.Level == EventLevel.Warn)
             {
                 lock (_lock)
                 {
-                    var alarms = _alertEventInstances;
-                    var newAlarms = new EventInstance[alarms.Length + 1];
-                    Array.Copy(alarms, newAlarms, alarms.Length);
-                    newAlarms[alarms.Length] = eventInstance;
-                    _alertEventInstances = newAlarms;
+                    var alerts = _alertEventInstances;
+                    var newAlerts = new EventInstance[alerts.Length + 1];
+                    Array.Copy(alerts, newAlerts, alerts.Length);
+                    newAlerts[alerts.Length] = eventInstance;
+                    _alertEventInstances = newAlerts;
                 }
             }
-            _eventChannel.Writer.TryWrite(eventInstance);
             OnEventSync?.Invoke(this, eventInstance);
+            _eventChannel.Writer.TryWrite(eventInstance);
         }
     }
 }
