@@ -19,7 +19,6 @@
         <Description>A class library for high-performance read and write configuration based on XML.</Description>
     </PropertyGroup>
     <ItemGroup>
-        <None Remove="readme.md" />
         <None Remove="setting.png" />
     </ItemGroup>
     <ItemGroup>

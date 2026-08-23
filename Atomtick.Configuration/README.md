@@ -1,4 +1,8 @@
-﻿# 解决了什么问题
+﻿# TODO
+
+- IConfigReader
+
+# 解决了什么问题
 
 Atomtick.Configuration的核心价值是
 
@@ -248,7 +252,7 @@ PrimitiveConfigSource构造函数传入XML文件路径和文件编码。
 
 ```C#
 // 第一步: 使用配置名称字符串索引到配置项
-var iIsSimulatorMode = _configSource.SelectConfigItem("System.IsSimulatorMode");
+var iIsSimulatorMode = _configSource.Select("System.IsSimulatorMode");
 // 第二步: 拿到配置的值快照
 var vSimulatorMode = _configSource.Read(iIsSimulatorMode);
 // 第三步: 解析快照拿到基元值
@@ -261,8 +265,8 @@ var simulatorMode = vSimulatorMode.ToBool(true);
 
 ```C#
 // 第一步: 使用配置名称字符串索引到配置项
-var iIsSimulatorMode = _configSource.SelectConfigItem("System.IsSimulatorMode");
-var iCycleCount = _configSource.SelectConfigItem("System.CycleCount");
+var iIsSimulatorMode = _configSource.Select("System.IsSimulatorMode");
+var iCycleCount = _configSource.Select("System.CycleCount");
 // 第二步: 拿到配置的值快照
 (var vSimulatorMode, var vCycleCount) = _configSource.Read(iIsSimulatorMode, iCycleCount);
 // 第三步: 解析快照拿到基元值

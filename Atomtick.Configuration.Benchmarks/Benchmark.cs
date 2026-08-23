@@ -39,22 +39,22 @@ namespace Atomtick.Configuration.Benchmarks
             Environment.CurrentDirectory = AppContext.BaseDirectory;
             _configSource = new PrimitiveConfigSource("configs.db");
             // 这里只需要执行一次就可以了
-            iFAEnable = _configSource.SelectConfigItem("FA.Enable");
-            iFAMode = _configSource.SelectConfigItem("FA.ConnectionMode");
-            iT3Timeout = _configSource.SelectConfigItem("FA.T3Timeout");
-            iNotchDegree = _configSource.SelectConfigItem("Aligner.NotchDegree");
-            iStableCriteria = _configSource.SelectConfigItem("PM1.BiasRFMatch.StableCriteria");
-            iStableTime = _configSource.SelectConfigItem("PM1.BiasRFMatch.StableTime");
-            iAlarmRange = _configSource.SelectConfigItem("PM1.SourceRFPower.AlarmRange");
-            iAlarmTime = _configSource.SelectConfigItem("PM1.SourceRFPower.AlarmTime");
-            iWarningTime = _configSource.SelectConfigItem("PM1.SourceRFPower.WarningTime");
-            iWarningRange = _configSource.SelectConfigItem("PM1.SourceRFPower.WarningRange");
-            iEnableLogMessage = _configSource.SelectConfigItem("PM1.DryPump.Edwards.EnableLogMessage");
-            iBaudRate = _configSource.SelectConfigItem("PM1.HeaterController.BaudRate");
-            iDataBits = _configSource.SelectConfigItem("PM1.HeaterController.DataBits");
-            iWindowHeater = _configSource.SelectConfigItem("PM1.WindowHeater.IsInstalled");
-            iPumpingLine = _configSource.SelectConfigItem("PM1.PumpingLineHeater.IsInstalled");
-            iBaratron = _configSource.SelectConfigItem("PM1.BaratronLineHeater.IsInstalled");
+            iFAEnable = _configSource.Select("FA.Enable");
+            iFAMode = _configSource.Select("FA.ConnectionMode");
+            iT3Timeout = _configSource.Select("FA.T3Timeout");
+            iNotchDegree = _configSource.Select("Aligner.NotchDegree");
+            iStableCriteria = _configSource.Select("PM1.BiasRFMatch.StableCriteria");
+            iStableTime = _configSource.Select("PM1.BiasRFMatch.StableTime");
+            iAlarmRange = _configSource.Select("PM1.SourceRFPower.AlarmRange");
+            iAlarmTime = _configSource.Select("PM1.SourceRFPower.AlarmTime");
+            iWarningTime = _configSource.Select("PM1.SourceRFPower.WarningTime");
+            iWarningRange = _configSource.Select("PM1.SourceRFPower.WarningRange");
+            iEnableLogMessage = _configSource.Select("PM1.DryPump.Edwards.EnableLogMessage");
+            iBaudRate = _configSource.Select("PM1.HeaterController.BaudRate");
+            iDataBits = _configSource.Select("PM1.HeaterController.DataBits");
+            iWindowHeater = _configSource.Select("PM1.WindowHeater.IsInstalled");
+            iPumpingLine = _configSource.Select("PM1.PumpingLineHeater.IsInstalled");
+            iBaratron = _configSource.Select("PM1.BaratronLineHeater.IsInstalled");
         }
 
         [WarmupCount(5)]
@@ -68,7 +68,7 @@ namespace Atomtick.Configuration.Benchmarks
         [Benchmark()]
         public void HashSearch()
         {
-            _configSource.SelectConfigItem("PM1.BaratronLineHeater.IsInstalled");
+            _configSource.Select("PM1.BaratronLineHeater.IsInstalled");
         }
 
         [WarmupCount(5)]
@@ -127,22 +127,22 @@ namespace Atomtick.Configuration.Benchmarks
             var PumpingLine = vPumpingLine.ToBool();
             var Baratron = vBaratron.ToBool();
             // 将值喂给 Consumer，防止 val 的读取被 JIT 删掉
-            //_consumer.Consume(FAEnable);
-            //_consumer.Consume(FAMode);
-            //_consumer.Consume(T3Timeout);
-            //_consumer.Consume(NotchDegree);
-            //_consumer.Consume(TStableCriteria);
-            //_consumer.Consume(stableTime);
-            //_consumer.Consume(alarmRange);
-            //_consumer.Consume(alarmtime);
-            //_consumer.Consume(warningTime);
-            //_consumer.Consume(warningrange);
-            //_consumer.Consume(EnableLogMessage);
-            //_consumer.Consume(BaudRate);
-            //_consumer.Consume(DataBits);
-            //_consumer.Consume(WindowHeater);
-            //_consumer.Consume(PumpingLine);
-            //_consumer.Consume(Baratron);
+            _consumer.Consume(FAEnable);
+            _consumer.Consume(FAMode);
+            _consumer.Consume(T3Timeout);
+            _consumer.Consume(NotchDegree);
+            _consumer.Consume(TStableCriteria);
+            _consumer.Consume(stableTime);
+            _consumer.Consume(alarmRange);
+            _consumer.Consume(alarmtime);
+            _consumer.Consume(warningTime);
+            _consumer.Consume(warningrange);
+            _consumer.Consume(EnableLogMessage);
+            _consumer.Consume(BaudRate);
+            _consumer.Consume(DataBits);
+            _consumer.Consume(WindowHeater);
+            _consumer.Consume(PumpingLine);
+            _consumer.Consume(Baratron);
         }
 
         [WarmupCount(5)]

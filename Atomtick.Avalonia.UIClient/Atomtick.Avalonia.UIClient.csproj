@@ -7,11 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="12.1.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="IndicatorLight\" />
+    <PackageReference Include="Avalonia" Version="12.1.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="ProDataGrid" Version="12.1.0.4" />
   </ItemGroup>
 
 </Project>

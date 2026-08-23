@@ -1,11 +1,11 @@
-﻿using Atomtick.Configuration;
-using Atomtick.Configuration.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Atomtick.Configuration;
+using Atomtick.Configuration.Interfaces;
 
 namespace SCADA.Configuration.UnitTests
 {
@@ -17,26 +17,26 @@ namespace SCADA.Configuration.UnitTests
             var configSource = new PrimitiveConfigSource("configs.db");
 
             // 这里只需要执行一次就可以了
-            var iFAEnable = configSource.SelectConfigItem("FA.Enable");
-            var iFAMode = configSource.SelectConfigItem("FA.ConnectionMode");
-            var iT3Timeout = configSource.SelectConfigItem("FA.T3Timeout");
-            var iNotchDegree = configSource.SelectConfigItem("Aligner.NotchDegree");
-            var iRecipePath = configSource.SelectConfigItem("System.RecipePath");
+            var FAEnable_i = configSource.Select("FA.Enable");
+            var FAMode_i = configSource.Select("FA.ConnectionMode");
+            var t3Timeout_i = configSource.Select("FA.T3Timeout");
+            var notchDegree_i = configSource.Select("Aligner.NotchDegree");
+            var recipePath_i = configSource.Select("System.RecipePath");
 
             // 第一次原子性的批量获取多个配置项的值
-            (var vFAEnable, var vFAMode, var vT3Timeout, var vNotchDegree, var vRecipePath) = configSource.Read(iFAEnable, iFAMode, iT3Timeout, iNotchDegree, iRecipePath);
-            var FAEnable = vFAEnable.ToBool();
-            var FAMode = vFAMode.ToString();
-            var T3Timeout = vT3Timeout.ToInt32();
-            var NotchDegree = vNotchDegree.ToDouble();
-            var RecipePath = vRecipePath.ToDirectory();
+            (var FAEnable_v, var FAMode_v, var T3Timeout_v, var notchDegree_v, var recipePath_v) = configSource.Read(FAEnable_i, FAMode_i, t3Timeout_i, notchDegree_i, recipePath_i);
+            var FAEnable = FAEnable_v.ToBool();
+            var FAMode = FAMode_v.ToString();
+            var T3Timeout = T3Timeout_v.ToInt32();
+            var NotchDegree = notchDegree_v.ToDouble();
+            var RecipePath = recipePath_v.ToDirectory();
             // 第二次原子性的批量获取多个配置项的值(如果配置值有变化,第二次读取的最新值显然会和第一次不一样)
-            (vFAEnable, vFAMode, vT3Timeout, vNotchDegree, vRecipePath) = configSource.Read(iFAEnable, iFAMode, iT3Timeout, iNotchDegree, iRecipePath);
-            FAEnable = vFAEnable.ToBool();
-            FAMode = vFAMode.ToString();
-            T3Timeout = vT3Timeout.ToInt32();
-            NotchDegree = vNotchDegree.ToDouble();
-            RecipePath = vRecipePath.ToDirectory();
+            (FAEnable_v, FAMode_v, T3Timeout_v, notchDegree_v, recipePath_v) = configSource.Read(FAEnable_i, FAMode_i, t3Timeout_i, notchDegree_i, recipePath_i);
+            FAEnable = FAEnable_v.ToBool();
+            FAMode = FAMode_v.ToString();
+            T3Timeout = T3Timeout_v.ToInt32();
+            NotchDegree = notchDegree_v.ToDouble();
+            RecipePath = recipePath_v.ToDirectory();
         }
 
         //[Fact]
@@ -67,37 +67,46 @@ namespace SCADA.Configuration.UnitTests
 
         public class TransferModule
         {
-            private readonly IConfigReader _configSource;
-            private readonly ConfigItem _iHomeTimeout;
-            private readonly ConfigItem _iMoveDistanceAfterHome;
-            private readonly string _robotIP;
-            private readonly int _bladeSlots;
+            private readonly IConfigReader _configReader;
+            private readonly ConfigItem _homeTimeout_i;
+            private readonly ConfigItem _maxPressureDiffOpenSlitValve_i;
+            private readonly ConfigItem _atmPressureBase_i;
+            private readonly ConfigItem _vacuumPressureBase_i;
+            private readonly ConfigItem _robotIp_i;
+            private readonly ConfigItem _robotPort_i;
 
             public TransferModule(IConfigReader configReader)
             {
-                _configSource = configReader;
-                _iHomeTimeout = configReader.SelectConfigItem("TM.HomeTimeout");
+                _configReader = configReader;
+                _homeTimeout_i = _configReader.Select("TM.HomeTimeout");
+                _maxPressureDiffOpenSlitValve_i = _configReader.Select("TM.MaxPressureDiffOpenSlitValve");
+                _atmPressureBase_i = _configReader.Select("TM.AtmPressureBase");
+                _vacuumPressureBase_i = _configReader.Select("TM.VacuumPressureBase");
+                _robotIp_i = _configReader.Select("TM.RobotIP");
+                _robotPort_i = _configReader.Select("TM.RobotPort");
+            }
 
-                var iBladeSlotes = configReader.SelectConfigItem("TM.BladeSlots");
-                var iRobotIp = configReader.SelectConfigItem("TM.RobotIP");
-                (var _bladeSlotsValue, var _robotIpValue) = configReader.Read(iBladeSlotes, iRobotIp);
-                _bladeSlots = _bladeSlotsValue.ToInt32();
-                _robotIP = _robotIpValue.ToString();
+            public void Init()
+            {
 
-                var iIsSimulatorMode = _configSource.SelectConfigItem("System.IsSimulatorMode");
-                var iCycleCount = _configSource.SelectConfigItem("System.CycleCount");
-
-                (var vSimulatorMode, var vCycleCount) = _configSource.Read(iIsSimulatorMode, iCycleCount);
-
-                var simulatorMode = vSimulatorMode.ToBool(true);
-                var cycleCount = vCycleCount.ToInt32();
+                (var ip_v, var port_v) = _configReader.Read(_robotIp_i, _robotPort_i);
+                var ip = ip_v.ToString();
+                var port = port_v.ToInt32();
+                Connect(ip, port);
             }
 
             public void Home()
             {
-                var configValues = _configSource.Read(_iHomeTimeout, _iMoveDistanceAfterHome);
-                int homeTimeout = configValues.Item1.ToInt32(30);
-                int moveDistanceAfterHome = configValues.Item2.ToInt32(15);
+                var configValues = _configReader.Read(_homeTimeout_i, _atmPressureBase_i, _vacuumPressureBase_i, _maxPressureDiffOpenSlitValve_i);
+                int homeTimeout = configValues.Item1.ToInt32();
+                var atmPressureBase = configValues.Item2.ToDouble();
+                var vacuumPressureBase = configValues.Item3.ToDouble();
+                var maxPressureDiffOpenSlitValve = configValues.Item4.ToDouble();
+            }
+
+            private void Connect(string ip, int port)
+            {
+                throw new NotImplementedException();
             }
         }
     }

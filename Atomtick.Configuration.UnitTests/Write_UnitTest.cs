@@ -15,11 +15,11 @@ namespace SCADA.Configuration.UnitTests
         {
             PrimitiveConfigSource primitiveConfigSource = new PrimitiveConfigSource("D:\\CodeRepo\\ZeroGC.SCADA\\SCADA.Configuration\\configs.db");
 
-            var IsSimulatorMode = primitiveConfigSource.SelectConfigItem("System.IsSimulatorMode");
+            var IsSimulatorMode = primitiveConfigSource.Select("System.IsSimulatorMode");
             var isSimulatorModeValue = primitiveConfigSource.Read(IsSimulatorMode);
             var result = isSimulatorModeValue.ToBool();
 
-            var VentBasePressure = primitiveConfigSource.SelectConfigItem("VCE.Vent.VentBasePressure");
+            var VentBasePressure = primitiveConfigSource.Select("VCE.Vent.VentBasePressure");
             var VentBasePressureValue = primitiveConfigSource.Read(VentBasePressure);
             var result2 = VentBasePressureValue.ToDouble();
 

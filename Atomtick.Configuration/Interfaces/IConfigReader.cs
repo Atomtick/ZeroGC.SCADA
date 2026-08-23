@@ -5,7 +5,7 @@ namespace Atomtick.Configuration.Interfaces
 {
     public interface IConfigReader
     {
-        ConfigItem SelectConfigItem(string config);
+        ConfigItem Select(string config);
 
         ConfigValue Read(ConfigItem configItem);
 
