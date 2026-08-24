@@ -34,7 +34,7 @@ namespace SCADA.Configuration.UnitTests
             (FAEnable_v, FAMode_v, T3Timeout_v, notchDegree_v, recipePath_v) = configSource.Read(FAEnable_i, FAMode_i, t3Timeout_i, notchDegree_i, recipePath_i);
             FAEnable = FAEnable_v.ToBool();
             FAMode = FAMode_v.ToString();
-            T3Timeout = T3Timeout_v.ToInt32();
+            T3Timeout = T3Timeout_v.ToInt8();
             NotchDegree = notchDegree_v.ToDouble();
             RecipePath = recipePath_v.ToDirectory();
         }
@@ -106,7 +106,7 @@ namespace SCADA.Configuration.UnitTests
 
             private void Connect(string ip, int port)
             {
-                throw new NotImplementedException();
+                // ......
             }
         }
     }

@@ -8,7 +8,6 @@ namespace Atomtick.Configuration
     {
         public ConfigItem Select(string config)
         {
-            CheckConfigFormattingValid(config);
             if (!_configItems.TryGetValue(config, out ConfigItem result))
             {
                 result = new ConfigItem()

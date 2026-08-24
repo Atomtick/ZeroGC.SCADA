@@ -51,9 +51,34 @@
             <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
         </EmbeddedResource>
     </ItemGroup>
+
+
+	<ItemGroup>
+		<!-- 将 settings.json 文件打包到 NuGet 中 -->
+		<Content Include="Assets/configs.db">
+			<!-- 1. 允许打包此文件 -->
+			<Pack>true</Pack>
+
+			<!-- 2. 指定在 NuGet 包内部的路径。
+           contentFiles\any\any 表示不限制目标框架和语言。
+           content 是为了向后兼容旧的 packages.config 模式。-->
+			<PackagePath>contentFiles\any\any;content</PackagePath>
+
+			<!-- 3. (可选) 安装此包的项目在编译时，是否将该文件复制到输出目录 (bin/Debug) -->
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+
+			<!-- 4. (可选) 控制安装此包的项目如何处理该文件 (例如设为 None 或 Content) -->
+			<BuildAction>Content</BuildAction>
+		</Content>
+	</ItemGroup>
+	
+	
     <!--指定程序集的internal成员可在另一个程序集中被调用-->
     <ItemGroup>
         <InternalsVisibleTo Include="SCADA.Configuration.UnitTests" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Include="Assets\configs.db" Link="Assets\configs.db" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Atomtick.Common\Atomtick.Common.csproj" />

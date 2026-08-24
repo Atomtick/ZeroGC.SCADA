@@ -246,255 +246,140 @@ PrimitiveConfigSource构造函数传入XML文件路径和文件编码。
 
 > 需要保证一个XML文件同时只能有一个PrimitiveConfigSource对象持有，因为单个对象能保证改配置项值时写操作是线程安全的，但多个对象同时写时不是线程安全的。
 
-### 批量读取单个或多个配置项(原子操作)
+### How to read multiple configs atomically
 
-**读取单个配置**
+#### 读取单个配置
 
 ```C#
 // 第一步: 使用配置名称字符串索引到配置项
-var iIsSimulatorMode = _configSource.Select("System.IsSimulatorMode");
+var isSimulatorMode_i = _configSource.Select("System.IsSimulatorMode");
 // 第二步: 拿到配置的值快照
-var vSimulatorMode = _configSource.Read(iIsSimulatorMode);
+var simulatorMode_v = _configSource.Read(isSimulatorMode_i);
 // 第三步: 解析快照拿到基元值
-var simulatorMode = vSimulatorMode.ToBool(true);
+var simulatorMode = simulatorMode_v.ToBool(true);
+// 再次读取配置最新的值(不需要重新用字符串Select ConfigItem)
+simulatorMode_v = _configSource.Read(isSimulatorMode_i);
+simulatorMode = simulatorMode_v.ToBool(true);
 ```
 
-**读取多个配置**
+#### 读取多个配置
 
 `System.IsSimulatorMode 和 System.CycleCount 来自同一快照, 满足一致性和原子性`
 
 ```C#
 // 第一步: 使用配置名称字符串索引到配置项
-var iIsSimulatorMode = _configSource.Select("System.IsSimulatorMode");
-var iCycleCount = _configSource.Select("System.CycleCount");
+var isSimulatorMode_i = _configSource.Select("System.IsSimulatorMode");
+var cycleCount_i = _configSource.Select("System.CycleCount");
 // 第二步: 拿到配置的值快照
-(var vSimulatorMode, var vCycleCount) = _configSource.Read(iIsSimulatorMode, iCycleCount);
+(var simulatorMode_v, var cycleCount_v) = _configSource.Read(isSimulatorMode_i, cycleCount_i);
 // 第三步: 解析快照拿到基元值
-var simulatorMode = vSimulatorMode.ToBool(true);
-var cycleCount = vCycleCount.ToInt32();
+var simulatorMode = simulatorMode_v.ToBool(true);
+var cycleCount = cycleCount_v.ToInt32();
+// 再次读取配置最新的值(不需要重新用字符串Select ConfigItem)
+(simulatorMode_v,cycleCount_v) = _configSource.Read(isSimulatorMode_i, cycleCount_i);
+simulatorMode = simulatorMode_v.ToBool(true);
+cycleCount = cycleCount_v.ToInt32();
 ```
 
-**读取配置的最佳实践**
-
-SelectConfigItem
-
-
-
-
+#### 读取配置的最佳实践
 
 ```C#
 public class TransferModule
 {
-    private readonly IConfigReader _configSource;
-    private readonly ConfigItem _iHomeTimeout;
-    private readonly ConfigItem _iMoveDistanceAfterHome;
-    private readonly string _robotIP;
-    private readonly int _bladeSlots;
+    private readonly IConfigReader _configReader;
+    private readonly ConfigItem _homeTimeout;
+    private readonly ConfigItem _maxPressureDiffOpenSlitValve;
+    private readonly ConfigItem _atmPressureBase;
+    private readonly ConfigItem _vacuumPressureBase;
+    private readonly ConfigItem _robotIp;
+    private readonly ConfigItem _robotPort;
 
     public TransferModule(IConfigReader configReader)
     {
-        _configSource = configReader;
-        _iHomeTimeout = configReader.SelectConfigItem("TM.HomeTimeout");
+        _configReader = configReader;
+        _homeTimeout = _configReader.Select("TM.HomeTimeout");
+        _maxPressureDiffOpenSlitValve = _configReader.Select("TM.MaxPressureDiffOpenSlitValve");
+        _atmPressureBase = _configReader.Select("TM.AtmPressureBase");
+        _vacuumPressureBase = _configReader.Select("TM.VacuumPressureBase");
+        _robotIp = _configReader.Select("TM.RobotIP");
+        _robotPort = _configReader.Select("TM.RobotPort");
+    }
 
-        var iBladeSlotes = configReader.SelectConfigItem("TM.BladeSlots");
-        var iRobotIp = configReader.SelectConfigItem("TM.RobotIP");
-        (var _bladeSlotsValue, var _robotIpValue) = configReader.Read(iBladeSlotes, iRobotIp);
-        _bladeSlots = _bladeSlotsValue.ToInt32();
-        _robotIP = _robotIpValue.ToString();
-
-        var iIsSimulatorMode = _configSource.SelectConfigItem("System.IsSimulatorMode");
-        var iCycleCount = _configSource.SelectConfigItem("System.CycleCount");
-
-        (var vSimulatorMode, var vCycleCount) = _configSource.Read(iIsSimulatorMode, iCycleCount);
-
-        var simulatorMode = vSimulatorMode.ToBool(true);
-        var cycleCount = vCycleCount.ToInt32();
+    public void Init()
+    {
+        var configValues = _configReader.Read(_robotIp, _robotPort);
+        var ip = configValues.Item1.ToString();
+        var port = configValues.Item2.ToInt32();
+        Connect(ip, port);
     }
 
     public void Home()
     {
-        var configValues = _configSource.Read(_iHomeTimeout, _iMoveDistanceAfterHome);
-        int homeTimeout = configValues.Item1.ToInt32(30);
-        int moveDistanceAfterHome = configValues.Item2.ToInt32(15);
+        var configValues = _configReader.Read(_homeTimeout, _atmPressureBase, _vacuumPressureBase, _maxPressureDiffOpenSlitValve);
+        int homeTimeout = configValues.Item1.ToInt32();
+        var atmPressureBase = configValues.Item2.ToDouble();
+        var vacuumPressureBase = configValues.Item3.ToDouble();
+        var maxPressureDiffOpenSlitValve = configValues.Item4.ToDouble();
+    }
+
+    private void Connect(string ip, int port)
+    {
+        // ......
     }
 }
 ```
 
-####  value="boolean"
+- 类的构造函数注入IConfigReader，此接口只暴露读取配置的方法。PrimitiveConfigSource只适合读极多写极少的场景，IConfigReader可以约束用户在类中滥用写操作。
+- 类要用到的所有配置的ConfigItem全部定义成字段，在构造函数中通过Select完成字段的赋值。这样做有两大优点：1. 代码可读性好 2. 类中读取配置最新值时访问ConfigItem引用即可，无需借助字符串，可以避免用户重复的进行不必要的字符串拼接导致GC。
+- 可以把程序启动后不会再被修改的配置项的基元值直接存储成字段，在构造函数中完成初始化，后续直接访问字段即可，这种静态读取比透过顺序锁的冷读取快的多。
 
-`<config name="IsSimulatorMode" value="false" type="Bool" />`
+#### ConfigValue转换成基元值的方法
 
-```c#
-bool isSimulatorMode = source.GetValue<bool>("System.IsSimulatorMode");
-```
-
-#### value="integer"
-
-`<config name="CycleCount" value="3" type="integer" />`
-
-①
+**ToXXX()   ToXXX(xxx)   TryToXXX(out xxx)**
 
 ```c#
-int cycleCount = source.GetValue<int>("System.CycleCount");
-```
-②
-```c#
-long cycleCount = source.GetValue<long>("System.CycleCount");
-```
-③
-```c#
-short cycleCount = source.GetValue<short>("System.CycleCount");
-```
-④
-```c#
-byte cycleCount = source.GetValue<byte>("System.CycleCount");
-```
-
-⑤
-
-```c#
-double cycleCount = source.GetValue<double>("System.CycleCount");
-```
-
-⑥
-
-```c#
-float cycleCount = source.GetValue<float>("System.CycleCount");
-```
-
-⑦
-
-```c#
-decimal cycleCount = source.GetValue<decimal>("System.CycleCount");
-```
-
-如果value文本值是`255`，那么前4种写法都不会有问题。如果value文本值是`70000`，①②(int，long)无问题，③④(short，byte)会溢出异常。如果value文本值是9007199254740993,②⑦无问题, 其他都有问题! long转换成double时,double的有效数字有限, 情形转换, 会把尾部全部四舍五入, 虽然不会溢出, 但是会有精度损失!
-
-在实际编程时，按需决定使用哪一个宽度的数据类型，一般使用int。
-
-> `SCADA.Configuration不允许任何精度损失和溢出, 调用API的读取或设置配置项的值时, 如果发生溢出或精度损失, 会抛出异常! 所以使用者可以放心使用, 框架本身已经做好了防御!`
-
-Integer支持的字符串格式样例
-
-- `10`
--  `0x0A`
--  `0XB`
--  `-1,000`
--  `10,00,00`
--  `1.00`
--  `12,345.00`
-
-####  value="double"
-
-`<config name="DiskFreeSpaceAlarmTolerance" value="5" type="double" />`
-
-①
-
-```c#
-double diskFreeSpaceAlarmTolerance = source.GetValue<double>("System.SetUp.DiskFreeSpaceAlarmTolerance");
-```
-②
-```c#
-float diskFreeSpaceAlarmTolerance = source.GetValue<float>("System.SetUp.DiskFreeSpaceAlarmTolerance");
-```
-③
-```c#
-decimal diskFreeSpaceAlarmTolerance = source.GetValue<decimal>("System.SetUp.DiskFreeSpaceAlarmTolerance");
-```
-
-①②③能表示的范围都足够大，通常不会溢出，最重要的是精度区别。按照实际的精度需求选择最合适的类型，一般double即可。
-
-> 如果value文本值是3.14159265358979323846，共计21位有效数字，选择GetValue\<decimal>()，不会丢失精度，但使用GetValue\<double>得到的是损失5个有效数字的3.1415926535897936。
-
-> `SCADA.Configuration不允许任何精度损失和溢出, 调用API的读取或设置配置项的值时, 如果发生溢出或精度损失, 会抛出异常! 所以使用者可以放心使用, 框架本身已经做好了防御!`
-
-Decimal支持的字符串格式样例
-
-- `6`
-- `0x0A`
-- `0XB`
-- `6.5`
-- `-6.5`
-- `1,234.5`
-- `1,234.5e-3`
-
-####  value="string"
-
-`<config name="RemoteIpAddress" value="127.0.0.1"  type="string" />`
-
-```c#
-string RemoteIpAddress = source.GetValue<string>("System.SetUp.RemoteIpAddress");
+// 如果未配置此项，抛出异常
+bool isEFEMInstalled = _isEFEMInstalled.ToBool();
+// 如果未配置此项，不会抛出异常，而是返回false。函数参数是默认值
+bool isEFEMInstalled = _isEFEMInstalled.ToBool("false");
+// 返回值表示是否含有此配置项，函数的out参数是配置项的值
+bool isPresent = _isEFEMInstalled.TryToBool(out bool isEFEMInstalled);
 ```
 
 
-#### value="folder"
 
-`<config name="LogsFolder" value="D:\Logs" type="folder"/>`
+**Type Mapping Table** 
 
-```c#
-DirectoryInfo folder = source.GetValue<DirectoryInfo>("System.LogsFolder");
-```
-
-#### value="file"
-
-`<config name="DataReport" value="C:\data.csv" type="file"/>`
-
-```c#
-FileInfo file = source.GetValue<FileInfo>("System.DataReport");
-```
-
-#### value="color"
-
-`<config name="AlarmLight" value="#FFFFFF"  type="color" />`
-
-```c#
-source.GetValue<System.Drawing.Color>("System.AlarmLight");
-```
-
-- #FFFFFF
-- #0AFFFFFF
-
-#### value="datetime"
-
-`<config name="ResetDate" value="2025-05-06 08:00:00"  type="datetime" />`
-
-```c#
-DateTime dateTime = source.GetValue<DateTime>("System.ResetDate");
-```
-
-==只支持yyyy-MM-dd HH:mm:ss格式的字符串,其他任何形式的字符串都不能转换成DateTime!==
-
-- 2020-02-02 02:02:02  ✔
-- 20200202020202 ❌
-- 2020-02-02 020202 ❌
-- 2020-02-02 ❌
-- 02:02:02 ❌
-- 2020/2/2 ❌
-- 2020/02/02 ❌
-- 02:02 ❌
-
-
-> type="integer"，允许映射的C#数据类型是int，long，short，byte，double，float，decimal。
->
-> type="boolean"，允许映射的C#数据类型是bool。
->
-> type="decimal"，允许映射的C#数据类型是double，float，decimal。
->
-> type="string"，允许映射的C#数据类型是string。
->
-> type="folder"，允许映射的C#数据类型是DirectoryInfo。
->
-> type="file"，允许映射的C#数据类型是FileInfo。
->
-> type="color"，允许映射的C#数据类型是System.Drawing.Color。
->
-> type="dateTime"，允许映射的C#数据类型是DateTime。
+| Config Type |                     .NET Type                      |
+| :---------: | :------------------------------------------------: |
+|    Bool     |                        bool                        |
+|   Integer   | long  ulong  int  uint  short  ushort  byte  sbyte |
+|   Decimal   |                   double  float                    |
+|   String    |                       string                       |
+|    Color    |                System.Drawing.Color                |
+|  DateTime   |                      DateTime                      |
+|   Folder    |                   DirectoryInfo                    |
+|    File     |                      FileInfo                      |
 
 
 
-> ==使用非允许的数据类型时，GetValue\<TValue>()会抛出异常。GetValue\<string>()支持任意type，它读取的是value在XML中的原始文本。如 `<config value="0x0A" type="Integer" />` ，GetValue\<int>()得到的是`10`，GetValue\<string>得到的是`0x0A`字符串。==
+> PrimitiveConfigSource后台用long存储`Integer`类型的配置项的值，ToXXX()的本质是将long类型转换成XXX类型。框架的ToXXX()允许XXX是任意整数类型，它的内部自动进行类型转换，但需要注意，若转换发生溢出，会抛出异常。
 
 
+
+> PrimitiveConfigSource后台用double存储`Decimal`类型的配置项的值，ToDouble()没什么需要说的，ToSingle()的本质是将double类型转换成float类型, 若转换发生溢出或精度损失，会抛出异常。举例：对于"3.1415926535897"， ToSingle()时会因为精度损失而抛出异常。
+
+
+
+> ConifgValue.ToXXX()，XXX必须满足mapping table，否则发生异常！举例：`<config name="DiskFreeSpaceAlarmTolerance" value="5" type="double" />` ，如果 configValue.ToDouble(), configValue.ToFloat()是OK的，但是configValue.ToInt()，configValue.ToBool()会抛出异常。
+
+
+
+> 任何ConfigType都允许ToString() !  `<config name="Timeout" value="0x0A" type="Integer" />` , ToInt32()得到的结果是10，ToString()得到的结果是"0X0A".
+
+
+
+> 复杂数据可以全部配置成String，程序使用时先转换成string，再把string二次转换成复杂数据。
 
 ### 批量修改单个或多个配置项(原子操作)
 
