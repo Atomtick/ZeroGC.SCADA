@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -45,6 +46,7 @@ namespace Atomtick.Configuration
                 throw new FileNotFoundException("The sqlite DB file does not exist.", sqliteDB);
             Settings = settings ?? new ConfigSettings();
             _dbConnectionString = $"Data Source={sqliteDB}";
+            _transactionBuffer = new ConcurrentDictionary<long, ListDict>();
             Initialize();
 #if NET8_0_OR_GREATER
             _configItems = _configItems.ToFrozenDictionary();
@@ -158,7 +160,7 @@ namespace Atomtick.Configuration
                         // 提交事务（这个时候才真正执行一次集中的磁盘 I/O）
                         transaction.Commit();
                     }
-                    if (Settings.TrackConfigValueModification)
+                    if (Settings.IsConfigModificationTrackingEnabled)
                     {
                         if (_hasTable_config_history_value == false)
                         {

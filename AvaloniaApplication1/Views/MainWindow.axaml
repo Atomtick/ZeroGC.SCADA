@@ -16,8 +16,8 @@
         <vm:MainViewModel />
     </Design.DataContext>
 
-<uiclient:SignalTowerStatusConfigView>
+<uiclient:MfcVerficationView>
     
-</uiclient:SignalTowerStatusConfigView>
+</uiclient:MfcVerficationView>
 
 </Window>

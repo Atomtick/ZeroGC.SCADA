@@ -13,7 +13,9 @@ namespace SCADA.Configuration.UnitTests
         [Fact]
         public void Test()
         {
-            PrimitiveConfigSource primitiveConfigSource = new PrimitiveConfigSource("D:\\CodeRepo\\ZeroGC.SCADA\\SCADA.Configuration\\configs.db");
+            ConfigSettings settings = new ConfigSettings();
+            settings.IsConfigModificationTrackingEnabled = true;
+            PrimitiveConfigSource primitiveConfigSource = new PrimitiveConfigSource("D:\\CodeRepo\\ZeroGC.SCADA\\SCADA.Configuration\\configs.db", settings);
 
             var IsSimulatorMode = primitiveConfigSource.Select("System.IsSimulatorMode");
             var isSimulatorModeValue = primitiveConfigSource.Read(IsSimulatorMode);

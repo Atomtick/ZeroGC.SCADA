@@ -557,7 +557,7 @@ configSource.Write(transactionId,"System.DataReport", "../../data.xlsx");
 
 > 每次调用CommitTransaction都会写一次数据库。如果有多个修改，单次批量提交性能更高开销更小，且可以保证只要有一项校验失败，则全部的设置项都不会被修改，即原子操作。
 
-## 校验
+### 校验
 
 ### 校验代码
 

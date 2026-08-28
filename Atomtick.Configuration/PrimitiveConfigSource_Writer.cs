@@ -14,15 +14,14 @@ namespace Atomtick.Configuration
     {
         // long 事务id,允许多个事务并行.
         // ConcurrentDictionary<string, object> 单个事务需要修改的的配置项集合.使用字典的好处是如果在同一个事务中多次修改同一个配置项的值,会以最后一次为准!
-        private readonly ConcurrentDictionary<long, ListDict> _transactionCache;
-        private readonly List<string> _equalsKeys = new List<string>();
+        private readonly ConcurrentDictionary<long, ListDict> _transactionBuffer;
         private long _id;
 
         public IConfigWriter BeginTransaction(out long transactionId)
         {
             // _id: 0,1,2...long.max,long.min(overflow),long.min + 1...0...long.max...如此循环往复.
             transactionId = Interlocked.Increment(ref _id);
-            _transactionCache.TryAdd(transactionId, new ListDict());
+            _transactionBuffer.TryAdd(transactionId, new ListDict());
             return this;
         }
 
@@ -30,10 +29,10 @@ namespace Atomtick.Configuration
         {
             // 即使Save失败,事务也会从缓存中移除,不会永驻导致内存泄漏.
 #if NET8_0_OR_GREATER
-            if (_transactionCache.Remove(transactionId, out var configs))
+            if (_transactionBuffer.Remove(transactionId, out var configs))
                 Save(configs);
 #elif NET462_OR_GREATER
-            if (_transactionCache.TryRemove(transactionId, out var configs))
+            if (_transactionBuffer.TryRemove(transactionId, out var configs))
                 Save(configs);
 #endif
             else
@@ -58,7 +57,7 @@ namespace Atomtick.Configuration
 
             ValidateValue(config, value);
 
-            if (_transactionCache.TryGetValue(transactionId, out ListDict configs))
+            if (_transactionBuffer.TryGetValue(transactionId, out ListDict configs))
             {
                 configs.AddOrUpdate(config, value);
             }
@@ -75,16 +74,15 @@ namespace Atomtick.Configuration
             if (modificationConfigs != null && modificationConfigs.Any())
             {
                 // 剔除值没变化的配置项
-                _equalsKeys.Clear();
+                var equalsKeys = new List<string>();
                 foreach (var pair in modificationConfigs.Where(pair => (pair.Value as string) == _configItems[pair.Key].StringValue))
                 {
-                    _equalsKeys.Add(pair.Key);
+                    equalsKeys.Add(pair.Key);
                 }
-                foreach (var item in _equalsKeys)
+                foreach (var item in equalsKeys)
                 {
                     modificationConfigs.Remove(item);
                 }
-                _equalsKeys.Clear();
 
                 // 存在新值与旧值不相等的情况才会触发修改动作
                 if (modificationConfigs.Any())
