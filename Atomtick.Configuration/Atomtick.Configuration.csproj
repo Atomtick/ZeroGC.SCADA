@@ -13,7 +13,7 @@
         <RepositoryUrl>https://github.com/atomtick/ZeroGC.SCADA.git</RepositoryUrl>
         <PackageProjectUrl>https://github.com/atomtick/ZeroGC.SCADA.git</PackageProjectUrl>
         <Copyright>Copyright © 2026 atomtick</Copyright>
-        <Version>2026.7.28.1</Version>
+        <Version>2026.8.29</Version>
         <RepositoryType>git</RepositoryType>
         <Authors>atomtick</Authors>
         <Description>A class library for high-performance read and write configuration based on XML.</Description>
@@ -37,6 +37,7 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.8" />
         <PackageReference Include="System.ValueTuple" Version="4.6.2" />
+        <PackageReference Include="ZLinq" Version="1.5.6" />
     </ItemGroup>
     <ItemGroup>
         <Compile Update="Assets\ExceptionMessages.Designer.cs">

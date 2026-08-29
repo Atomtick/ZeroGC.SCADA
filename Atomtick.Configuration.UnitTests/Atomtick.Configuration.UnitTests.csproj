@@ -23,4 +23,14 @@
     <ItemGroup>
         <Using Include="Xunit" />
     </ItemGroup>
+
+    <ItemGroup>
+      <None Update="configs.db">
+        <PackagePath>contentFiles\any\any;content</PackagePath>
+        <PackageCopyToOutput>true</PackageCopyToOutput>
+        <BuildAction>Content</BuildAction>
+        <Pack>true</Pack>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
 </Project>

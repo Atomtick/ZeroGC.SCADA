@@ -1,27 +1,30 @@
-﻿using System;
+﻿using Atomtick.Common;
+using Atomtick.Configuration.Interfaces;
+using SCADA.Common;
+using System;
+using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using Atomtick.Common;
-using Atomtick.Configuration.Interfaces;
-using SCADA.Common;
+using ZLinq;
 
 namespace Atomtick.Configuration
 {
     public partial class PrimitiveConfigSource : IConfigWriter
     {
         // long 事务id,允许多个事务并行.
-        // ConcurrentDictionary<string, object> 单个事务需要修改的的配置项集合.使用字典的好处是如果在同一个事务中多次修改同一个配置项的值,会以最后一次为准!
+        // ListDict 单个事务需要修改的的配置项集合.使用字典的好处是如果在同一个事务中多次修改同一个配置项的值,会以最后一次为准!
         private readonly ConcurrentDictionary<long, ListDict> _transactionBuffer;
+
         private long _id;
 
         public IConfigWriter BeginTransaction(out long transactionId)
         {
             // _id: 0,1,2...long.max,long.min(overflow),long.min + 1...0...long.max...如此循环往复.
             transactionId = Interlocked.Increment(ref _id);
-            _transactionBuffer.TryAdd(transactionId, new ListDict());
+            _transactionBuffer.TryAdd(transactionId, new ListDict(8));
             return this;
         }
 
@@ -49,7 +52,6 @@ namespace Atomtick.Configuration
             {
                 throw new ArgumentException("Config name cannot be null or empty.", nameof(config));
             }
-
             if (!_configItems.ContainsKey(config))
             {
                 throw new KeyNotFoundException($"{config} not found in the config collection.");
@@ -73,28 +75,33 @@ namespace Atomtick.Configuration
         {
             if (modificationConfigs != null && modificationConfigs.Any())
             {
-                // 剔除值没变化的配置项
-                var equalsKeys = new List<string>();
+                // 剔除值(StringValue)没变化的配置项
+                var equalsKeys = ArrayPool<string>.Shared.Rent(modificationConfigs.Count);
+                int k = 0;
                 foreach (var pair in modificationConfigs.Where(pair => (pair.Value as string) == _configItems[pair.Key].StringValue))
                 {
-                    equalsKeys.Add(pair.Key);
+                    equalsKeys[k] = pair.Key;
+                    ++k;
                 }
-                foreach (var item in equalsKeys)
+
+                for (int i = 0; i < k; ++i)
                 {
-                    modificationConfigs.Remove(item);
+                    modificationConfigs.Remove(equalsKeys[i]);
                 }
+                ArrayPool<string>.Shared.Return(equalsKeys);
 
                 // 存在新值与旧值不相等的情况才会触发修改动作
                 if (modificationConfigs.Any())
                 {
                     // 把数据提前准备好,以保证锁内只有最小的代码量(只有极其简单的赋值操作),提高并发性能.因为锁内的代码越少,并发性能越高.
-                    string[] stringValues = new string[modificationConfigs.Count];
-                    object[] objectValues = new object[modificationConfigs.Count];
-                    ConfigItem[] configItems = new ConfigItem[modificationConfigs.Count];
+                    int count = modificationConfigs.Count;
+                    var stringValues = ArrayPool<string>.Shared.Rent(count);
+                    object[] objectValues = new object[count];
+                    ConfigItem[] configItems = new ConfigItem[count];
                     int index = 0;
                     foreach (var pair in modificationConfigs)
                     {
-                        configItems[index] = _configItems[pair.Key];
+                        configItems[index] = _configItems[pair.Key]; // hash查找转数组O(1)查找
                         stringValues[index] = pair.Value as string;
                         objectValues[index] = Convert2Object(_configItems[pair.Key].Type, pair.Value as string);
                         ++index;
@@ -106,12 +113,14 @@ namespace Atomtick.Configuration
                         configItems[i].ObjectValue = objectValues[i];
                     }
                     _seqLock.WriteUnlock();
+
+                    ArrayPool<string>.Shared.Return(stringValues);
+                    ValueChanged?.Invoke(modificationConfigs);
                     // 异步刷盘
                     if (_channel.Writer.TryWrite(modificationConfigs) == false)
                     {
                         throw new Exception("Failed to add to the asynchronous persistence to disk queue.");
                     }
-                    ValueChanged?.Invoke(modificationConfigs);
                 }
             }
         }

@@ -20,7 +20,7 @@ namespace Atomtick.Configuration
 
     public partial class PrimitiveConfigSource : IDisposable
     {
-        private readonly Channel<ListDict> _channel = Channel.CreateUnbounded<ListDict>();
+        private readonly Channel<ListDict> _channel = Channel.CreateUnbounded<ListDict>(new UnboundedChannelOptions() { SingleReader = true });
 
         private readonly string _dbConnectionString;
         private readonly Task _saveTask;

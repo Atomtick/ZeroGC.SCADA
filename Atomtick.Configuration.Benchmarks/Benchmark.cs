@@ -154,5 +154,26 @@ namespace Atomtick.Configuration.Benchmarks
             // 将值喂给 Consumer，防止 val 的读取被 JIT 删掉
             _consumer.Consume(FAEnable);
         }
+
+        [WarmupCount(5)]
+        [Benchmark()]
+        public void Write10Items()
+        {
+            var _configSource2 = new PrimitiveConfigSource("configs.db");
+            _configSource2
+                .BeginTransaction(out long transactionId)
+                .Write(transactionId, "FA.Enable", true.ToString())
+                .Write(transactionId, "FA.LocalIpAddress", "192.168.0.1")
+                .Write(transactionId, "FA.LocalPortNumber", 5432.ToString())
+                .Write(transactionId, "FA.T3Timeout", "20")
+                .Write(transactionId, "FA.T5Timeout", "20")
+                .Write(transactionId, "FA.T6Timeout", "20")
+                .Write(transactionId, "FA.T7Timeout", "20")
+                .Write(transactionId, "FA.T8Timeout", "20")
+                .Write(transactionId, "FA.LinkTestInterval", "20")
+                .Write(transactionId, "FA.initial_valueControlSubState", "Local")
+                .CommitTransaction(transactionId);
+            _configSource2.Dispose();
+        }
     }
 }

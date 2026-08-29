@@ -95,6 +95,11 @@ ConfigValue是值类型, 疯狂返回时, 不会有GC压力.
 
 
 
+## Modify Configs
+
+- 批量写入时，先创建一个字典，把所有本次要写入的配置项全部缓存到字典中，最后校验字典中的全部元素，若全部通过，则正式修改。
+- BeginTransaction生成字典，Write将配置项临时缓存到字典，CommitTransaction校验字典元素并正式修改。
+
 ## 校验流程
 
 **校验的相关元素**
@@ -381,27 +386,73 @@ bool isPresent = _isEFEMInstalled.TryToBool(out bool isEFEMInstalled);
 
 > 复杂数据可以全部配置成String，程序使用时先转换成string，再把string二次转换成复杂数据。
 
-### 批量修改单个或多个配置项(原子操作)
+### How to modify multiple configs atomically
 
 ```c#
-var configSource = new PrimitiveConfigSource("configs.db");
-
-configSource.BeginTransaction(out long transactionId);
-
+var configSource = new PrimitiveConfigSource("configs.db", settings);
 configSource
-    .Write(transactionId, "Cylinder.Timeout", 5 * 1000)
-    .Write(transactionId, "EAP.IP", "192.168.1.29")
-    .Write(transactionId, "Log.Enable", true)
-    .Write(transactionId, "FlowRate.Tolerance", 1.5)
-    .Write(transactionId, "Alarm.Color", System.Drawing.Color.Red)
-    .Write(transactionId, "Data.Folder", "C:\\Logs");
-
-configSource.CommitTransaction(transactionId);
+    .BeginTransaction(out long transactionId) // new a dict
+    .Write(transactionId, "FA.IsEnabled", true.ToString()) // add element to dict temporarily
+    .Write(transactionId, "FA.LocalIpAddress", "192.168.0.1")
+    .Write(transactionId, "FA.LocalPortNumber", 5432.ToString())
+    .Write(transactionId, "FA.T3Timeout", "20.5")
+    .Write(transactionId, "FA.LogPath", "C:\\Logs")
+    .CommitTransaction(transactionId); // validate all elements in dict and commit modifications
+configSource.Dispose();
 ```
 
 - 多个配置项要么都被成功修改, 要么都维持不变, 满足原子操作
-- 只有新值与旧值不相等才会触发修改动作, 所以如果多次Write相同值几乎没有开销
+- 只有新值与旧值不相等才会触发修改动作, 所以如果多次Write相同值没有开销（非常适合处理用户疯狂点保存按钮的场景）
 - 新值和旧值判断相等的规则是比较字符串形式的值, 如 旧值是 "16", 新值是 "0x10" , 虽然都表示十进制的数字16, 但仍旧被判定为新值与旧值不等.
+
+> 每次Write Transaction都会分配一些小对象和写数据库，这会引入磁盘IO和GC抖动，所以，如果要修改多个配置项，强烈建议单次事务提交，这样性能和内存开销更小，同时，PrimitiveConfigSource可以保证只要有一项校验失败，则全部的项都不会被修改，即原子操作。
+
+### 校验
+
+### 校验代码
+
+```c#
+IConfigValidator configSource = new PrimitiveConfigSource("configs.db");
+
+// 方式一: 校验失败会抛出异常
+configSource.ValidateValue("FA.LocalPortNumber", "1000");
+
+// 方式二: ok是true表示校验通过,false表示校验失败,errorMessage是失败原因.
+var ok = configSource.ValidateValue("FA.LocalPortNumber", "1000", out string errorMessage);
+```
+
+> 高频校验场景请使用方式二, 因为方式一频繁抛出异常会严重影响性能.
+
+### 校验流程
+
+- 类型校验
+  - 值都是字符串类型. 值字符串必须满足可以转换成配置项的type指定的类型. 如"3.14"肯定无法转换成Integer, "#AABBCC"肯定无法转换成DateTime.
+
+- 集合校验
+  - String, Integer, Decimal, Color才有此项校验
+  - Integer 和 Decimal 比较特殊.首先,options内的所有元素和待校验的值都是字符串,它会先统一的把Options里面的元素以及待校验的值全部转换成数字类型(long或double),然后再检查转换后的集合是否包含转换后的待校验值. 举例: 假设string[] options=["1", "0x02", "3.14E2"], 待校验值是"2", 则校验过程是[1,2,314].Contains(2),结果是包含! 这样做更智能,避免了同一个数字因为不同的字符串表示被判断成不相等的情况.
+- 最值校验
+  - 如果大于最大值或小于最小值, 则校验失败.
+  - Integer和Decimal才有此项校验, 其他类型无.
+- 正则校验
+  - Bool无此校验,其他类型有.
+  - String, Folder, File, DateTime, Color的字符串形式直接进行正则表达.
+  - Integer和Decimal先统一转换成十进制字符串形式再进行正则表达. (举例: 如果是十六进制如'0X0A', 那么进行正则表达校验的实际字符串是'10').
+
+- AppendedValidationRule. 
+
+### 校验位置
+
+Atomtick.Configuration Library 内部在3个位置调用校验函数进行校验.
+
+1. 初始化时,对intial_value校验.
+2. 初始化时,对持久化的current_value校验.
+3. 初始化时,对options所有子元素校验.
+4. Write函数修改配置项的值时对新值校验.
+
+
+
+
 
 #### type="Bool"
 
@@ -555,50 +606,7 @@ configSource.Write(transactionId,"System.DataReport", "D:\\data.xlsx");
 configSource.Write(transactionId,"System.DataReport", "../../data.xlsx");
 ```
 
-> 每次调用CommitTransaction都会写一次数据库。如果有多个修改，单次批量提交性能更高开销更小，且可以保证只要有一项校验失败，则全部的设置项都不会被修改，即原子操作。
 
-### 校验
-
-### 校验代码
-
-```c#
-IConfigValidator configSource = new PrimitiveConfigSource("configs.db");
-
-// 方式一: 校验失败会抛出异常
-configSource.ValidateValue("FA.LocalPortNumber", "1000");
-
-// 方式二: ok是true表示校验通过,false表示校验失败,errorMessage是失败原因.
-var ok = configSource.ValidateValue("FA.LocalPortNumber", "1000", out string errorMessage);
-```
-
-> 高频校验场景请使用方式二, 因为方式一频繁抛出异常会严重影响性能.
-
-### 校验流程
-
-- 类型校验
-  - 值都是字符串类型. 值字符串必须满足可以转换成配置项的type指定的类型. 如"3.14"肯定无法转换成Integer, "#AABBCC"肯定无法转换成DateTime.
-
-- 集合校验
-  - String, Integer, Decimal, Color才有此项校验
-  - Integer 和 Decimal 比较特殊.首先,options内的所有元素和待校验的值都是字符串,它会先统一的把Options里面的元素以及待校验的值全部转换成数字类型(long或double),然后再检查转换后的集合是否包含转换后的待校验值. 举例: 假设string[] options=["1", "0x02", "3.14E2"], 待校验值是"2", 则校验过程是[1,2,314].Contains(2),结果是包含! 这样做更智能,避免了同一个数字因为不同的字符串表示被判断成不相等的情况.
-- 最值校验
-  - 如果大于最大值或小于最小值, 则校验失败.
-  - Integer和Decimal才有此项校验, 其他类型无.
-- 正则校验
-  - Bool无此校验,其他类型有.
-  - String, Folder, File, DateTime, Color的字符串形式直接进行正则表达.
-  - Integer和Decimal先统一转换成十进制字符串形式再进行正则表达. (举例: 如果是十六进制如'0X0A', 那么进行正则表达校验的实际字符串是'10').
-
-- AppendedValidationRule. 
-
-### 校验位置
-
-Atomtick.Configuration Library 内部在3个位置调用校验函数进行校验.
-
-1. 初始化时,对intial_value校验.
-2. 初始化时,对持久化的current_value校验.
-3. 初始化时,对options所有子元素校验.
-4. Write函数修改配置项的值时对新值校验.
 
 ## ValueSet
 
