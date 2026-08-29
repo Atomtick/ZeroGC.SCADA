@@ -16,6 +16,7 @@ namespace Atomtick.Configuration.Benchmarks
     public class Benchmark
     {
         private readonly PrimitiveConfigSource _configSource;
+        private readonly PrimitiveConfigSource _configSource2;
         private readonly ConfigItem iFAEnable;
         private readonly ConfigItem iFAMode;
         private readonly ConfigItem iT3Timeout;
@@ -38,6 +39,7 @@ namespace Atomtick.Configuration.Benchmarks
         {
             Environment.CurrentDirectory = AppContext.BaseDirectory;
             _configSource = new PrimitiveConfigSource("configs.db");
+            _configSource2 = new PrimitiveConfigSource("configs.db");
             // 这里只需要执行一次就可以了
             iFAEnable = _configSource.Select("FA.Enable");
             iFAMode = _configSource.Select("FA.ConnectionMode");
@@ -159,7 +161,6 @@ namespace Atomtick.Configuration.Benchmarks
         [Benchmark()]
         public void Write10Items()
         {
-            var _configSource2 = new PrimitiveConfigSource("configs.db");
             _configSource2
                 .BeginTransaction(out long transactionId)
                 .Write(transactionId, "FA.Enable", true.ToString())
