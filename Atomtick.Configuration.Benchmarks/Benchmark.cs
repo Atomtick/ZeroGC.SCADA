@@ -17,6 +17,7 @@ namespace Atomtick.Configuration.Benchmarks
     {
         private readonly PrimitiveConfigSource _configSource;
         private readonly PrimitiveConfigSource _configSource2;
+        private long _i;
         private readonly ConfigItem iFAEnable;
         private readonly ConfigItem iFAMode;
         private readonly ConfigItem iT3Timeout;
@@ -66,15 +67,15 @@ namespace Atomtick.Configuration.Benchmarks
             double.Parse("3.14159");
         }
 
-        [WarmupCount(5)]
-        [Benchmark()]
+        //[WarmupCount(5)]
+        //[Benchmark()]
         public void HashSearch()
         {
             _configSource.Select("PM1.BaratronLineHeater.IsInstalled");
         }
 
-        [WarmupCount(5)]
-        [Benchmark()]
+        //[WarmupCount(5)]
+        //[Benchmark()]
         public void Read16Items()
         {
             (
@@ -147,8 +148,8 @@ namespace Atomtick.Configuration.Benchmarks
             _consumer.Consume(Baratron);
         }
 
-        [WarmupCount(5)]
-        [Benchmark()]
+        //[WarmupCount(5)]
+        //[Benchmark()]
         public void ReadOneItem()
         {
             var vFAEnable = _configSource.Read(iFAEnable);
@@ -157,22 +158,23 @@ namespace Atomtick.Configuration.Benchmarks
             _consumer.Consume(FAEnable);
         }
 
+        private bool _FaEnable = true;
         [WarmupCount(5)]
         [Benchmark()]
         public void Write10Items()
         {
             _configSource2
                 .BeginTransaction(out long transactionId)
-                .Write(transactionId, "FA.Enable", true.ToString())
-                .Write(transactionId, "FA.LocalIpAddress", "192.168.0.1")
-                .Write(transactionId, "FA.LocalPortNumber", 5432.ToString())
-                .Write(transactionId, "FA.T3Timeout", "20")
-                .Write(transactionId, "FA.T5Timeout", "20")
-                .Write(transactionId, "FA.T6Timeout", "20")
-                .Write(transactionId, "FA.T7Timeout", "20")
-                .Write(transactionId, "FA.T8Timeout", "20")
-                .Write(transactionId, "FA.LinkTestInterval", "20")
-                .Write(transactionId, "FA.initial_valueControlSubState", "Local")
+                .Write(transactionId, "FA.Enable", (!_FaEnable).ToString())
+                .Write(transactionId, "FA.LocalIpAddress", $"192.168.{_i++}.1")
+                .Write(transactionId, "FA.LocalPortNumber", (_i++).ToString())
+                .Write(transactionId, "FA.T3Timeout", (_i++).ToString())
+                .Write(transactionId, "FA.T5Timeout", (_i++).ToString())
+                .Write(transactionId, "FA.T6Timeout", (_i++).ToString())
+                .Write(transactionId, "FA.T7Timeout", (_i++).ToString())
+                .Write(transactionId, "FA.T8Timeout", (_i++).ToString())
+                .Write(transactionId, "FA.LinkTestInterval", (_i++).ToString())
+                .Write(transactionId, "FA.initial_valueControlSubState", _FaEnable ? "Local" : "Remote")
                 .CommitTransaction(transactionId);
             _configSource2.Dispose();
         }
