@@ -11,6 +11,7 @@ namespace ZZZ.Test
     {
         private static void Main(string[] args)
         {
+
             var configSource = new PrimitiveConfigSource("configs.db");
 
             configSource.BeginTransaction(out long transactionId);

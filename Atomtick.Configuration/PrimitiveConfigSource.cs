@@ -55,7 +55,6 @@ namespace Atomtick.Configuration
         }
 
         public event Action<ListDict> ValueChanged;
-        public event Action<ListDict> ValueChanging;
 
         public ConfigSettings Settings { get; }
 
@@ -97,45 +96,10 @@ namespace Atomtick.Configuration
             catch { }
         }
 
-        private void CreateConfigCurrentValueTable()
-        {
-            using (var connection = new SqliteConnection(_dbConnectionString))
-            {
-                connection.Open();
-                string createTableSql = $"CREATE TABLE \"{CONFIG_CURRENT_VALUE}\" (\n\t\"name\"\tTEXT,\n\t\"value\"\tTEXT NOT NULL,\n\t\"time\"\tINTEGER NOT NULL,\n\tPRIMARY KEY(\"name\")\n)";
-                using (var command = connection.CreateCommand())
-                {
-                    command.CommandText = createTableSql;
-                    command.ExecuteNonQuery();
-                }
-            }
-        }
-
-        private void CreateConfigHistoryValueTable()
-        {
-            using (var connection = new SqliteConnection(_dbConnectionString))
-            {
-                connection.Open();
-                string createTableSql =
-                    $"CREATE TABLE \"{CONFIG_HISTORY_VALUE}\" ( \"id\"\tINTEGER, \"name\"\tTEXT NOT NULL, \"new_value\"\tTEXT NOT NULL, \"time\"\tINTEGER NOT NULL, PRIMARY KEY(\"id\"))";
-                using (var command = connection.CreateCommand())
-                {
-                    command.CommandText = createTableSql;
-                    command.ExecuteNonQuery();
-                }
-            }
-        }
-
         private void SaveToSqlite(ListDict changedItems)
         {
             if (!Settings.RestoreOnAppStartup)
             {
-                if (!_hasTable_config_current_value)
-                {
-                    CreateConfigCurrentValueTable();
-                    _hasTable_config_current_value = true;
-                }
-
                 using (var connection = new SqliteConnection(_dbConnectionString))
                 {
                     connection.Open();
@@ -162,11 +126,6 @@ namespace Atomtick.Configuration
                     }
                     if (Settings.IsConfigModificationTrackingEnabled)
                     {
-                        if (_hasTable_config_history_value == false)
-                        {
-                            CreateConfigHistoryValueTable();
-                            _hasTable_config_history_value = true;
-                        }
                         using (var transaction = connection.BeginTransaction())
                         {
                             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();

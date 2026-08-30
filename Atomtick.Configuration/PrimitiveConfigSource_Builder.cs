@@ -15,12 +15,17 @@ namespace Atomtick.Configuration
         private void Initialize()
         {
             CheckTableExists(out _hasTable_config_schema_document, out _hasTable_config_current_value, out _hasTable_config_history_value);
+            if (Settings.IsConfigModificationTrackingEnabled && _hasTable_config_history_value == false)
+                CreateConfigHistoryValueTable();
+            if (Settings.RestoreOnAppStartup == false && _hasTable_config_current_value == false)
+                CreateConfigCurrentValueTable();
+
             RootNodes = Build();
             UpdateOptions();
             ValidateInitialValue();
             ValidateOptions();
 
-            if (Settings.RestoreOnAppStartup == false && _hasTable_config_current_value)
+            if (Settings.RestoreOnAppStartup == false)
             {
                 ReadConfigCurrentValue();
             }
@@ -60,6 +65,35 @@ namespace Atomtick.Configuration
                             }
                         }
                     }
+                }
+            }
+        }
+
+        private void CreateConfigCurrentValueTable()
+        {
+            using (var connection = new SqliteConnection(_dbConnectionString))
+            {
+                connection.Open();
+                string createTableSql = $"CREATE TABLE \"{CONFIG_CURRENT_VALUE}\" (\n\t\"name\"\tTEXT,\n\t\"value\"\tTEXT NOT NULL,\n\t\"time\"\tINTEGER NOT NULL,\n\tPRIMARY KEY(\"name\")\n)";
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = createTableSql;
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        private void CreateConfigHistoryValueTable()
+        {
+            using (var connection = new SqliteConnection(_dbConnectionString))
+            {
+                connection.Open();
+                string createTableSql =
+                    $"CREATE TABLE \"{CONFIG_HISTORY_VALUE}\" ( \"id\"\tINTEGER, \"name\"\tTEXT NOT NULL, \"new_value\"\tTEXT NOT NULL, \"time\"\tINTEGER NOT NULL, PRIMARY KEY(\"id\"))";
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = createTableSql;
+                    command.ExecuteNonQuery();
                 }
             }
         }
