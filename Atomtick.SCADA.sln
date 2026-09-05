@@ -38,7 +38,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "!Solution Items", "!Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
 	ProjectSection(SolutionItems) = preProject
 		Atomtick_Design_Mind.md = Atomtick_Design_Mind.md
-		C:\Users\liliu\Music\GemModel.db = C:\Users\liliu\Music\GemModel.db
+		..\..\..\Users\liliu\Music\GemModel.db = ..\..\..\Users\liliu\Music\GemModel.db
 		pgsql.xlsx = pgsql.xlsx
 		README.md = README.md
 	EndProjectSection
@@ -96,6 +96,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UIClient", "UIClient", "{C68B4B12-76C4-463A-8FE3-B72A4A7DCF5D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvaloniaApplication1", "AvaloniaApplication1\AvaloniaApplication1.csproj", "{F33986C1-BD24-4869-AF50-A9EE5ADD1795}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "测试零GC写入数据库", "测试零GC写入数据库", "{D6DE988F-6572-4D0A-AC22-844E7979B104}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{CC432637-E299-4E58-B05C-6CACDA0CAEAA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -243,6 +247,10 @@ Global
 		{F33986C1-BD24-4869-AF50-A9EE5ADD1795}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F33986C1-BD24-4869-AF50-A9EE5ADD1795}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F33986C1-BD24-4869-AF50-A9EE5ADD1795}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC432637-E299-4E58-B05C-6CACDA0CAEAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC432637-E299-4E58-B05C-6CACDA0CAEAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC432637-E299-4E58-B05C-6CACDA0CAEAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC432637-E299-4E58-B05C-6CACDA0CAEAA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -272,6 +280,7 @@ Global
 		{BF7C0CC9-D3F9-4018-8428-64784A3A148C} = {951E2E38-3C6C-44ED-A868-506468F75C5F}
 		{E6E98F73-E484-4CE7-BE0A-BDC06CF18681} = {08A15B38-4912-42D4-8F59-D26E85439A3B}
 		{AC8D4C40-C22B-49D3-AD07-0597C44DAEF9} = {C68B4B12-76C4-463A-8FE3-B72A4A7DCF5D}
+		{CC432637-E299-4E58-B05C-6CACDA0CAEAA} = {D6DE988F-6572-4D0A-AC22-844E7979B104}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {799FB5EC-E80F-4485-A592-24BA78235A48}

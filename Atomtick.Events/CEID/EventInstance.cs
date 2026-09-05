@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Atomtick.Common;
+using CommunityToolkit.HighPerformance.Buffers;
+using SCADA.Common;
+using System;
 using System.Collections.Specialized;
 using System.Runtime.InteropServices;
-using Atomtick.Common;
-using SCADA.Common;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Atomtick.Events.CEID
 {
@@ -20,7 +22,15 @@ namespace Atomtick.Events.CEID
             {
                 _source = value;
                 var index = _source.IndexOf('.');
-                Module = index == -1 ? value : _source.Substring(0, index);
+                if(index == -1)
+                {
+                    Module = value;
+                }
+                else
+                {
+                    ReadOnlySpan<char> spanKey = _source.AsSpan(0, index + 1);
+                    Module = index == -1 ? value : StringPool.Shared.GetOrAdd(spanKey);
+                }
             }
         }
         public string Module { get; internal set; }
