@@ -6,7 +6,7 @@ using SCADA.Common;
 
 namespace Atomtick.Events.CEID
 {
-    public class EventInstance
+    public struct EventInstance
     {
         private string _source;
 

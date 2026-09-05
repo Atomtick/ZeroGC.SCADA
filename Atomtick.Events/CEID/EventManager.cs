@@ -65,15 +65,17 @@ namespace Atomtick.Events.CEID
                 {
                     while (_eventChannel.Reader.TryRead(out var eventInstance))
                     {
-                        OnEventAsync?.Invoke(this, eventInstance);
+                        OnEventAsync?.Invoke(this, ref eventInstance);
                     }
                 }
             });
         }
 
-        public event EventHandler<EventInstance> OnEventAsync;
+        public event EventItemHandler<EventInstance> OnEventAsync;
 
-        public event EventHandler<EventInstance> OnEventSync;
+        public delegate void EventItemHandler<T>(object sender, ref T e);
+
+        public event EventItemHandler<EventInstance> OnEventSync;
 
         public void ClearAlarmEvents()
         {
@@ -461,7 +463,7 @@ namespace Atomtick.Events.CEID
                     _alertEventInstances = newAlerts;
                 }
             }
-            OnEventSync?.Invoke(this, eventInstance);
+            OnEventSync?.Invoke(this, ref eventInstance);
             _eventChannel.Writer.TryWrite(eventInstance);
         }
     }
