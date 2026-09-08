@@ -413,23 +413,23 @@ configSource.Dispose();
 
 > 每次Write Transaction都会分配一些小对象和写数据库，这会引入磁盘IO和GC抖动，所以，如果要修改多个配置项，强烈建议单次事务提交，这样性能和内存开销更小，同时，PrimitiveConfigSource可以保证只要有一项校验失败，则全部的项都不会被修改，即原子操作。
 
-### 校验
+### Validate
 
-### 校验代码
+#### code example
 
 ```c#
 IConfigValidator configSource = new PrimitiveConfigSource("configs.db");
 
-// 方式一: 校验失败会抛出异常
+// 方式一: 校验未通过会抛出异常
 configSource.ValidateValue("FA.LocalPortNumber", "1000");
 
-// 方式二: ok是true表示校验通过,false表示校验失败,errorMessage是失败原因.
+// 方式二: ok是true表示校验通过,false表示校验未通过,errorMessage是失败原因.
 var ok = configSource.ValidateValue("FA.LocalPortNumber", "1000", out string errorMessage);
 ```
 
 > 高频校验场景请使用方式二, 因为方式一频繁抛出异常会严重影响性能.
 
-### 校验流程
+#### validation process
 
 - 类型校验
   - 值都是字符串类型. 值字符串必须满足可以转换成配置项的type指定的类型. 如"3.14"肯定无法转换成Integer, "#AABBCC"肯定无法转换成DateTime.
@@ -447,7 +447,7 @@ var ok = configSource.ValidateValue("FA.LocalPortNumber", "1000", out string err
 
 - AppendedValidationRule. 
 
-### 校验位置
+#### validation position
 
 Atomtick.Configuration Library 内部在3个位置调用校验函数进行校验.
 
@@ -456,11 +456,7 @@ Atomtick.Configuration Library 内部在3个位置调用校验函数进行校验
 3. 初始化时,对options所有子元素校验.
 4. Write函数修改配置项的值时对新值校验.
 
-
-
-
-
-#### type="Bool"
+#### validation unit test
 
 ```c#
 configSource.Write(transactionId,"System.IsSimulatorMode", true);
@@ -478,7 +474,7 @@ configSource.Write(transactionId,"System.IsSimulatorMode", "fAlsE");
 configSource.Write(transactionId,"System.IsSimulatorMode", "TRUE");
 ```
 
-#### type="Integer"
+
 
 ```c#
 configSource.Write(transactionId,"System.CycleCount", 13);
@@ -520,7 +516,7 @@ configSource.Write(transactionId,"System.CycleCount", 12,34,56);
 configSource.Write(transactionId,"System.CycleCount", "123,456");
 ```
 
-#### type="Decimal"
+
 
 ```c#
 configSource.Write(transactionId,"System.SetUp.DiskFreeSpaceAlarmTolerance", -23.01);
@@ -558,7 +554,7 @@ configSource.Write(transactionId,"System.SetUp.DiskFreeSpaceAlarmTolerance", 0xA
 configSource.Write(transactionId,"System.SetUp.DiskFreeSpaceAlarmTolerance", "0xA2");
 ```
 
-#### type="String"
+
 
 可以是任意字符串，包括空字符串，也可以是任意数据类型，比如下面的23，会自动调用其ToString()。只要不是null都可以。
 
@@ -574,14 +570,14 @@ configSource.Write(transactionId,"System.SetUp.RemoteIpAddress", "hello");
 configSource.Write(transactionId,"System.SetUp.RemoteIpAddress", 23);
 ```
 
-#### type="DateTime"
+
 
 ```c#
 configSource.Write(transactionId,"System.ResetDate", DateTime.Now);
 configSource.Write(transactionId,"System.ResetDate", "2025-8-4");
 ```
 
-#### type="Color"
+
 
 ```c#
 configSource.Write(transactionId,"System.AlarmLight", "#000000CC");
@@ -589,7 +585,7 @@ configSource.Write(transactionId,"System.AlarmLight", "#0000CC");
 configSource.Write(transactionId,"System.AlarmLight", System.Drawing.Color.Red);
 ```
 
-#### type="Folder"
+
 
 *支持绝对路径和相对路径*
 
@@ -601,7 +597,7 @@ configSource.Write(transactionId,"System.LogsFolder", "D:\\Logs");
 configSource.Write(transactionId,"System.LogsFolder", "../Logs");
 ```
 
-#### type="File"
+
 
 *支持绝对路径和相对路径*
 
@@ -611,8 +607,6 @@ configSource.Write(transactionId,"System.LogsFolder", "../Logs");
 configSource.Write(transactionId,"System.DataReport", "D:\\data.xlsx");
 configSource.Write(transactionId,"System.DataReport", "../../data.xlsx");
 ```
-
-
 
 ## ValueSet
 

@@ -11,11 +11,11 @@ namespace Atomtick.Configuration.Benchmarks
     [MemoryDiagnoser(displayGenColumns: true)]
     [EventPipeProfiler(EventPipeProfile.GcVerbose)] // 会生成一个 .nettrace 文件，你可以用 Visual Studio 或 PerfView 打开，精确看到是哪一行代码触发了分配
     [GcServer(false)] // 强制使用 Workstation GC，降低内存阈值，更容易触发回收
-    public class ValidateBenchmark
+    public class Benchmark_Validate
     {
         IConfigValidator _configSource;
 
-        public ValidateBenchmark()
+        public Benchmark_Validate()
         {
             _configSource = new PrimitiveConfigSource("configs.db");
         }

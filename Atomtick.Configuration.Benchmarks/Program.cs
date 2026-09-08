@@ -1,5 +1,5 @@
 ﻿using Atomtick.Configuration.Benchmarks;
 using BenchmarkDotNet.Running;
 
-var summary = BenchmarkRunner.Run<Benchmark>();
-var summary2 = BenchmarkRunner.Run<ValidateBenchmark>();
+BenchmarkRunner.Run<Benchmark_ReadWrite>();
+BenchmarkRunner.Run<Benchmark_Validate>();

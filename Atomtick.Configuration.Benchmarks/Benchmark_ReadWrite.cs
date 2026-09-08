@@ -13,7 +13,7 @@ namespace Atomtick.Configuration.Benchmarks
     [MemoryDiagnoser(displayGenColumns: true)]
     [EventPipeProfiler(EventPipeProfile.GcVerbose)] // 会生成一个 .nettrace 文件，你可以用 Visual Studio 或 PerfView 打开，精确看到是哪一行代码触发了分配
     [GcServer(false)] // 强制使用 Workstation GC，降低内存阈值，更容易触发回收
-    public class Benchmark
+    public class Benchmark_ReadWrite
     {
         private readonly PrimitiveConfigSource _configSource;
         private readonly PrimitiveConfigSource _configSource2;
@@ -36,7 +36,7 @@ namespace Atomtick.Configuration.Benchmarks
         private readonly ConfigItem iBaratron;
         private readonly Consumer _consumer = new Consumer();
 
-        public Benchmark()
+        public Benchmark_ReadWrite()
         {
             Environment.CurrentDirectory = AppContext.BaseDirectory;
             _configSource = new PrimitiveConfigSource("configs.db");
@@ -76,7 +76,7 @@ namespace Atomtick.Configuration.Benchmarks
 
         //[WarmupCount(5)]
         //[Benchmark()]
-        public void Read16Items()
+        public void Read_16_Items()
         {
             (
                 var vFAEnable,
@@ -150,7 +150,7 @@ namespace Atomtick.Configuration.Benchmarks
 
         //[WarmupCount(5)]
         //[Benchmark()]
-        public void ReadOneItem()
+        public void Read_1_Item()
         {
             var vFAEnable = _configSource.Read(iFAEnable);
             var FAEnable = vFAEnable.ToBool();
@@ -161,7 +161,7 @@ namespace Atomtick.Configuration.Benchmarks
         private bool _FaEnable = true;
         [WarmupCount(5)]
         [Benchmark()]
-        public void Write10Items()
+        public void Write_10_Items()
         {
             _configSource2
                 .BeginTransaction(out long transactionId)
