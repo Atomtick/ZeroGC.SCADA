@@ -254,7 +254,7 @@ namespace Atomtick.Configuration
 
         public bool TryParse2Int64(string @string, out long @long)
         {
-            if (long.TryParse(@string, NumberStyles.Integer | NumberStyles.AllowThousands | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out @long))
+            if (long.TryParse(@string, NumberStyles.Integer | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out @long))
             {
                 return true;
             }
