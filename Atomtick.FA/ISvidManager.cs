@@ -6,5 +6,8 @@ using System.Threading.Tasks;
 
 namespace Atomtick.FA
 {
-    public class SVIDManager { }
+    public interface ISvidManager
+    {
+
+    }
 }

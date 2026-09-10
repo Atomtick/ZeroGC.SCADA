@@ -1,137 +1,4 @@
-﻿# TODO
-
-- IConfigReader
-
-# 解决了什么问题
-
-Atomtick.Configuration的核心价值是
-
-1. 支持原子批量读写 
-2. 读操作零GC 
-3. 纳秒级性能
-
-下面是BenchmarkDotNet的测试报告, 该报告说明: 原子性批量读取16个配置项, 仅耗时`47.966 ns`, 相当于执行两次将一个字符串转换成数字的时间, 速度极快, 同时`满足零GC`!
-
-```
-
-BenchmarkDotNet v0.15.8, Windows 10 (10.0.19045.6466/22H2/2022Update)
-12th Gen Intel Core i7-1260P 2.10GHz, 1 CPU, 16 logical and 12 physical cores
-.NET SDK 10.0.301
-  [Host]     : .NET 10.0.9 (10.0.9, 10.0.926.27113), X64 RyuJIT x86-64-v3
-  Job-YGNLVQ : .NET 10.0.9 (10.0.9, 10.0.926.27113), X64 RyuJIT x86-64-v3
-
-Server=False  WarmupCount=5  
-
-```
-| Method              |        Mean |     Error |    StdDev | Ratio | RatioSD | Allocated | Alloc Ratio |
-| ------------------- | ----------: | --------: | --------: | ----: | ------: | --------: | ----------: |
-| ParseStringToDouble | `27.128 ns` | 0.3929 ns | 0.3675 ns |  1.00 |    0.02 |       `-` |          NA |
-| HashSearch          | `23.654 ns` | 0.4555 ns | 0.4260 ns |  0.87 |    0.02 |       `-` |          NA |
-| Read16Items         | `47.966 ns` | 0.1554 ns | 0.1378 ns |  1.77 |    0.02 |       `-` |          NA |
-| ReadOneItem         |  `4.467 ns` | 0.0167 ns | 0.0148 ns |  0.16 |    0.00 |       `-` |          NA |
-
-
-
-
-
-- **跨平台**
-  - 支持 Windows, Linux, MacOS
-  - 支持 .NET Framework 4.6.2 & .NET 12.
-
-- **支持修改**
-  - .NET Framework 和 .NET Core 内置的配置系统, 仅对读取操作友好, 但是对程序运行中修改配置操作支持差劲, 不适合在工业软件中, 用户需要频繁修改配置以完成装机调试, 工艺验证, 流程管控等场景.
-
-
-- **支持原子批量读写**
-
-  保证单次批量读取的所有配置来自同一个快照, 批量写入的配置要么同时成功要么全部失败, `严格满足一致性, 无数据撕裂`. 
-
-  在工业软件中, 配置的批量操作原子性如同PLC在一个扫描周期内IO来自同一快照, 一起写入物理地址那样重要, 否则就会导致诡异和难以复现的偶发宕机.
-
-  举例: 
-
-  1. MFC的流量在Tolerance徘徊Time则报警,如果调试时, Tolerance的修改先生效,程序内部可能出现在一个监控周期使用Tolerance新值Time旧值的情况,导致设备报警!
-  2. 矛盾的多个配置关系
-
-- **零GC & 高性能**
-
-  1. 采用SeqLock机制实现读无锁, 软件不会因为高频读取配置导致性能抖动或下降.
-
-  2. 自研Object转数字类型时, 在检查溢出和精度损失的同时, 不发生任何装箱, 速度接近C#类型强转.
-  3. 提前查好Value,在热路径避免哈希查找, 极其高频调用连哈希计算的时间都省去了.
-
-  3. 使用结构体和栈内存, 避免堆内存压力导致GC Stop-World.
-  4. 纳秒级抖动和耗时
-
-- **引入值校验机制, 防御性编程**
-
-  regex, options, type
-
-- **结构文档, 便于组织配置, Sqlite, 写无损.**
-
-- 字符串性配置,无需编译, 灵活配置, 完全符合半导体行业设备和软件逐步迭代的需求.
-
-- 支持导出GEM模型中的ECID集合.
-
-- **存储修改历史**
-
-  此功能可选择是否开启.
-
-  若开启, 每一次修改都会被严格记录, 可用于追溯和审计, 帮助定位客户现场事故原因.
-
-​		
-
-# Design Idea
-
-## ConfigValue
-
-IConfigValue和IConfigItem的目的是配合IConfigSource暴露给用户,用户在使用时,可以拿到接口进而读写配置,但是接口内无具体实现,既保密了代码,也能让用户自己实现IConfigSource,也能使用SCADA提供的实现.
-
-ConfigItem包含一个配置的所有信息,包括当前值,是单例的.
-
-ConfigValue只是暂存的,拿到后拷贝ConfigItem,能够临时变量.
-
-ConfigValue是值类型, 疯狂返回时, 不会有GC压力.
-
-
-
-## 保证原子读写的顺序锁
-
-
-
-
-
-## Modify Configs
-
-- 批量写入时，先创建一个字典，把所有本次要写入的配置项全部缓存到字典中，最后校验字典中的全部元素，若全部通过，则正式修改。
-- BeginTransaction生成字典，Write将配置项临时缓存到字典，CommitTransaction校验字典元素并正式修改。
-
-## 校验流程
-
-**校验的相关元素**
-
-​	min, max, regex, options, CustomizeOptions, AppendValidationRule.
-
-**校验顺序**
-
-1. 值字符串是否可以转换成相应的类型
-2. 如果是数字类型, 是否超出min和max范围
-3. 是否是options集合中的某一元素
-4. 值字符串是否满足regex正则表达式
-5. 是否满足AppendValidationRule
-
-**检查位置**
-
-	- initial_value, 加载XML后校验初始值
-	- options, 加载XML后校验options的每一个元素
-	- current_value, 校验从数据表读取到的当前值
-	- new_value, 修改配置项的值时检验新值
-
-
-
-> 不需要对min和max校验, 因为它并不是配置项的值, 只是指定极值范围.
-
-# User Manual
+﻿# User Manual
 
 1. 支持读取和修改配置
 2. 支持原子性批量读取或修改配置
@@ -142,9 +9,29 @@ ConfigValue是值类型, 疯狂返回时, 不会有GC压力.
 
 
 
-## Motivation and Function
+## Motivation and Purpose
 
-**.net framework app.config**
+强类型配置类(Options模式)的痛点
+
+优点：类型安全，智能提示，极速访问
+
+缺点1：假设以下场景，模块A使用的配置类ConfigA，模块B使用的配置类ConfigB，模块C使用的配置类ConfigC。在开发模块时，将所有模块使用的类需要事先定义到Common Library，class Config{ ConfigA A；ConfigB B； ConfigC C；}。 但是在整个应用启动时，需要根据需求加载部分模块，这就会导致未使用模块C但是应用的配置系统有根本不会被使用的ConfigC，这会非常干扰程序员使用配置。如果根据需求定义多个类，那需要维护多个软件版本，增删一个配置，都要新增一个版本。 如改用字符串，就能按需动态增删配置项，全程只需一个版本。
+
+缺点2：无法原子性批量更新。假设使用引用替换实现原子性。 第一次修改配置项A，B，C，第二次修改配置项D，E，F，原子替换时，修改ABC，DEF的修改会被抹除。
+
+
+
+动态增删配置和原子性批量读写是工业控制软件不可或缺的核心功能，所以诞生了基于字符串配置系统。
+
+基于字符串的字典模式
+
+
+
+为什么不用Microsoft自带的基于字符串索引的字典型配置系统？
+
+
+
+**.net framework app.config** 
 
 ```xml
 <?xml version="1.0" encoding="utf-8" ?>
@@ -432,29 +319,28 @@ var ok = configSource.ValidateValue("FA.LocalPortNumber", "1000", out string err
 #### validation process
 
 - 类型校验
-  - 值都是字符串类型. 值字符串必须满足可以转换成配置项的type指定的类型. 如"3.14"肯定无法转换成Integer, "#AABBCC"肯定无法转换成DateTime.
-
+  - 待校验的值都是字符串. 
+  - 待校验的字符串值必须可以转换成配置项的type指定的类型. 如"3.14"肯定无法转换成Integer, "#AABBCC"肯定无法转换成DateTime, "0XBC"肯定无法转换成Bool.
 - 集合校验
   - String, Integer, Decimal, Color才有此项校验
   - Integer 和 Decimal 比较特殊.首先,options内的所有元素和待校验的值都是字符串,它会先统一的把Options里面的元素以及待校验的值全部转换成数字类型(long或double),然后再检查转换后的集合是否包含转换后的待校验值. 举例: 假设string[] options=["1", "0x02", "3.14E2"], 待校验值是"2", 则校验过程是[1,2,314].Contains(2),结果是包含! 这样做更智能,避免了同一个数字因为不同的字符串表示被判断成不相等的情况.
 - 最值校验
-  - 如果大于最大值或小于最小值, 则校验失败.
   - Integer和Decimal才有此项校验, 其他类型无.
+  - 如果小于最小值或大于最大值, 则校验失败.
 - 正则校验
   - Bool无此校验,其他类型有.
   - String, Folder, File, DateTime, Color的字符串形式直接进行正则表达.
   - Integer和Decimal先统一转换成十进制字符串形式再进行正则表达. (举例: 如果是十六进制如'0X0A', 那么进行正则表达校验的实际字符串是'10').
-
 - AppendedValidationRule. 
 
 #### validation position
 
 Atomtick.Configuration Library 内部在3个位置调用校验函数进行校验.
 
-1. 初始化时,对intial_value校验.
-2. 初始化时,对持久化的current_value校验.
-3. 初始化时,对options所有子元素校验.
-4. Write函数修改配置项的值时对新值校验.
+1. Initialize时, 对options所有子元素校验.
+2. Initialize时, 对intial_value校验.
+3. Initialize时, 对current_value校验.
+4. Write修改配置项的值时对新值校验.
 
 #### validation unit test
 
@@ -979,6 +865,143 @@ Console.WriteLine(source.GetValue<bool>("System.IsSimulatorMode"));
 
 // PrimitiveConfigSource source = new PrimitiveConfigSource(File.ReadAllText("SetUp.xml")); // SetUp.xml作为软件初启动的默认配置，存放在应用程序目录下，可根据需要编辑修改。
 ```
+
+
+
+# TODO
+
+- IConfigReader
+
+# 解决了什么问题
+
+Atomtick.Configuration的核心价值是
+
+1. 支持原子批量读写 
+2. 读操作零GC 
+3. 纳秒级性能
+
+下面是BenchmarkDotNet的测试报告, 该报告说明: 原子性批量读取16个配置项, 仅耗时`47.966 ns`, 相当于执行两次将一个字符串转换成数字的时间, 速度极快, 同时`满足零GC`!
+
+```
+
+BenchmarkDotNet v0.15.8, Windows 10 (10.0.19045.6466/22H2/2022Update)
+12th Gen Intel Core i7-1260P 2.10GHz, 1 CPU, 16 logical and 12 physical cores
+.NET SDK 10.0.301
+  [Host]     : .NET 10.0.9 (10.0.9, 10.0.926.27113), X64 RyuJIT x86-64-v3
+  Job-YGNLVQ : .NET 10.0.9 (10.0.9, 10.0.926.27113), X64 RyuJIT x86-64-v3
+
+Server=False  WarmupCount=5  
+
+```
+| Method              |        Mean |     Error |    StdDev | Ratio | RatioSD | Allocated | Alloc Ratio |
+| ------------------- | ----------: | --------: | --------: | ----: | ------: | --------: | ----------: |
+| ParseStringToDouble | `27.128 ns` | 0.3929 ns | 0.3675 ns |  1.00 |    0.02 |       `-` |          NA |
+| HashSearch          | `23.654 ns` | 0.4555 ns | 0.4260 ns |  0.87 |    0.02 |       `-` |          NA |
+| Read16Items         | `47.966 ns` | 0.1554 ns | 0.1378 ns |  1.77 |    0.02 |       `-` |          NA |
+| ReadOneItem         |  `4.467 ns` | 0.0167 ns | 0.0148 ns |  0.16 |    0.00 |       `-` |          NA |
+
+
+
+
+
+- **跨平台**
+  - 支持 Windows, Linux, MacOS
+  - 支持 .NET Framework 4.6.2 & .NET 12.
+
+- **支持修改**
+  - .NET Framework 和 .NET Core 内置的配置系统, 仅对读取操作友好, 但是对程序运行中修改配置操作支持差劲, 不适合在工业软件中, 用户需要频繁修改配置以完成装机调试, 工艺验证, 流程管控等场景.
+
+
+- **支持原子批量读写**
+
+  保证单次批量读取的所有配置来自同一个快照, 批量写入的配置要么同时成功要么全部失败, `严格满足一致性, 无数据撕裂`. 
+
+  在工业软件中, 配置的批量操作原子性如同PLC在一个扫描周期内IO来自同一快照, 一起写入物理地址那样重要, 否则就会导致诡异和难以复现的偶发宕机.
+
+  举例: 
+
+  1. MFC的流量在Tolerance徘徊Time则报警,如果调试时, Tolerance的修改先生效,程序内部可能出现在一个监控周期使用Tolerance新值Time旧值的情况,导致设备报警!
+  2. 矛盾的多个配置关系
+
+- **零GC & 高性能**
+
+  1. 采用SeqLock机制实现读无锁, 软件不会因为高频读取配置导致性能抖动或下降.
+
+  2. 自研Object转数字类型时, 在检查溢出和精度损失的同时, 不发生任何装箱, 速度接近C#类型强转.
+  3. 提前查好Value,在热路径避免哈希查找, 极其高频调用连哈希计算的时间都省去了.
+
+  3. 使用结构体和栈内存, 避免堆内存压力导致GC Stop-World.
+  4. 纳秒级抖动和耗时
+
+- **引入值校验机制, 防御性编程**
+
+  regex, options, type
+
+- **结构文档, 便于组织配置, Sqlite, 写无损.**
+
+- 字符串性配置,无需编译, 灵活配置, 完全符合半导体行业设备和软件逐步迭代的需求.
+
+- 支持导出GEM模型中的ECID集合.
+
+- **存储修改历史**
+
+  此功能可选择是否开启.
+
+  若开启, 每一次修改都会被严格记录, 可用于追溯和审计, 帮助定位客户现场事故原因.
+
+​		
+
+# Design Idea
+
+## ConfigValue
+
+IConfigValue和IConfigItem的目的是配合IConfigSource暴露给用户,用户在使用时,可以拿到接口进而读写配置,但是接口内无具体实现,既保密了代码,也能让用户自己实现IConfigSource,也能使用SCADA提供的实现.
+
+ConfigItem包含一个配置的所有信息,包括当前值,是单例的.
+
+ConfigValue只是暂存的,拿到后拷贝ConfigItem,能够临时变量.
+
+ConfigValue是值类型, 疯狂返回时, 不会有GC压力.
+
+
+
+## 保证原子读写的顺序锁
+
+
+
+
+
+## Modify Configs
+
+- 批量写入时，先创建一个字典，把所有本次要写入的配置项全部缓存到字典中，最后校验字典中的全部元素，若全部通过，则正式修改。
+- BeginTransaction生成字典，Write将配置项临时缓存到字典，CommitTransaction校验字典元素并正式修改。
+
+## 校验流程
+
+**校验的相关元素**
+
+​	min, max, regex, options, CustomizeOptions, AppendValidationRule.
+
+**校验顺序**
+
+1. 值字符串是否可以转换成相应的类型
+2. 如果是数字类型, 是否超出min和max范围
+3. 是否是options集合中的某一元素
+4. 值字符串是否满足regex正则表达式
+5. 是否满足AppendValidationRule
+
+**检查位置**
+
+	- initial_value, 加载XML后校验初始值
+	- options, 加载XML后校验options的每一个元素
+	- current_value, 校验从数据表读取到的当前值
+	- new_value, 修改配置项的值时检验新值
+
+
+
+> 不需要对min和max校验, 因为它并不是配置项的值, 只是指定极值范围.
+
+
 
 ## Awesome Example
 

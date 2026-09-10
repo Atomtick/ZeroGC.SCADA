@@ -14,7 +14,7 @@ namespace Atomtick.Configuration
         {
             if (string.IsNullOrWhiteSpace(config))
             {
-                errorMessage = "Config item name cannot be null or empty.";
+                errorMessage = "Config name cannot be null or empty.";
                 return false;
             }
             if (string.IsNullOrWhiteSpace(value))
@@ -24,7 +24,7 @@ namespace Atomtick.Configuration
             }
             if (!_configItems.TryGetValue(config, out ConfigItem configItem))
             {
-                errorMessage = $"Config item '{config}' not found.";
+                errorMessage = $"Config '{config}' not found.";
                 return false;
             }
             ConfigType configType = configItem.Type;
@@ -159,8 +159,7 @@ namespace Atomtick.Configuration
                     return false;
                 }
             }
-
-            if (configType == ConfigType.Decimal)
+            else if (configType == ConfigType.Decimal)
             {
                 TryParse2Double(configItem.MaxValue, out var max);
                 TryParse2Double(configItem.MinValue, out var min);

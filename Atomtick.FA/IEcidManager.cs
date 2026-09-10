@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace Atomtick.FA
 {
-    internal interface IClass1
+    public interface IEcidManager
     {
-        Dictionary<string,long> Get
+        Dictionary<string, long> GetAllEcids();
+        long GenerateEcid(string statusVar);
     }
 }
