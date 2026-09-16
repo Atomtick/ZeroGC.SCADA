@@ -1,35 +1,35 @@
 ﻿# User Manual
 
+1. 动态增删配置项，适合模块化应用
+
 1. 支持读取和修改配置
 2. 支持原子性批量读取或修改配置
 3. 顺序锁机制保证原子操作杜绝撕裂读，读性能极高
-4. 支持UI
-
-
-
-
+4. 类型安全，强大的校验系统
 
 ## Motivation and Purpose
 
-强类型配置类(Options模式)的痛点
+### 强类型配置类的痛点
 
-优点：类型安全，智能提示，极速访问
+此方案的优点不再多做赘述（类型安全，智能提示，极速访问）。
 
-缺点1：假设以下场景，模块A使用的配置类ConfigA，模块B使用的配置类ConfigB，模块C使用的配置类ConfigC。在开发模块时，将所有模块使用的类需要事先定义到Common Library，class Config{ ConfigA A；ConfigB B； ConfigC C；}。 但是在整个应用启动时，需要根据需求加载部分模块，这就会导致未使用模块C但是应用的配置系统有根本不会被使用的ConfigC，这会非常干扰程序员使用配置。如果根据需求定义多个类，那需要维护多个软件版本，增删一个配置，都要新增一个版本。 如改用字符串，就能按需动态增删配置项，全程只需一个版本。
+- 痛点1：配置冗余，无法适配动态场景。
 
-缺点2：无法原子性批量更新。假设使用引用替换实现原子性。 第一次修改配置项A，B，C，第二次修改配置项D，E，F，原子替换时，修改ABC，DEF的修改会被抹除。
+​	假设以下场景：模块A使用的配置类ConfigA，模块B使用的配置类ConfigB，模块C使用的配置类ConfigC。在开发模块时，将所有模块使用的类需要事先定义到Common Library，
+
+​	`public class Config { ConfigA A；ConfigB B； ConfigC C；}`
+
+​	应用采用模块化开发，需要根据需求加载模块A和C，不使用模块B，但是应用的配置系统仍旧含有永远不会被使用的ConfigC，这就导致冗余配置干扰程序员访问配置和用户使用系统。如果	根据需求进行取舍定义多个配置类，增删一个配置，都要新增一个版本，导致版本爆炸消耗软件团队巨大精力去维护。 如改用基于字符串的字典型配置系统，就能按需动态增删配置项，仅	需一个软件版本。
+
+- 痛点2：无法原子性批量更新。
+
+  如果使用引用替换实现原子性， 线程1修改配置项A和B，线程修改配置项B和C，原子替换时，线程1会覆盖（抹除）线程对B的修改。
+
+> 动态增删配置项和原子批量读写多个配置项是工业控制软件不可或缺的核心功能。
 
 
 
-动态增删配置和原子性批量读写是工业控制软件不可或缺的核心功能，所以诞生了基于字符串配置系统。
-
-基于字符串的字典模式
-
-
-
-为什么不用Microsoft自带的基于字符串索引的字典型配置系统？
-
-
+### Microsoft内置的字符串配置系统的痛点
 
 **.net framework app.config** 
 
@@ -48,52 +48,21 @@
 </configuration>
 ```
 
-**缺点**
+- 只能读不能改。.NET Framework 程序在技术上是支持修改自身的 `app.config` 文件的，但这通常几乎不推荐，`app.config` 文件被设计为存储相对静态的、随应用程序部署的配置信息，例如数据库连接字符串、服务终结点等，而不是用来存储频繁变化的用户数据或运行时状态。
 
-- 只支持读配置，不支持修改。.NET Framework 程序**在技术上是支持**修改自身的 `app.config` 文件的，但这通常几乎不推荐，`app.config` 文件被设计为存储相对静态的、随应用程序部署的配置信息，例如数据库连接字符串、服务终结点等，而不是用来存储频繁变化的用户数据或运行时状态。
+- 不支持原子性读或写配置。
 
-- 结构简单，容易Key重复。如果配置项数量太多，多达几百甚至上千项，很容易导致Key重复。
+- .NET Core 已经抛弃此配置机制
 
-  ```xml
-  <?xml version="1.0" encoding="utf-8" ?>
-  <configuration>
-      <startup> 
-          <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.7.2" />
-      </startup>
-      <appSettings>
-          <add key="System.CycleCount" value="365" />
-          <add key="System.IsSimulatorMode" value="false" />
-          <add key="System.Setup.DiskFreeSpaceAlarmTolerance" value="6.18" />
-          <add key="System.Setup.RemoteIpAddress" value="127.0.0.1" />
-      </appSettings>
-  </configuration>
-  ```
+### PrimitiveConfigSource的优点
 
-  以`.`延长Key长，虽然在一定程度上避免了Key重复问题，但是结构不易调整。
+- 不仅支持读配置，也支持`修改配置`，且保证多读写的原子性和事务性
+- 极高性能读写操作。原子批量读16个配置项仅需约60ns；原子修改多配置只要修改完内存中的值立刻返回即刻生效，后台的生产者消费者线程‘默默’写磁盘(.NetFramework4.6.2和.NET8.0，使用Channel`不空占线程`,开销几乎忽略不计)
+- 强大的校验机制。含有数据类型，最值，允许值集合，正则表达，自定义校验 5种校验方式，对于程序员是彻底的防御性编程，对于工业行业中需要频繁调整修改参数的不懂软件的操作员，是友好严谨的防呆利器
+- 零GC读操作，低GC写操作
+- 跨平台: Windows，MacOS，Linux，IOS，Android...
 
-**PrimitiveConfigSource XML**
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<root>
-	<config name="System" >
-		<config name="CycleCount" value="3" type="Integer" />
-		<config name="IsSimulatorMode" value="false" type="Boolean" />
-		<config name="SetUp" >
-			<config name="DiskFreeSpaceAlarmTolerance" value="5" type="Decimal" />
-			<config name="RemoteIpAddress" value="127.0.0.1"  type="String" />
-		</config>
-	</config>
-</root>
-```
-
-- 不仅支持读配置，也支持`修改配置`
-- 高性能写操作。SetValue只要修改完内存中的值立刻返回即刻生效，后台的生产者消费者线程‘默默’写磁盘(.NetFramework4.6.2和.NET6.0，使用Channel`不空占线程`,开销几乎忽略不计)
-- 树状结构，很容易避免Key重复，且`容易调整config的位置和Key的索引路径`
-- 可以在XML中添加额外的数据类型限定，在程序中自动进行类型转换，能够在程序员使用错误的期望类型读写配置时，抛出异常，满足`防御性编程`。
-- 可以添加`校验规则`，如最大值最小值限制，正则表达式校验，限制到可允许的取值集合
-- 支持跨平台: Windows, MacOS, Linux
-- 适合配置的结构、内容或键名在编码时无法预知，或者需要被程序动态处理，尤其是自动化行业上位机，需要同一个软件兼容多种机型的场景，`避免维护多个分支和软件版本`.
+- 适合配置的结构、内容或键名在编码时无法预知，或者需要被程序动态处理，尤其是自动化行业上位机，需要同一个软件兼容多种机型的场景，`避免维护多个分支和软件版本`
 
 ## Quick Start
 
