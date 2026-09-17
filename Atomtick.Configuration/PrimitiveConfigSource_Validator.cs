@@ -1,10 +1,9 @@
-﻿using System;
+﻿using Atomtick.Configuration.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Atomtick.Configuration.Interfaces;
 
 namespace Atomtick.Configuration
 {
@@ -63,38 +62,6 @@ namespace Atomtick.Configuration
                     return false;
                 }
             }
-            else if (configType == ConfigType.File)
-            {
-                if (TryParse2File(trimmedValue, out var _) == false)
-                {
-                    errorMessage = ExceptionHelper.GetFormattedString("InvalidCastException_CannotConvert2Path", trimmedValue, config);
-                    return false;
-                }
-            }
-            else if (configType == ConfigType.Folder)
-            {
-                if (TryParse2Directory(trimmedValue, out var _) == false)
-                {
-                    errorMessage = ExceptionHelper.GetFormattedString("InvalidCastException_CannotConvert2Path", trimmedValue, config);
-                    return false;
-                }
-            }
-            else if (configType == ConfigType.DateTime)
-            {
-                if (!TryParse2DateTime(trimmedValue, out _))
-                {
-                    errorMessage = ExceptionHelper.GetFormattedString("InvalidCastException_CannotConvert2DateTime", trimmedValue, config);
-                    return false;
-                }
-            }
-            else if (configType == ConfigType.Color)
-            {
-                if (!TryParse2Color(trimmedValue, out _))
-                {
-                    errorMessage = ExceptionHelper.GetFormattedString("InvalidCastException_CannotConvert2Color", trimmedValue, config);
-                    return false;
-                }
-            }
 
             #endregion CS Data Type Validation
 
@@ -103,7 +70,7 @@ namespace Atomtick.Configuration
             var options = configItem.Options;
             if (options != null && options.Count > 0)
             {
-                if (configType == ConfigType.String || configType == ConfigType.Color)
+                if (configType == ConfigType.String)
                 {
                     if (!options.Contains(trimmedValue))
                     {
@@ -178,7 +145,7 @@ namespace Atomtick.Configuration
             var vtype = configItem.Type;
             if (!string.IsNullOrWhiteSpace(regex))
             {
-                if ((vtype == ConfigType.String || vtype == ConfigType.File || vtype == ConfigType.Folder || vtype == ConfigType.DateTime || vtype == ConfigType.Color) && !Regex.IsMatch(trimmedValue, regex))
+                if ((vtype == ConfigType.String) && !Regex.IsMatch(trimmedValue, regex))
                 {
                     errorMessage = ExceptionHelper.GetFormattedString("ArgumentException_RegexValidation", trimmedValue, configItem.RegexNote, config);
                     return false;

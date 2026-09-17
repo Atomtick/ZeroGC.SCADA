@@ -27,8 +27,6 @@
 
 > 动态增删配置项和原子批量读写多个配置项是工业控制软件不可或缺的核心功能。
 
-
-
 ### Microsoft内置的字符串配置系统的痛点
 
 **.net framework app.config** 
@@ -90,14 +88,10 @@
 
 ### Supported Types
 
-- Boolean
+- Bool
 - Integer
 - Decimal
 - String
-- Folder
-- File
-- Color
-- DateTime
 
 > Folder,File,Color,DateTime属于非核心type，算是额外拓展的边缘类型，虽然完全可以用String替代，但是这样做的好处是将来做控件来修改XML配置项的值，Folder可以标记弹出文件夹选择对话框，DateTime可以弹出日期选择器，但如果全是String，只能采用简陋的文本框输入路径，颜色，日期，既麻烦也易输入错误，此外，标记成Folder,File,Color,DateTime，PrimitiveConfigSource内部会对Value字符串的格式进行校验检查，避免流入非法字符串。
 

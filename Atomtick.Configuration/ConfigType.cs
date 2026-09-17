@@ -7,9 +7,5 @@
         Integer,
         Decimal,
         String,
-        File,
-        Folder,
-        DateTime,
-        Color,
     }
 }

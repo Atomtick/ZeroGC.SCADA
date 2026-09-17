@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Microsoft.Data.Sqlite;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Xml;
-using Microsoft.Data.Sqlite;
 
 namespace Atomtick.Configuration
 {
@@ -468,34 +468,6 @@ namespace Atomtick.Configuration
                             if (!TryParse2Double(initialValue, out _))
                             {
                                 throw new ArgumentException($"The 'value' attribute must be a numeric value. Hint:'{GetHint()}'");
-                            }
-                        }
-                        else if (configType == ConfigType.File)
-                        {
-                            if (!TryParse2File(initialValue, out _))
-                            {
-                                throw new ArgumentException($"The 'value' attribute must be a file value. Hint:'{GetHint()}'");
-                            }
-                        }
-                        else if (configType == ConfigType.Folder)
-                        {
-                            if (!TryParse2Directory(initialValue, out _))
-                            {
-                                throw new ArgumentException($"The 'value' attribute must be a folder value. Hint:'{GetHint()}'");
-                            }
-                        }
-                        else if (configType == ConfigType.Color)
-                        {
-                            if (!TryParse2Color(initialValue, out _))
-                            {
-                                throw new ArgumentException($"The 'value' attribute must be a color value. Hint:'{GetHint()}'");
-                            }
-                        }
-                        else if (configType == ConfigType.DateTime)
-                        {
-                            if (!TryParse2DateTime(initialValue, out _))
-                            {
-                                throw new ArgumentException($"The 'value' attribute must be a DateTime value. Hint:'{GetHint()}'");
                             }
                         }
 

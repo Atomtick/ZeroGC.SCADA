@@ -1,8 +1,7 @@
-﻿using System;
+﻿using Atomtick.Common;
+using System;
 using System.Drawing;
 using System.IO;
-using Atomtick.Common;
-using SCADA.Common;
 
 namespace Atomtick.Configuration
 {
@@ -58,9 +57,9 @@ namespace Atomtick.Configuration
             {
                 throw new ArgumentException($"Config item '{path}' is absent.");
             }
-            if (type != ConfigType.Color)
+            if (type != ConfigType.String)
             {
-                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.Color}'.");
+                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.String}'.");
             }
 
             if (@object is Color color)
@@ -76,16 +75,15 @@ namespace Atomtick.Configuration
             {
                 throw new ArgumentException($"Config item '{path}' is absent.");
             }
-            if (type != ConfigType.DateTime)
+            if (type != ConfigType.String)
             {
-                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.DateTime}'.");
+                throw new ArgumentException($"Config item '{path}' type is not 'String'.");
             }
-            if (@object is DateTime dateTime)
+            if (Utility.TryParse2DateTime(@string, out var dateTime))
             {
                 return dateTime;
             }
-
-            throw new ApplicationException();
+            throw new InvalidOperationException($"'{@string}' can't be converted into 'DateTime' for config item '{path}'");
         }
 
         public DirectoryInfo ToDirectory()
@@ -95,17 +93,17 @@ namespace Atomtick.Configuration
                 throw new ArgumentException($"Config item '{path}' is absent.");
             }
 
-            if (type != ConfigType.Folder)
+            if (type != ConfigType.String)
             {
-                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.Folder}'.");
+                throw new ArgumentException($"Config item '{path}' type is not 'String'.");
             }
 
-            if (@object is DirectoryInfo folder)
+            if (Utility.TryParse2Directory(@string, out var directoryInfo))
             {
-                return folder;
+                return directoryInfo;
             }
 
-            throw new ApplicationException();
+            throw new InvalidOperationException($"'{@string}' can't be converted into 'DirectoryInfo' for config item '{path}'");
         }
 
         public double ToDouble()
@@ -133,17 +131,16 @@ namespace Atomtick.Configuration
                 throw new ArgumentException($"Config item '{path}' is absent.");
             }
 
-            if (type != ConfigType.File)
+            if (type != ConfigType.String)
             {
-                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.File}'.");
+                throw new ArgumentException($"Config item '{path}' type is not 'String'.");
             }
-
-            if (@object is FileInfo fileInfo)
+            if (Utility.TryParse2File(@string, out var fileInfo))
             {
                 return fileInfo;
             }
 
-            throw new ApplicationException();
+            throw new InvalidOperationException($"'{@string}' can't be converted into 'FileInfo' for config item '{path}'");
         }
 
         public short ToInt16()
@@ -349,17 +346,12 @@ namespace Atomtick.Configuration
             {
                 return defaultValue;
             }
-            if (type != ConfigType.Color)
+            if (type != ConfigType.String)
             {
-                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.Color}'.");
+                throw new ArgumentException($"Config item '{path}' type is not 'String'.");
             }
 
-            if (@object is Color color)
-            {
-                return color;
-            }
-
-            throw new ApplicationException();
+            return Utility.TryParse2Color(@string, out var color) ? color : defaultValue;
         }
 
         public DateTime ToDateTime(DateTime defaultValue)
@@ -368,17 +360,12 @@ namespace Atomtick.Configuration
             {
                 return defaultValue;
             }
-            if (type != ConfigType.DateTime)
+            if (type != ConfigType.String)
             {
-                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.DateTime}'.");
+                throw new ArgumentException($"Config item '{path}' type is not 'String'.");
             }
 
-            if (@object is DateTime dateTime)
-            {
-                return dateTime;
-            }
-
-            throw new ApplicationException();
+            return Utility.TryParse2DateTime(@string, out var dateTime) ? dateTime : defaultValue;
         }
 
         public DirectoryInfo ToDirectory(DirectoryInfo defaultValue)
@@ -388,17 +375,12 @@ namespace Atomtick.Configuration
                 return defaultValue;
             }
 
-            if (type != ConfigType.Folder)
+            if (type != ConfigType.String)
             {
-                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.Folder}'.");
+                throw new ArgumentException($"Config item '{path}' type is not 'String'.");
             }
 
-            if (@object is DirectoryInfo folder)
-            {
-                return folder;
-            }
-
-            throw new ApplicationException();
+            return Utility.TryParse2Directory(@string, out var directoryInfo) ? directoryInfo : defaultValue;
         }
 
         public double ToDouble(double defaultValue)
@@ -427,17 +409,12 @@ namespace Atomtick.Configuration
                 return defaultValue;
             }
 
-            if (type != ConfigType.File)
+            if (type != ConfigType.String)
             {
-                throw new ArgumentException($"Config item '{path}' type is not '{ConfigType.File}'.");
+                throw new ArgumentException($"Config item '{path}' type is not 'String'.");
             }
 
-            if (@object is FileInfo file)
-            {
-                return file;
-            }
-
-            throw new ApplicationException();
+            return Utility.TryParse2File(@string, out var fileInfo) ? fileInfo : defaultValue;
         }
 
         public short ToInt16(short defaultValue)
@@ -645,18 +622,12 @@ namespace Atomtick.Configuration
                 return false;
             }
 
-            if (type != ConfigType.Color)
+            if (type != ConfigType.String)
             {
-                throw new ArgumentException($"Config item '{path}' type is not 'color'.");
+                throw new ArgumentException($"Config item '{path}' type is not 'String'.");
             }
 
-            if (@object is Color color2)
-            {
-                color = color2;
-                return true;
-            }
-
-            throw new ApplicationException();
+            return Utility.TryParse2Color(@string, out color);
         }
 
         public bool TryToDateTime(out DateTime dateTime)
@@ -667,18 +638,12 @@ namespace Atomtick.Configuration
                 return false;
             }
 
-            if (type != ConfigType.DateTime)
+            if (type != ConfigType.String)
             {
-                throw new ArgumentException($"Config item '{path}' type is not 'datetime'.");
+                throw new ArgumentException($"Config item '{path}' type is not 'String'.");
             }
 
-            if (@object is DateTime datetime2)
-            {
-                dateTime = datetime2;
-                return true;
-            }
-
-            throw new ApplicationException();
+            return Utility.TryParse2DateTime(@string, out dateTime);
         }
 
         public bool TryToDirectory(out DirectoryInfo directoryInfo)
@@ -689,18 +654,12 @@ namespace Atomtick.Configuration
                 return false;
             }
 
-            if (type != ConfigType.Folder)
+            if (type != ConfigType.String)
             {
-                throw new ArgumentException($"Config item '{path}' type is not 'folder'.");
+                throw new ArgumentException($"Config item '{path}' type is not 'String'.");
             }
 
-            if (@object is DirectoryInfo folder)
-            {
-                directoryInfo = folder;
-                return true;
-            }
-
-            throw new ApplicationException();
+            return Utility.TryParse2Directory(@string, out directoryInfo);
         }
 
         public bool TryToDouble(out double @double)
@@ -733,17 +692,12 @@ namespace Atomtick.Configuration
                 return false;
             }
 
-            if (type != ConfigType.File)
+            if (type != ConfigType.String)
             {
-                throw new ArgumentException($"Config item '{path}' type is not 'file'.");
+                throw new ArgumentException($"Config item '{path}' type is not 'String'.");
             }
 
-            if (@object is FileInfo file)
-            {
-                fileInfo = file;
-                return true;
-            }
-            throw new ApplicationException();
+            return Utility.TryParse2File(@string, out fileInfo);
         }
 
         public bool TryToInt16(out short @short)

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Atomtick.Configuration.Interfaces
+﻿namespace Atomtick.Configuration.Interfaces
 {
     public interface IConfigReader
     {

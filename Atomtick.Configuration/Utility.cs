@@ -1,5 +1,4 @@
-﻿using Atomtick.Configuration.Interfaces;
-using System;
+﻿using System;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -9,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace Atomtick.Configuration
 {
-    public partial class PrimitiveConfigSource : IConfigConverter
+    internal static class Utility
     {
         // InvariantCulture（固定区域性）是一种独立于任何国家、地区或语言的格式。它的底层逻辑基于英语文化，但它被硬编码在.NET 中，永远不会随着操作系统的设置而改变。
         // 使用 CultureInfo.InvariantCulture 的核心目的，正是为了保证你的程序和数据在拷贝到不同区域的电脑上时，绝对不会因为区域设置不同而崩溃或无法使用
@@ -29,7 +28,7 @@ namespace Atomtick.Configuration
         /// <param name="string">必须是#XXXXXX或#XXXXXXXX;X是16进制字符,不区分大小写</param>
         /// <param name="color"></param>
         /// <returns></returns>
-        public bool TryParse2Color(string @string, out System.Drawing.Color color)
+        public static bool TryParse2Color(string @string, out System.Drawing.Color color)
         {
             color = System.Drawing.Color.Empty;
             if (string.IsNullOrWhiteSpace(@string))
@@ -58,7 +57,7 @@ namespace Atomtick.Configuration
         /// <param name="string">字符串格式必须严格是yyyyMMddHHmmss;共计14个字符,多一个少一个都不行</param>
         /// <param name="dateTime"></param>
         /// <returns></returns>
-        public bool TryParse2DateTime(string @string, out DateTime dateTime)
+        public static bool TryParse2DateTime(string @string, out DateTime dateTime)
         {
             if (string.IsNullOrWhiteSpace(@string))
             {
@@ -81,7 +80,7 @@ namespace Atomtick.Configuration
             return false;
         }
 
-        public bool TryParse2Directory(string @string, out DirectoryInfo directoryInfo)
+        public static bool TryParse2Directory(string @string, out DirectoryInfo directoryInfo)
         {
             directoryInfo = null;
             // 1. 基础非空校验
@@ -143,7 +142,7 @@ namespace Atomtick.Configuration
             }
         }
 
-        public bool TryParse2Double(string @string, out double @double)
+        public static bool TryParse2Double(string @string, out double @double)
         {
             // 允许整数形式的字符串转换成double
             if (long.TryParse(@string, NumberStyles.Integer | NumberStyles.AllowThousands | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out long @long))
@@ -180,7 +179,7 @@ namespace Atomtick.Configuration
             }
         }
 
-        public bool TryParse2File(string @string, out FileInfo fileInfo)
+        public static bool TryParse2File(string @string, out FileInfo fileInfo)
         {
             fileInfo = null;
             if (string.IsNullOrWhiteSpace(@string))
@@ -251,7 +250,7 @@ namespace Atomtick.Configuration
             }
         }
 
-        public bool TryParse2Int64(string @string, out long @long)
+        public static bool TryParse2Int64(string @string, out long @long)
         {
             if (long.TryParse(@string, NumberStyles.Integer | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out @long))
             {
@@ -264,7 +263,7 @@ namespace Atomtick.Configuration
             return false;
         }
 
-        public string[] CheckConfigItemFormatting(string config)
+        public static string[] CheckConfigItemFormatting(string config)
         {
             if (config == null)
             {
@@ -286,7 +285,7 @@ namespace Atomtick.Configuration
             return names;
         }
 
-        public void CheckConfigFormattingValid(string config)
+        public static void CheckConfigFormattingValid(string config)
         {
             if (config == null)
             {
@@ -305,7 +304,7 @@ namespace Atomtick.Configuration
             }
         }
 
-        public object Convert2Object(ConfigType type, string value)
+        public static object Convert2Object(ConfigType type, string value)
         {
             switch (type)
             {
@@ -328,7 +327,7 @@ namespace Atomtick.Configuration
             }
         }
 
-        public string Convert2String(object value)
+        public static string Convert2String(object value)
         {
             if (value == null)
             {
@@ -375,12 +374,12 @@ namespace Atomtick.Configuration
             throw new ArgumentException($"Unsupported value type '{value.GetType().Name}'.", nameof(value));
         }
 
-        public string Convert2String(Color color)
+        public static string Convert2String(Color color)
         {
             return "#" + color.ToArgb().ToString("X8", CultureInfo.InvariantCulture);
         }
 
-        public string Convert2String(DateTime dateTime)
+        public static string Convert2String(DateTime dateTime)
         {
             return dateTime.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
         }

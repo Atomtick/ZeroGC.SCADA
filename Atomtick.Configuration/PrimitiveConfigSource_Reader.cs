@@ -1,5 +1,4 @@
-﻿using System;
-using Atomtick.Configuration.Interfaces;
+﻿using Atomtick.Configuration.Interfaces;
 
 namespace Atomtick.Configuration
 {
