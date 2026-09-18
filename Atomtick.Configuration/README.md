@@ -64,48 +64,11 @@
 
 ## Quick Start
 
-### XML File Example
-
-**system.xml**
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<root>
-	<config name="System" >
-		<config name="CycleCount" value="3" type="Integer" />
-		<config name="IsSimulatorMode" value="false" type="Boolean" />
-		<config name="SetUp" >
-			<config name="DiskFreeSpaceAlarmTolerance" value="5" type="Decimal" />
-			<config name="RemoteIpAddress" value="127.0.0.1"  type="String" />
-            <config name="LogsFolder" value="C:\Logs"  type="Folder" />
-            <config name="DataReport" value="C:\data.csv"  type="File" />
-            <config name="AlarmLight" value="#FFFFFF"  type="Color" />
-            <config name="ResetDate" value="2025-05-06 08:00:00"  type="DateTime" />
-		</config>
-	</config>
-</root>
-```
-
-### Supported Types
-
-- Bool
-- Integer
-- Decimal
-- String
-
-> Folder,File,Color,DateTime属于非核心type，算是额外拓展的边缘类型，虽然完全可以用String替代，但是这样做的好处是将来做控件来修改XML配置项的值，Folder可以标记弹出文件夹选择对话框，DateTime可以弹出日期选择器，但如果全是String，只能采用简陋的文本框输入路径，颜色，日期，既麻烦也易输入错误，此外，标记成Folder,File,Color,DateTime，PrimitiveConfigSource内部会对Value字符串的格式进行校验检查，避免流入非法字符串。
-
-`当然，如果你明确将来不会通过可视化界面修改某个XML文件的值，那么完全可以不适用Folder，File，Color，DateTime这四种类型，只用String平替即可。`
-
-### Load XML File
-
 ```c#
-var source = new PrimitiveConfigSource("system.xml",Encoding.UTF8);
+var source = new PrimitiveConfigSource("configs.db");
 ```
 
-PrimitiveConfigSource构造函数传入XML文件路径和文件编码。
-
-> 需要保证一个XML文件同时只能有一个PrimitiveConfigSource对象持有，因为单个对象能保证改配置项值时写操作是线程安全的，但多个对象同时写时不是线程安全的。
+> 需要保证一个db文件同时只能有一个PrimitiveConfigSource对象持有，因为单个对象能保证改配置项值时写操作是线程安全的，但多个对象同时写时不是线程安全的。
 
 ### How to read multiple configs atomically
 
@@ -113,14 +76,11 @@ PrimitiveConfigSource构造函数传入XML文件路径和文件编码。
 
 ```C#
 // 第一步: 使用配置名称字符串索引到配置项
-var isSimulatorMode_i = _configSource.Select("System.IsSimulatorMode");
-// 第二步: 拿到配置的值快照
-var simulatorMode_v = _configSource.Read(isSimulatorMode_i);
-// 第三步: 解析快照拿到基元值
-var simulatorMode = simulatorMode_v.ToBool(true);
+var _isSimulatorMode= _configSource.Select("System.IsSimulatorMode");
+// 第二步: 拿到配置的值快照并解析基元值
+var simulatorMode = _configSource.Read(_isSimulatorMode).ToBool(true);
 // 再次读取配置最新的值(不需要重新用字符串Select ConfigItem)
-simulatorMode_v = _configSource.Read(isSimulatorMode_i);
-simulatorMode = simulatorMode_v.ToBool(true);
+simulatorMode = _configSource.Read(_isSimulatorMode).ToBool(true);
 ```
 
 #### 读取多个配置
@@ -217,10 +177,6 @@ bool isPresent = _isEFEMInstalled.TryToBool(out bool isEFEMInstalled);
 |   Integer   | long  ulong  int  uint  short  ushort  byte  sbyte |
 |   Decimal   |                   double  float                    |
 |   String    |                       string                       |
-|    Color    |                System.Drawing.Color                |
-|  DateTime   |                      DateTime                      |
-|   Folder    |                   DirectoryInfo                    |
-|    File     |                      FileInfo                      |
 
 
 
