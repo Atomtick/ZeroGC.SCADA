@@ -261,7 +261,7 @@ namespace SCADA.UART.Framework
             {
                 if (_lowerPriorityLevelRequests.Count > RequestCacheCapacity)
                 {
-                    throw new InvalidOperationException("Serial port is too busy because request queue is full.");
+                    throw new InvalidOperationException("Serial port is too busy because request controlRequestQueue is full.");
                 }
                 id = ID;
                 var reqinfo = new RequestInfo<TCharOrByte>(content, commandName, timeoutMS, retryLimit, id);

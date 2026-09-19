@@ -79,7 +79,10 @@ var source = new PrimitiveConfigSource("configs.db");
 var _isSimulatorMode= _configSource.Select("System.IsSimulatorMode");
 // 第二步: 拿到配置的值快照并解析基元值
 var simulatorMode = _configSource.Read(_isSimulatorMode).ToBool(true);
-// 再次读取配置最新的值(不需要重新用字符串Select ConfigItem)
+
+// 
+
+// 一段时间后...如果想再次读取配置的当前值(不需要重新用字符串Select ConfigItem)
 simulatorMode = _configSource.Read(_isSimulatorMode).ToBool(true);
 ```
 
